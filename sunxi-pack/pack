@@ -30,7 +30,7 @@
 #    - Call pack with 'debug' parameters
 
 
-if [ $(basename `pwd`) != "pack" ] ; then
+if [ $(basename `pwd`) != "sunxi-pack" ] ; then
 	echo "Please run at the top directory of pack"
 	exit 1
 fi
@@ -50,7 +50,11 @@ function pack_info()
 	echo -e "\033[47;30mINFO: $*\033[0m"
 }
 
-. ../build/shflags
+if [ -f ../build/shflags ] ; then
+	. ../build/shflags
+else
+	. ./shflags
+fi
 
 # define option, format:
 #   'long option' 'default value' 'help message' 'short option'
@@ -88,7 +92,9 @@ if [ "xcamdroid" = "x${PACK_PLATFORM}" ]; then
 	LICHEE_OUT="../../out/${PACK_CHIP}/linux/common"
 	PACK_FUNC="spinor"
 else
-	LICHEE_OUT="../../out/${PACK_CHIP}/${PACK_PLATFORM}/common"
+#BPI
+#	LICHEE_OUT="../../out/${PACK_CHIP}/${PACK_PLATFORM}/common"
+	LICHEE_OUT="../out/${PACK_CHIP}/${PACK_PLATFORM}/common"
 fi
 
 OTA_TEST_NAME="ota_test"
@@ -333,7 +339,9 @@ function do_prepare()
 
 	if [ -z "${PACK_KERN}" ] ; then
 		printf "No kernel param, parse it from .buildconfig\n"
-		PACK_KERN=`awk -F LICHEE_KERN_VER= '{printf $2}' ../../.buildconfig`
+#BPI
+#		PACK_KERN=`awk -F LICHEE_KERN_VER= '{printf $2}' ../../.buildconfig`
+		PACK_KERN=`awk -F LICHEE_KERN_VER= '{printf $2}' .buildconfig`
 		if [ -z "${PACK_KERN}" ] ; then
 			pack_error "Failed to parse kernel param from .buildconfig"
 			exit 1
@@ -509,7 +517,10 @@ function do_ini_to_dts()
 	fi
 
 	if [ -z ${LICHEE_KERN_DIR}  ]; then
-		LICHEE_KERN_DIR=${LICHEE_OUT}/../../../../${PACK_KERN}
+#BPI
+#		LICHEE_KERN_DIR=${LICHEE_OUT}/../../../../${PACK_KERN}
+#		LICHEE_KERN_DIR=../${PACK_KERN}
+		LICHEE_KERN_DIR=../linux-sunxi
 	fi
 	if [ -z ${LICHEE_TOOLS_DIR}  ]; then
 		LICHEE_TOOLS_DIR=${LICHEE_OUT}/../../../../tools
@@ -519,8 +530,11 @@ function do_ini_to_dts()
 	local DTC_DEP_FILE=${LICHEE_KERN_DIR}/arch/$ARCH/boot/dts/.${PACK_CHIP}-${PACK_BOARD}.dtb.d.dtc.tmp
 	local DTC_SRC_PATH=${LICHEE_KERN_DIR}/arch/$ARCH/boot/dts/
 	local DTC_SRC_FILE=${LICHEE_KERN_DIR}/arch/$ARCH/boot/dts/.${PACK_CHIP}-${PACK_BOARD}.dtb.dts.tmp
-	local DTC_INI_FILE_BASE=${LICHEE_TOOLS_DIR}/pack/out/sys_config.fex
-	local DTC_INI_FILE=${LICHEE_TOOLS_DIR}/pack/out/sys_config_fix.fex
+#BPI
+#	local DTC_INI_FILE_BASE=${LICHEE_TOOLS_DIR}/pack/out/sys_config.fex
+#	local DTC_INI_FILE=${LICHEE_TOOLS_DIR}/pack/out/sys_config_fix.fex
+	local DTC_INI_FILE_BASE=out/sys_config.fex
+	local DTC_INI_FILE=out/sys_config_fix.fex
 
 	if [ "x${PACK_BOARD:0:10}" = "xmagton-ipc" ]; then
 		DTC_DEP_FILE=${LICHEE_KERN_DIR}/arch/$ARCH/boot/dts/.${PACK_CHIP}-${PACK_BOARD:0:10}.dtb.d.dtc.tmp

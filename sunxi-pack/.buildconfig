@@ -1,0 +1,5 @@
+export LICHEE_CHIP=sun8iw7p1
+export LICHEE_ARCH=arm
+export LICHEE_PLATFORM=dragonboard
+export LICHEE_KERN_VER=linux-4.4
+export LICHEE_BOARD=BPI-M2P-720P
