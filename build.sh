@@ -40,7 +40,7 @@ R="${SD}/BPI-ROOT"
 	mkdir -p $B/bananapi/${board}/linux4.4
 	cp $BOOT_PACK_P/* $B/bananapi/${board}/linux4.4
 	cp -a $T/linux-sunxi/arch/arm/boot/zImage $B/bananapi/${board}/linux4.4/zImage
-	cp -a $T/linux-sunxi/arch/arm/boot/uImage $B/bananapi/${board}/linux/uImage
+	cp -a $T/linux-sunxi/arch/arm/boot/uImage $B/bananapi/${board}/linux4.4/uImage
 
 	#
 	## copy files to BPI-ROOT
@@ -91,19 +91,19 @@ case $BOARD in
     board="bpi-m2p"
 #    kernel="3.4.113-BPI-M2P-Kernel"
     kernel="4.4.55-BPI-M2P-Kernel"
-    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/default/linux
+    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/default/linux4.4
     ;;
   BPI-M2Z*)
     board="bpi-m2z"
 #    kernel="3.4.113-BPI-M2Z-Kernel"
     kernel="4.4.55-BPI-M2Z-Kernel"
-    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux
+    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
     ;;
   *)
     board=$(echo $BOARD | tr '[A-Z]' '[a-z]')
 #    kernel="3.4.113-${BOARD}-Kernel"
     kernel="4.4.55-${BOARD}-Kernel"
-    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux
+    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
     ;;
 esac
 
