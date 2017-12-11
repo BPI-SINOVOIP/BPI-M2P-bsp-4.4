@@ -284,10 +284,10 @@
 #define CONFIG_SYS_LONGHELP				/* undef to save memory */
 #define CONFIG_SYS_HUSH_PARSER			/* use "hush" command parser	*/
 #define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
-#define CONFIG_SYS_PROMPT		"sunxi#"
+#define CONFIG_SYS_PROMPT		"BPI-IoT# " /* "sunxi#" BPI */
 #define CONFIG_SYS_CBSIZE	256			/* Console I/O Buffer Size */
 #define CONFIG_SYS_PBSIZE	384			/* Print Buffer Size */
-#define CONFIG_SYS_MAXARGS	16			/* max number of command args */
+#define CONFIG_SYS_MAXARGS	32			/* max number of command args */
 
 /* Boot Argument Buffer Size */
 #define CONFIG_SYS_BARGSIZE			CONFIG_SYS_CBSIZE
@@ -408,6 +408,8 @@
 ***************************************************************/
 
 
+//#define CONFIG_BOOT_GUI			/* BPI BOOT GUI */
+#define CONFIG_CMD_ECHO			/* BPI echo cmd */
 #define CONFIG_CMD_BOOTA		/* boot android image */
 #define CONFIG_CMD_RUN			/* run a command */
 #define CONFIG_CMD_BOOTD		/* boot the default command */
@@ -415,6 +417,7 @@
 
 #ifndef CONFIG_SUN8IW7P1_NOR
 #define CONFIG_CMD_FAT			/* with this we can access bootfs in nand */
+#define CONFIG_CMD_EXT4
 #define CONFIG_CMD_IRQ
 #define CONFIG_CMD_ELF
 #define CONFIG_CMD_MEMORY

@@ -179,8 +179,11 @@ SPLTREE		:= $(OBJTREE)/spl
 SRCTREE		:= $(CURDIR)
 TOPDIR		:= $(SRCTREE)
 LNDIR		:= $(OBJTREE)
-SPLDIR		:= $(OBJTREE)/../../bootloader/uboot_2014_sunxi_spl/sunxi_spl
-SPLBASE		:= $(OBJTREE)/../../bootloader/uboot_2014_sunxi_spl
+#BPI
+#SPLDIR		:= $(OBJTREE)/../../bootloader/uboot_2014_sunxi_spl/sunxi_spl
+#SPLBASE		:= $(OBJTREE)/../../bootloader/uboot_2014_sunxi_spl
+SPLDIR		:= $(OBJTREE)/../bootloader/uboot_2014_sunxi_spl/sunxi_spl
+SPLBASE		:= $(OBJTREE)/../bootloader/uboot_2014_sunxi_spl
 SPLSUPPORT  := $(shell if [ -d $(SPLBASE) ] ; then echo "y"; else echo "n"; fi)
 
 export	TOPDIR SRCTREE OBJTREE SPLTREE SPLDIR SPLBASE
@@ -854,11 +857,13 @@ u-boot.bin: u-boot FORCE
 
 u-boot-$(CONFIG_TARGET_NAME).bin:   u-boot.bin
 	@cp -v $<    $@
-	@cp -v $@ $(objtree)/../../tools/pack/chips/$(CONFIG_SYS_BOARD)/bin/$@
+#BPI
+#	@cp -v $@ $(objtree)/../../tools/pack/chips/$(CONFIG_SYS_BOARD)/bin/$@
+	@cp -v $@ $(objtree)/../sunxi-pack/chips/$(CONFIG_SYS_BOARD)/bin/$@
 	if [ -z "$(findstring $(OTA_TEST_NAME), $(SUNXI_MODE))" ]; then \
-		cp -v u-boot-$(CONFIG_TARGET_NAME).bin $(objtree)/../../tools/pack/chips/$(subst  spinor-,,$(CONFIG_TARGET_NAME))/bin/u-boot-$(CONFIG_TARGET_NAME).bin; \
+		cp -v u-boot-$(CONFIG_TARGET_NAME).bin $(objtree)/../sunxi-pack/chips/$(subst  spinor-,,$(CONFIG_TARGET_NAME))/bin/u-boot-$(CONFIG_TARGET_NAME).bin; \
 	else \
-		cp -v u-boot-$(CONFIG_TARGET_NAME).bin $(objtree)/../../tools/pack/chips/$(subst  spinor-,,$(CONFIG_TARGET_NAME))/bin/u-boot-$(CONFIG_TARGET_NAME)-$(SUNXI_MODE).bin; \
+		cp -v u-boot-$(CONFIG_TARGET_NAME).bin $(objtree)/../sunxi-pack/chips/$(subst  spinor-,,$(CONFIG_TARGET_NAME))/bin/u-boot-$(CONFIG_TARGET_NAME)-$(SUNXI_MODE).bin; \
 	fi
 	@if [ -d nand_sunxi/$(SOC)/lib-nand ];  then \
 		cp -v  nand_sunxi/$(SOC)/lib-nand/built-in.o nand_sunxi/$(SOC)/libnand-$(SOC); \
@@ -1212,7 +1217,7 @@ tpl/u-boot-tpl.bin: tools prepare
 TAG_SUBDIRS := $(u-boot-dirs) include $(SPLDIR)
 
 FIND := find
-FINDFLAGS := -L
+FINDFLAGS := -L \
 -R --c++-kinds=+p --fields=+iaS --extra=+q
 tags ctags:
 		ctags -w -o ctags `$(FIND) $(FINDFLAGS) $(TAG_SUBDIRS) \
