@@ -1,0 +1,101 @@
+
+内存配置
+
+名称           来源             长度             属性
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000000000000                __resumes_start = .
+
+.text           0x0000000000000000       0x50
+ drivers/soc/sunxi/power/brom/resume_head.o(.rodata)
+ .rodata        0x0000000000000000       0x30 drivers/soc/sunxi/power/brom/resume_head.o
+                0x0000000000000000                resume_head
+ drivers/soc/sunxi/power/brom/resumes.o(.text)
+ .text          0x0000000000000030       0x20 drivers/soc/sunxi/power/brom/resumes.o
+                0x0000000000000030                _start
+                0x0000000000000048                cpu_brom_addr
+ *(.text)
+ .text          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+
+.glue_7         0x0000000000000050        0x0
+ .glue_7        0x0000000000000050        0x0 linker stubs
+
+.glue_7t        0x0000000000000050        0x0
+ .glue_7t       0x0000000000000050        0x0 linker stubs
+
+.vfp11_veneer   0x0000000000000050        0x0
+ .vfp11_veneer  0x0000000000000050        0x0 linker stubs
+
+.v4_bx          0x0000000000000050        0x0
+ .v4_bx         0x0000000000000050        0x0 linker stubs
+
+.iplt           0x0000000000000050        0x0
+ .iplt          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+
+.rel.dyn        0x0000000000000050        0x0
+ .rel.iplt      0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+
+.rodata
+ *(.rodata)
+
+.data           0x0000000000000050        0x0
+ *(.data)
+ .data          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+ .data          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resumes.o
+                0x0000000000000050                __bss_start = .
+
+.igot.plt       0x0000000000000050        0x0
+ .igot.plt      0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+
+.bss            0x0000000000000050        0x0
+ *(.sbss)
+ *(.scommon)
+ *(.bss)
+ .bss           0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+ .bss           0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resumes.o
+ *(COMMON)
+                0x0000000000000050                __bss_end = .
+                0x0000000000000050                __resumes_end = .
+LOAD drivers/soc/sunxi/power/brom/resumes.o
+LOAD drivers/soc/sunxi/power/brom/resume_head.o
+OUTPUT(drivers/soc/sunxi/power/brom/resumes.elf elf32-littlearm)
+
+.debug_info     0x0000000000000000      0x1b7
+ .debug_info    0x0000000000000000      0x132 drivers/soc/sunxi/power/brom/resume_head.o
+ .debug_info    0x0000000000000132       0x85 drivers/soc/sunxi/power/brom/resumes.o
+
+.debug_abbrev   0x0000000000000000       0x8f
+ .debug_abbrev  0x0000000000000000       0x7b drivers/soc/sunxi/power/brom/resume_head.o
+ .debug_abbrev  0x000000000000007b       0x14 drivers/soc/sunxi/power/brom/resumes.o
+
+.debug_aranges  0x0000000000000000       0x38
+ .debug_aranges
+                0x0000000000000000       0x18 drivers/soc/sunxi/power/brom/resume_head.o
+ .debug_aranges
+                0x0000000000000018       0x20 drivers/soc/sunxi/power/brom/resumes.o
+
+.debug_line     0x0000000000000000       0xd2
+ .debug_line    0x0000000000000000       0x77 drivers/soc/sunxi/power/brom/resume_head.o
+ .debug_line    0x0000000000000077       0x5b drivers/soc/sunxi/power/brom/resumes.o
+
+.debug_str      0x0000000000000000      0x21d
+ .debug_str     0x0000000000000000      0x21d drivers/soc/sunxi/power/brom/resume_head.o
+                                        0x236 (size before relaxing)
+
+.comment        0x0000000000000000       0x2d
+ .comment       0x0000000000000000       0x2d drivers/soc/sunxi/power/brom/resume_head.o
+                                         0x2e (size before relaxing)
+
+.note.GNU-stack
+                0x0000000000000000        0x0
+ .note.GNU-stack
+                0x0000000000000000        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+
+.ARM.attributes
+                0x0000000000000000       0x2f
+ .ARM.attributes
+                0x0000000000000000       0x31 drivers/soc/sunxi/power/brom/resume_head.o
+ .ARM.attributes
+                0x0000000000000031       0x1f drivers/soc/sunxi/power/brom/resumes.o

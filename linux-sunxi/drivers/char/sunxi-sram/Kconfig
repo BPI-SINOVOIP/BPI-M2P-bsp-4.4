@@ -1,0 +1,12 @@
+#
+# sram_a1 config.
+#
+
+config SUNXI_SRAM_A1
+	tristate "sram_a1 for user space"
+	depends on ARCH_SUN8IW12
+	---help---
+	 Say yes if you want to use the sram_a1 for user space; when this
+	 configuration option is enabled, the user space can access SRAM
+	 via mmap.
+

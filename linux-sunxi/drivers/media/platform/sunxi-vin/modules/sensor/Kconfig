@@ -1,0 +1,51 @@
+config SENSOR_OV5640
+	tristate "ov5640 sensor driver"
+	default n
+
+config SENSOR_OV2686
+	tristate "ov2686 sensor driver"
+	default n
+
+config SENSOR_OV2710_AW6131
+	tristate "ov2710_aw6131 sensor driver"
+	default n
+
+config SENSOR_OV2710_AW6131_CAMERA1
+	tristate "ov2710_aw6131_camera1 driver"
+	default n
+
+config SENSOR_AR0238
+	tristate "ar0238 sensor driver"
+	default n
+
+config SENSOR_IMX291_MIPI
+	tristate "ima291_mipi sensor driver"
+	default n
+
+config SENSOR_IMX291_DVP
+	tristate "imx291_dvp sensor driver"
+	default n
+
+config SENSOR_IMX317_MIPI
+	tristate "imx317_mipi sensor driver"
+	default n
+
+config SENSOR_OV2718_MIPI
+	tristate "ov2718_mipi sensor driver"
+	default n
+
+config SENSOR_MN34223_SLVDS
+	tristate "mn34223_slvds sensor driver"
+	default n
+
+config SENSOR_IMX274_SLVDS
+	tristate "imx274_slvds sensor driver"
+	default n
+
+config SENSOR_AR0238_HISPI
+	tristate "ar0238_hispi sensor driver"
+	default n
+
+config SENSOR_IMX326_MIPI
+	tristate "imx326_mipi sensor driver"
+	default n

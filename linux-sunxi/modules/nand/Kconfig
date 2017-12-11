@@ -1,0 +1,9 @@
+menu "Sunxi nand support"
+
+config SUNXI_NAND
+	tristate  "The sunxi nand driver"
+	default m
+	help
+	  The nand used on the platform.
+
+endmenu

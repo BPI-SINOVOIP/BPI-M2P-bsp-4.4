@@ -1,0 +1,45 @@
+#
+# Disp Engineer configuration for sunxi platform
+#
+
+menu "Disp Engineer support for sunxi"
+	depends on DISP2_SUNXI
+
+config DE_SUPPORT_SMBL
+	bool "DispEngineer support smart backlight"
+	default y
+	---help---
+		If you want to support smart backlight for display driver, set y.
+
+config DE_SUPPORT_EINK
+	bool "DispEngineer support eink screen"
+	default y
+	---help---
+		If you want to support EINK Screen for display driver, select it.
+
+config DE_SUPPORT_VGA
+	bool "DispEngineer support vga"
+	default y
+	---help---
+		If you want to support vga for display driver, select it.
+
+config DE_SUPPORT_TV
+	bool "DispEngineer support tv"
+	default y
+	---help---
+		If you want to support vga for display driver, select it.
+
+config DE_SUPPORT_ENHANCE
+	bool "DispEngineer support enhance"
+	default y
+	---help---
+		If you want to support enhance for display driver, select it.
+
+menu "LCD panels select"
+	depends on DISP2_SUNXI
+
+source "drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig"
+
+endmenu
+
+endmenu

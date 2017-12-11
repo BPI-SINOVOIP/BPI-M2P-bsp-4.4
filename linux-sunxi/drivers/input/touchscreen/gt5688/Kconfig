@@ -1,0 +1,25 @@
+#
+#  Touchscreen driver configuration
+#
+config  TOUCHSCREEN_GT5688
+	tristate  "gt5688 touchscreen driver"
+	#depends on INPUT && I2C
+	default y
+	help
+	  Say Y here if you want to built-in gt5688 touchscreen.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called gt5688.ko.
+
+
+config  WAKEUP_BY_GT5688
+	bool  "support gt5688 touchscreen to wakeup_src"
+	depends on TOUCHSCREEN_GT5688 && PM_SLEEP
+	default n
+	help
+	  Say Y here if you want to wake system up by gt5688.
+
+	  If unsure, say N.
+

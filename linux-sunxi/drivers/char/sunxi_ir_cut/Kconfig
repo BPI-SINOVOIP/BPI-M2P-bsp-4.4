@@ -1,0 +1,13 @@
+#
+# Character device configuration
+#
+
+
+config SUNXI_IR_CUT
+	tristate "support sunxi-ir-cut"
+	default m
+	help
+	  Say Y here if you want to support sunxi-ir-cut device.
+
+	  When in doubt, say "Y".
+

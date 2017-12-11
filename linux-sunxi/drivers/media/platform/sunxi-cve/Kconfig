@@ -1,0 +1,10 @@
+#
+# computer vision engine device configuration
+#
+config SUNXI_CVE
+	tristate "CVE driver"
+	default m
+	---help---
+	  This is the driver for allwinner platform computer vision engine(CVE) module.
+	  To compile this driver as a module, choose M here: the
+	  module will be called sunxi_cve.

@@ -1,0 +1,27 @@
+/*
+ * Allwinner Technology CO., Ltd. sun8iw11p1 soc board.
+ *
+ */
+
+/dts-v1/;
+
+#include "sun8iw11p1.dtsi"
+
+/{
+
+	soc@01c00000 {
+	};
+
+	wlan:wlan {
+		compatible = "allwinner,sunxi-wlan";
+		clocks = <&clk_outa>;
+		wlan_power;
+		wlan_io_regulator;
+		wlan_busnum = <0>;
+		wlan_usbnum = <0>;
+		wlan_regon;
+		wlan_hostwake;
+		wlan_clk_gpio = <&pio PI 12 4 0 0 0>;
+		status = "disabled";
+        };
+};

@@ -1,0 +1,68 @@
+config LCD_SUPPORT_CPU_GG1P4062UTSW
+	bool "LCD support cpu_gg1p4062utsw panel"
+	default y
+	---help---
+		If you want to support cpu_gg1p4062utsw panel for display driver, select it.
+
+config LCD_SUPPORT_DX0960BE40A1
+	bool "LCD support dx0960be40a1 panel"
+	default y
+	---help---
+		If you want to support dx0960be40a1 panel for display driver, select it.
+
+config LCD_SUPPORT_FD055HD003S
+	bool "LCD support fd055hd003s panel"
+	default y
+	---help---
+		If you want to support fd055hd003s panel for display driver, select it.
+
+config LCD_SUPPORT_HE0801A068
+	bool "LCD support he0801a068 panel"
+	default y
+	---help---
+		If you want to support he0801a068 panel for display driver, select it.
+
+config LCD_SUPPORT_ILI9341
+	bool "LCD support ili9341 panel"
+	default y
+	---help---
+		If you want to support ili9341 panel for display driver, select it.
+
+config LCD_SUPPORT_LS029B3SX02
+	bool "LCD support ls029b3sx02 panel"
+	default y
+	---help---
+		If you want to support ls029b3sx02 panel for display driver, select it.
+
+config LCD_SUPPORT_LT070ME05000
+	bool "LCD support lt070me05000 panel"
+	default y
+	---help---
+		If you want to support lt070me05000 panel for display driver, select it.
+
+
+config LCD_SUPPORT_S6D7AA0X01
+	bool "LCD support S6D7AA0X01 panel"
+	default y
+	---help---
+		If you want to support S6D7AA0X01 panel for display driver, select it.
+
+
+config LCD_SUPPORT_T27P06
+	bool "LCD support t27p06 panel"
+	default y
+	---help---
+		If you want to support t27p06 panel for display driver, select it.
+
+config LCD_SUPPORT_TFT720x1280
+	bool "LCD support tft720x1280 panel"
+	default y
+	---help---
+		If you want to support tft720x1280 panel for display driver, select it.
+
+
+config LCD_SUPPORT_WTQ05027D01
+	bool "LCD support wtq05027d01 panel"
+	default y
+	---help---
+		If you want to support wtq05027d01 panel for display driver, select it.

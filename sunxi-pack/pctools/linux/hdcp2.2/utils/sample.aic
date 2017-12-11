@@ -1,0 +1,16 @@
+DUK        = 0x00000000000000000000000000000000
+IK         = 0x77c81e6a61b764d67761e812b7cbba2f
+IVc        = 0x4b8c167243a787051beaf878
+BBRlen     = 16384
+CLL        = 64
+MAClen     = 16
+Koff       = 4
+
+input {
+  filename = "firmware/firmware.rom"
+}
+
+input {
+  filename = "firmware/esm_config.i"
+  offset = 20
+}

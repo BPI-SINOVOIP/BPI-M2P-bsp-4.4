@@ -1,0 +1,111 @@
+if ARCH_SUNXI
+menu "Allwinner SOC PINCTRL DRIVER"
+
+config PINCTRL_SUNXI_COMMON
+	bool
+	select PINMUX
+	select GENERIC_PINCONF
+
+config PINCTRL_SUNXI_TEST
+	tristate "pinctrl sunxi test driver"
+
+config PINCTRL_SUN4I_A10
+	def_bool MACH_SUN4I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN5I_A10S
+	def_bool MACH_SUN5I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN5I_A13
+	def_bool MACH_SUN5I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN6I_A31
+	def_bool MACH_SUN6I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN6I_A31S
+	def_bool MACH_SUN6I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN6I_A31_R
+	def_bool MACH_SUN6I
+	depends on RESET_CONTROLLER
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN7I_A20
+	def_bool MACH_SUN7I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8I_A23
+	def_bool MACH_SUN8I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8I_A33
+	def_bool MACH_SUN8I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8I_A83T
+	def_bool MACH_SUN8I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8I_A23_R
+	def_bool MACH_SUN8I
+	depends on RESET_CONTROLLER
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN9I_A80
+	def_bool MACH_SUN9I
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW7P1
+	def_bool ARCH_SUN8IW7
+	depends on ARCH_SUN8IW7
+	bool "Pinctrl sun8iw7p1 PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW11P1
+	def_bool ARCH_SUN8IW11
+	depends on ARCH_SUN8IW11
+	bool "Pinctrl sun8iw11p1 PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW7P1
+	def_bool ARCH_SUN8IW7
+	depends on ARCH_SUN8IW7
+	bool "Pinctrl sun8iw7p1 PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW7P1_R
+	def_bool PINCTRL_SUN8IW7P1
+	depends on PINCTRL_SUN8IW7P1
+	bool "Pinctrl PINCTRL_SUN8IW7P1 R_PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW12P1
+	def_bool ARCH_SUN8IW12
+	depends on ARCH_SUN8IW12
+	bool "Pinctrl sun8iw12p1 PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW12P1_R
+	def_bool PINCTRL_SUN8IW12P1
+	depends on PINCTRL_SUN8IW12P1
+	bool "Pinctrl PINCTRL_SUN8IW12P1 R_PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW15P1
+	def_bool ARCH_SUN8IW15
+	depends on ARCH_SUN8IW15
+	bool "Pinctrl sun8iw15p1 PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+config PINCTRL_SUN8IW15P1_R
+	def_bool PINCTRL_SUN8IW15P1
+	depends on PINCTRL_SUN8IW15P1
+	bool "Pinctrl PINCTRL_SUN8IW15P1 R_PIO controller"
+	select PINCTRL_SUNXI_COMMON
+
+endmenu
+endif

@@ -1,0 +1,25 @@
+#
+#  Touchscreen driver configuration
+#
+config  TOUCHSCREEN_MSG2XXX
+	tristate  "msg2xxx touchscreen driver"
+	depends on INPUT && I2C
+	default m
+	help
+	  Say Y here if you want to built-in msg2xxx touchscreen.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called s23501to-g.ko.
+
+
+config  WAKEUP_BY_MSG2XXX
+	bool  "support msg2xxx touchscreen to wakeup_src"
+	depends on TOUCHSCREEN_MSG2XXX && PM_SLEEP
+	default n
+	help
+	  Say Y here if you want to wake system up by gt5688.
+
+	  If unsure, say N.
+
