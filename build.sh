@@ -53,9 +53,9 @@ R="${SD}/BPI-ROOT"
 	#
 	## create files for bpi-tools & bpi-migrate
 	#
-	(cd $B ; tar czvf $SD/BPI-BOOT-${board}.tgz .)
+	(cd $B ; tar czvf $SD/BPI-BOOT-${board}-linux4.4.tgz .)
 	(cd $R ; tar czvf $SD/${kernel}.tgz lib/modules)
-	(cd $R ; tar czvf $SD/BOOTLOADER-${board}.tgz usr/lib/u-boot/bananapi)
+	(cd $R ; tar czvf $SD/BOOTLOADER-${board}-linux4.4.tgz usr/lib/u-boot/bananapi)
 
 	return #SKIP
 }

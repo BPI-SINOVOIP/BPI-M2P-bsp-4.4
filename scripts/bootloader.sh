@@ -22,8 +22,8 @@ U=${TOPDIR}/out/100MB
 #echo DOWNLOAD DIR=$P
 
 mkdir -p $U
-TMP_FILE=${U}/${BOARD}-4.4-8k.tmp
-IMG_FILE=${U}/${BOARD}-4.4-8k.img
+TMP_FILE=${U}/${BOARD}-linux4.4-8k.tmp
+IMG_FILE=${U}/${BOARD}-linux4.4-8k.img
 
 (sudo dd if=/dev/zero of=${TMP_FILE} bs=1M count=100) >/dev/null 2>&1
 LOOP_DEV=`sudo losetup -f --show ${TMP_FILE}`
