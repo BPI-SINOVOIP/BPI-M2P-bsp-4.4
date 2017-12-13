@@ -77,7 +77,8 @@ case $BOARD in
     board="bpi"
     ;;
   BPI-M2Z*)
-    board="bpi-m2z"
+#    board="bpi-m2z"
+    board="bpi"
     ;;
   *)
     board=$(echo $BOARD | tr '[A-Z]' '[a-z]')

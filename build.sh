@@ -96,7 +96,7 @@ case $BOARD in
   BPI-M2Z*)
     board="bpi-m2z"
 #    kernel="3.4.113-BPI-M2Z-Kernel"
-    kernel="4.4.55-BPI-M2Z-Kernel"
+    kernel="4.4.55-BPI-M2P-Kernel"
     BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
     ;;
   *)
