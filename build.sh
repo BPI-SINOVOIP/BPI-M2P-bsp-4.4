@@ -99,6 +99,11 @@ case $BOARD in
     kernel="4.4.55-BPI-M2P-Kernel"
     BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
     ;;
+  BPI-M2U*)
+    board="bpi-m2u"
+    kernel="4.4.55-BPI-M2P-Kernel"
+    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
+    ;;
   *)
     board=$(echo $BOARD | tr '[A-Z]' '[a-z]')
 #    kernel="3.4.113-${BOARD}-Kernel"

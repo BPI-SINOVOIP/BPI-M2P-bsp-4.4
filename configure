@@ -30,7 +30,7 @@ generate_board_mk() {
 	COMPILE_TOOL=$CROSS_COMPILE
 	NEW_COMPILE_TOOL=$NEW_CROSS_COMPILE
 	UBOOT_CONFIG=$MACH
-	KERNEL_CONFIG=sun8iw7p1smp_${board}_defconfig
+	KERNEL_CONFIG=${MACH}smp_${board}_defconfig
 	LICHEE_PLATFORM=linux
 	EOT
 
@@ -46,7 +46,7 @@ generate_board_envsh() {
 	export MACH=$MACH
 	export CROSS_COMPILE=arm-linux-gnueabihf-
 	export UBOOT_CONFIG=${MACH}_config
-	export KERNEL_CONFIG=sun8iw7p1smp_${board}_defconfig
+	export KERNEL_CONFIG=${MACH}smp_${board}_defconfig
 	export LICHEE_PLATFORM="linux"
 	export GPU_TYPE="mali400"
 	export TOPDIR=${TOPDIR}
@@ -78,6 +78,10 @@ case $BOARD in
     ;;
   BPI-M2Z*)
 #    board="bpi-m2z"
+    board="bpi"
+    ;;
+  BPI-M2U*)
+    MACH=sun8iw11p1
     board="bpi"
     ;;
   *)

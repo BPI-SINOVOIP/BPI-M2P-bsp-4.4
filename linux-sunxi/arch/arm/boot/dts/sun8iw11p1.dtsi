@@ -165,7 +165,7 @@
 				opp-microvolt = <1300000>;
 				clock-latency-ns = <2000000>;
 			};
-		}
+		};
 	};
 
 	n_brom {
