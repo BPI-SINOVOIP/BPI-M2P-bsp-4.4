@@ -435,6 +435,185 @@ uart0_rx         = port:PB23<2><1><default><default>
 ;uart0_tx         = port:PB22<7><1><default><default>
 ;uart0_rx         = port:PB23<7><1><default><default>
 
+[uart1]
+uart1_used       = 0
+uart1_port       = 1
+uart1_type       = 8
+uart1_tx         = port:PA10<4><1><default><default>
+uart1_rx         = port:PA11<4><1><default><default>
+uart1_rts        = port:PA12<4><1><default><default>
+uart1_cts        = port:PA13<4><1><default><default>
+uart1_dtr        = port:PA14<4><1><default><default>
+uart1_dsr        = port:PA15<4><1><default><default>
+uart1_dcd        = port:PA16<4><1><default><default>
+uart1_ring       = port:PA17<4><1><default><default>
+[uart1_suspend]
+uart1_tx         = port:PA10<7><1><default><default>
+uart1_rx         = port:PA11<7><1><default><default>
+uart1_rts        = port:PA12<7><1><default><default>
+uart1_cts        = port:PA13<7><1><default><default>
+uart1_dtr        = port:PA14<7><1><default><default>
+uart1_dsr        = port:PA15<7><1><default><default>
+uart1_dcd        = port:PA16<7><1><default><default>
+uart1_ring       = port:PA17<7><1><default><default>
+
+[uart2]
+uart2_used       = 1
+uart2_port       = 2
+uart2_type       = 2
+;uart2_tx         = port:PA02<4><1><default><default>
+;uart2_rx         = port:PA03<4><1><default><default>
+;uart2_rts        = port:PA00<4><1><default><default>
+;uart2_cts        = port:PA01<4><1><default><default>
+uart2_tx         = port:PI18<3><1><default><default>
+uart2_rx         = port:PI19<3><1><default><default>
+
+[uart2_suspend]
+;uart2_tx         = port:PA02<7><1><default><default>
+;uart2_rx         = port:PA03<7><1><default><default>
+;uart2_rts        = port:PA00<7><1><default><default>
+;uart2_cts        = port:PA01<7><1><default><default>
+uart2_tx         = port:PI18<7><1><default><default>
+uart2_rx         = port:PI19<7><1><default><default>
+
+[uart3]
+uart3_used       = 1
+uart3_port       = 3
+uart3_type       = 4
+uart3_tx         = port:PG06<4><1><default><default>
+uart3_rx         = port:PG07<4><1><default><default>
+uart3_rts        = port:PG08<4><1><default><default>
+uart3_cts        = port:PG09<4><1><default><default>
+
+[uart3_suspend]
+uart3_tx         = port:PG06<7><1><default><default>
+uart3_rx         = port:PG07<7><1><default><default>
+uart3_rts        = port:PG08<7><1><default><default>
+uart3_cts        = port:PG09<7><1><default><default>
+
+[uart4]
+uart4_used       = 0
+uart4_port       = 4
+uart4_type       = 2
+uart4_tx         = port:PG10<4><1><default><default>
+uart4_rx         = port:PG10<4><1><default><default>
+
+[uart4_suspend]
+uart4_tx         = port:PG10<7><1><default><default>
+uart4_rx         = port:PG10<7><1><default><default>
+
+[uart5]
+uart5_used       = 0
+uart5_port       = 5
+uart5_type       = 2
+uart5_tx         = port:PH06<4><1><default><default>
+uart5_rx         = port:PH07<4><1><default><default>
+
+[uart5_suspend]
+uart5_tx         = port:PH06<3><1><default><default>
+uart5_rx         = port:PH07<3><1><default><default>
+
+[uart6]
+uart6_used       = 0
+uart6_port       = 6
+uart6_type       = 2
+uart6_tx         = port:PA12<3><1><default><default>
+uart6_rx         = port:PA13<3><1><default><default>
+
+[uart6_suspend]
+uart6_tx         = port:PA12<7><1><default><default>
+uart6_rx         = port:PA13<7><1><default><default>
+
+[uart7]
+uart7_used       = 0
+uart7_port       = 6
+uart7_type       = 2
+uart7_tx         = port:PA14<3><1><default><default>
+uart7_rx         = port:PA15<3><1><default><default>
+
+[uart7_suspend]
+uart7_tx         = port:PA14<7><1><default><default>
+uart7_rx         = port:PA15<7><1><default><default>
+
+;----------------------------------------------------------------------------------
+;SPI controller configuration
+;----------------------------------------------------------------------------------
+[spi0]
+spi0_used       = 1
+spi0_cs_number  = 2
+spi0_cs_bitmap  = 3
+spi0_cs0        = port:PC23<3><1><default><default>
+spi0_cs1        = port:PI14<2><1><default><default>
+spi0_sclk       = port:PC2<3><default><default><default>
+spi0_mosi       = port:PC0<3><default><default><default>
+spi0_miso       = port:PC1<3><default><default><default>
+
+[spi1]
+spi1_used       = 0
+spi1_cs_number  = 2
+spi1_cs_bitmap  = 3
+spi1_cs0        = port:PA0<3><1><default><default>
+spi1_cs1        = port:PA4<3><1><default><default>
+spi1_sclk       = port:PA1<3><default><default><default>
+spi1_mosi       = port:PA2<3><default><default><default>
+spi1_miso       = port:PA3<3><default><default><default>
+
+[spi2]
+spi2_used       = 0
+spi2_cs_number  = 2
+spi2_cs_bitmap  = 3
+spi2_cs0        = port:PB14<2><1><default><default>
+spi2_cs1        = port:PB13<2><1><default><default>
+spi2_sclk       = port:PB15<2><default><default><default>
+spi2_mosi       = port:PB16<2><default><default><default>
+spi2_miso       = port:PB17<2><default><default><default>
+
+[spi3]
+spi3_used       = 0
+spi3_cs_number  = 2
+spi3_cs_bitmap  = 3
+spi3_cs0        = port:PA5<3><1><default><default>
+spi3_cs1        = port:PA9<3><1><default><default>
+spi3_sclk       = port:PA6<3><default><default><default>
+spi3_mosi       = port:PA7<3><default><default><default>
+spi3_miso       = port:PA8<3><default><default><default>
+
+;----------------------------------------------------------------------------------
+;SPI device configuration
+;compatible        --- device name
+;spi-max-frequency --- work frequency
+;reg               --- chip select
+;optional properties: spi-cpha, spi-cpol, spi-cs-high
+;----------------------------------------------------------------------------------
+[spi0/spi_board0]
+compatible        = "spidev"
+spi-max-frequency = 50000000
+reg               = 0
+;spi-cpha
+;spi-cpol
+;spi-cs-high
+
+;----------------------------------------------------------------------------------
+;capacitor tp configuration
+;external int function
+;wakeup output function
+;notice ---    tp_int_port &  tp_io_port use the same port
+;----------------------------------------------------------------------------------
+[ctp]
+ctp_used            = 1
+ctp_name	    = "ft5x"
+ctp_twi_id          = 1
+ctp_twi_addr        = 0x38
+ctp_screen_max_x    = 800
+ctp_screen_max_y    = 400
+ctp_revert_x_flag   = 0
+ctp_revert_y_flag   = 0
+ctp_exchange_x_y_flag = 0
+ctp_int_port        = port:PI10<6><default><default><default>
+ctp_wakeup          = port:PI11<1><default><default><1>
+ctp_power_ldo       = "vcc-3v"
+ctp_power_ldo_vol   = 3300
+ctp_power_io        =
 
 
 [nand0_para]
@@ -925,7 +1104,7 @@ vqmmc="vcc-sdcvq33"
 vdmmc="vcc-sdcvd"
 ;ctl-spec-caps = 0x8
 [sdc1]
-sdc1_used          = 0
+sdc1_used          = 1
 bus-width	= 4
 sdc1_clk           = port:PG00<4><1><3><default>
 sdc1_cmd           = port:PG01<4><1><3><default>
@@ -1081,6 +1260,46 @@ gsensor_twi_id      = 2
 gsensor_twi_addr    = 0x18
 gsensor_int1        = port:PA09<6><1><default><default>
 gsensor_int2        =
+
+;--------------------------------------------------------------------------------
+;wlan configuration
+;clocks:							32k clk
+;wlan_power:					wifi power
+;wlan_io_regulator:		the power of wifi io
+;wlan_busnum:					no. of bus(usb or bus)
+;wlan_regon:					wifi function enable io
+;wlan_hostwake:				wifi device wake-up host
+;status:							okay
+;--------------------------------------------------------------------------------
+[wlan]
+wlan_used							= 1
+compatible						= "allwinner,sunxi-wlan"
+clocks                = "outa"
+;pinctrl-names					= "default"
+;bt_clk_gpio						= port:PI12<4><0><0><0>
+wlan_power            = "vcc-wifi"
+wlan_io_regulator 		= "vcc-io-wifi"
+wlan_busnum						= 1
+wlan_regon						= port:PG10<1><1><1><0>
+wlan_hostwake					= port:ower0<0><default><default><default>
+
+;--------------------------------------------------------------------------------
+;bt configuration
+;clocks:							32k clk
+;bt_power:						bt power
+;wlan_io_regulator:		the power of bt io
+;bt_rst_n:      			bt function enable io
+;status:							okay
+;--------------------------------------------------------------------------------
+[bt]
+bt_used								= 1
+compatible						= "allwinner,sunxi-bt"
+clocks 								= "outa"
+pinctrl-names					= "default"
+clock_io							= port:PI12<4><0><0><0>
+bt_power 							= "vcc-wifi-2"
+bt_io_regulator 			= "vcc-io-wifi"
+bt_rst_n							= port:PH12<1><1><1><0>
 
 
 ;--------------------------------------------------------------------------------
