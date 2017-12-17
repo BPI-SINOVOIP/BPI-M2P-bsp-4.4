@@ -54,9 +54,17 @@ R="${SD}/BPI-ROOT"
 	#
 	## create files for bpi-tools & bpi-migrate
 	#
+	# BPI-BOOT
 	(cd $B ; tar czvf $SD/BPI-BOOT-${board}-linux4.4.tgz .)
+	# BPI-ROOT: kernel modules
+	#(cd $R ; tar czvf $SD/${kernel}.tgz lib/modules)
+	(cd $R ; tar czvf $SD/${kernel}-net.tgz lib/modules/${kernel}/kernel/net)
+	(cd $R ; mv lib/modules/${kernel}/kernel/net $R/net)
 	(cd $R ; tar czvf $SD/${kernel}.tgz lib/modules)
+	(cd $R ; mv $R/net lib/modules/${kernel}/kernel/net)
+	# BPI-ROOT: BOOTLOADER
 	(cd $R ; tar czvf $SD/BOOTLOADER-${board}-linux4.4.tgz usr/lib/u-boot/bananapi)
+
 
 	return #SKIP
 }
