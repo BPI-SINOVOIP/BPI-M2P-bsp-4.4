@@ -4,6 +4,7 @@
 
 T=
 MACH="sun8iw7p1"
+BPIMACH="sun8iw7p1 sun8iw11p1"
 BOARD=$1
 board=
 kernel=
@@ -66,7 +67,9 @@ list_boards() {
 	new build.sh default select $BOARD and pack all boards
 	supported boards:
 	EOT
-	(cd sunxi-pack/chips/$MACH/configs ; ls -1d BPI* )
+	for MACH in $BPIMACH ; do
+		(cd sunxi-pack/chips/$MACH/configs ; ls -1d BPI*)
+	done
 	echo
 }
 

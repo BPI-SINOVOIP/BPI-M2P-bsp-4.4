@@ -13,6 +13,7 @@
 
 BUILD_CHIP="sun50iw2p1"
 BUILD_CHIP="sun8iw7p1"
+BUILD_UBOOT="u-boot-sunxi"
 BUILD_CONFIG_FILE=".config"
 set -e
 
@@ -152,7 +153,11 @@ fi
 
 
 if [[ "$1" == config ]]; then
-	build_get_config_form_user
+	if [[ -z "$2" ]]; then
+		build_get_config_form_user
+	else
+		BUILD_CHIP=$2
+	fi
 	build_write_config_to_file
 	cd $BUILD_UBOOT
 	make distclean

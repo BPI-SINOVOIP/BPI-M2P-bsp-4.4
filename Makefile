@@ -53,6 +53,7 @@ $(U_CONFIG_H): u-boot-sunxi
 #	$(Q)$(MAKE) -C u-boot-sunxi all CROSS_COMPILE=$(U_CROSS_COMPILE) -j$J
 u-boot: 
 #	./build_uboot.sh
+	./build-uboot.sh config $(MACH)
 	./build-uboot.sh
 
 u-boot-clean:
