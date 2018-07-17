@@ -90,7 +90,6 @@ led_state = 0
 boot_init_gpio_used	=	1
 gpio0 =  port:PL10<1><default><default><1>
 gpio1	=  port:PA15<1><default><default><1>
-gpio2   = port:PD06<1><default><default><1>
 
 ;----------------------------------------------------------------------------------
 ;	used: 模块使能端     1：开启模块          0：关闭模块
@@ -102,7 +101,7 @@ gpio2   = port:PD06<1><default><default><1>
 used =	0
 mode =	2
 trigger = 0
-recovery_key = port:PL03<0><default><default><default>
+recovery_key = port:PL04<0><default><default><default>
 
 ;----------------------------------------------------------------------------------
 ;	hid_used: 多份配置、硬件版本检测功能模块. 1: 开启, 0:关闭
@@ -110,7 +109,7 @@ recovery_key = port:PL03<0><default><default><default>
 ;	hid_bit_x: gpio引脚配置, 该项不允许更改
 ;----------------------------------------------------------------------------------
 [hardware_version]
-hid_used	    = 1
+hid_used	    = 0
 hid_count	    = 3
 hid_bit_0	    = port:PD00<0><1><default><default>
 hid_bit_1	    = port:PD01<0><1><default><default>
@@ -180,7 +179,7 @@ force_uart_tx    = port:PF02<3><1><default><default>
 force_uart_rx    = port:PF04<3><1><default><default>
 
 [jtag_para]
-jtag_enable     = 1
+jtag_enable     = 0
 jtag_ms         = port:PA00<3><default><default><default>
 jtag_ck         = port:PA01<3><default><default><default>
 jtag_do         = port:PA02<3><default><default><default>
@@ -218,7 +217,7 @@ pll_de           = 864
 ;                             (according to the ddr used in machine.)
 ;*****************************************************************************
 [dram_para]
-dram_clk        = 672
+dram_clk        = 576
 dram_type       = 3
 dram_zq         = 0x3b3bfb
 dram_odt_en     = 0x1
@@ -233,15 +232,15 @@ dram_tpr1       = 0x01C2418D
 dram_tpr2       = 0x00076051
 dram_tpr3       = 0
 dram_tpr4       = 0
-dram_tpr5       = 0
+dram_tpr5       = 0x2108A000
 dram_tpr6       = 100
-dram_tpr7       = 0
+dram_tpr7       = 0x13890240
 dram_tpr8       = 0
 dram_tpr9       = 0
 dram_tpr10      = 0
 dram_tpr11      = 0x6aaa0000
 dram_tpr12      = 0x7979
-dram_tpr13      = 0x800800
+dram_tpr13      = 0x1802800
 ;----------------------------------------------------------------------------------
 ;os life cycle para configuration
 ;----------------------------------------------------------------------------------
@@ -271,7 +270,6 @@ pll_ratio           = 0x111
 dram_selfresh_en    = 1
 dram_freq           = 36
 wakeup_src0         =
-wakeup_src_wl       = port:PG10<4><default><default><0>
 ;wakeup_src_bt       = port:PL03<6><default><default><0>
 
 ;----------------------------------------------------------------------------------
@@ -614,31 +612,27 @@ pwm_positive        = port:PA06<3><0><default><default>
 [gmac0]
 gmac0_used          = 1
 phy-mode           = "rgmii"
-gmac_rxd3          = port:PD00<2><default><3><default>
-gmac_rxd2          = port:PD01<2><default><3><default>
-gmac_rxd1          = port:PD02<2><default><3><default>
-gmac_rxd0          = port:PD03<2><default><3><default>
-gmac_rxclk         = port:PD04<2><default><3><default>
-gmac_rxdv          = port:PD05<2><default><3><default>
-;gmac_rxerr         = port:PD06<2><default><3><default>
-gmac_txd3          = port:PD07<2><default><3><default>
-gmac_txd2          = port:PD08<2><default><3><default>
-gmac_txd1          = port:PD09<2><default><3><default>
-gmac_txd0          = port:PD10<2><default><3><default>
-;gmac_crs           = port:PD11<2><default><3><default>
-gmac_txclk         = port:PD12<2><default><3><default>
-gmac_txen          = port:PD13<2><default><3><default>
-;gmac_txerr         = port:PD14<2><default><3><default>
-gmac_col           = port:PD15<2><default><3><default>
-gmac_mdc           = port:PD16<2><default><3><default>
-gmac_mdio          = port:PD17<2><default><3><default>
+gmac_rxd3          = port:PD00<2><default><default><default>
+gmac_rxd2          = port:PD01<2><default><default><default>
+gmac_rxd1          = port:PD02<2><default><default><default>
+gmac_rxd0          = port:PD03<2><default><default><default>
+gmac_rxck          = port:PD04<2><default><default><default>
+gmac_rxctl         = port:PD05<2><default><default><default>
+gmac_txd3          = port:PD07<2><default><default><default>
+gmac_txd2          = port:PD08<2><default><default><default>
+gmac_txd1          = port:PD09<2><default><default><default>
+gmac_txd0          = port:PD10<2><default><default><default>
+gmac_txck          = port:PD12<2><default><default><default>
+gmac_txctl         = port:PD13<2><default><default><default>
+gmac_clkin         = port:PD15<2><default><default><default>
+gmac_mdc           = port:PD16<2><default><default><default>
+gmac_mdio          = port:PD17<2><default><default><default>
+gmac_phy_power_en  = port:PD06<1><1><1><0>
 gmac-power0        = ""
 gmac-power1        = ""
 gmac-power2        = ""
-tx-delay            = 0
-rx-delay            = 0
-;use_ephy25m        = 1
-gmac_phy_power_en   = port:PD06<1><default><default><0>
+tx-delay           = 3
+rx-delay           = 0
 
 ;--------------------------------------------------------------------------------
 ;csi (COMS Sensor Interface) configuration
@@ -700,7 +694,7 @@ csi0_dev0_dvdd		= ""
 csi0_dev0_dvdd_vol	= 1500000
 csi0_dev0_afvdd		= ""
 csi0_dev0_afvdd_vol	= 2800000
-csi0_dev0_power_en	= port:PD14<1><0><1><0>
+csi0_dev0_power_en	= port:PA12<1><0><1><0>
 csi0_dev0_reset         = port:PE14<1><0><1><0>
 csi0_dev0_pwdn          = port:PE15<1><0><1><0>
 csi0_dev0_flash_used	= 0
@@ -982,14 +976,23 @@ wlan_regon            = port:PL07<1><default><default><1>
 ;bt_host_wake_invert: whether bt_host_wake use inverter between ap and module
 ;                     0: not used, 1: used
 ;--------------------------------------------------------------------------------
-[bt_para]
-bt_used               = 1
-bt_uart_id            = 1
-bt_uart_baud          = 1500000
-bt_rst_n              = port:PG12<1><default><default><0> 
-bt_wake               = port:PG13<1><default><default><0>
-bt_host_wake          = port:PG11<0><default><default><0>
-bt_host_wake_invert   = 0
+[bt]
+bt_used             = 1
+bt_rst_n            = port:PG12<1><default><default><0>
+
+;--------------------------------------------------------------------------------
+;bluetooth lpm configuration
+;btlpm_used:        0- no used, 1- used
+;uart_index:        0- uart0, 1- uart1, 2- uart2
+;bt_wake:           host wake-up bluetooth device
+;bt_hostwake:       bt device wake-up host
+;--------------------------------------------------------------------------------
+[btlpm]
+btlpm_used          = 1
+uart_index          = 1
+bt_hostwake_enable  = 0
+bt_wake             = port:PG13<1><default><default><1>
+bt_hostwake         = port:PG11<6><default><default><0>
 
 ;--------------------------------------------------------------------------------
 ;daudio_master:1: SND_SOC_DAIFMT_CBM_CFM(codec clk & FRM master)        use
@@ -1077,7 +1080,7 @@ adcdrc_used       		= 0
 dacdrc_used       		= 0
 adchpf_used       		= 0
 dachpf_used       		= 0
-audio_pa_ctrl          	= port:PL01<1><default><default><0>
+audio_pa_ctrl          	= port:PA16<1><default><default><0>
 
 [spdif0]
 spdif_used          	= 0

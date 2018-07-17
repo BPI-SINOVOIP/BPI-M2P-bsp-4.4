@@ -1642,6 +1642,9 @@
 			interrupt-names = "gmacirq";
 			clocks = <&clk_gmac>, <&clk_ephy>;
 			clock-names = "gmac", "ephy";
+			pinctrl-names = "default", "sleep";
+			pinctrl-0 = <&gmac_pins_a>;
+			pinctrl-1 = <&gmac_pins_b>;
 			phy-mode = "mii";
 			tx-delay = <7>;
 			rx-delay = <31>;

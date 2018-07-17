@@ -154,6 +154,9 @@ struct geth_priv {
 
 	/* resume work */
 	struct work_struct eth_work;
+
+	/* if has gpio to control phy power ---- for sun8iw7 */
+	int gpio_power_hd;
 };
 
 static u64 geth_dma_mask = DMA_BIT_MASK(32);
@@ -343,6 +346,11 @@ static int geth_power_on(struct geth_priv *priv)
 				return -EINVAL;
 			}
 		}
+		if (gpio_is_valid(priv->gpio_power_hd)) {
+			__gpio_set_value(priv->gpio_power_hd, 1);
+			/* wait phy power to be stable */
+            //msleep(500);
+		}
 	}
 
 	writel(value, priv->base_phy);
@@ -365,6 +373,8 @@ static void geth_power_off(struct geth_priv *priv)
 				continue;
 			regulator_disable(priv->gmac_power[i]);
 		}
+		if (gpio_is_valid(priv->gpio_power_hd))
+			__gpio_set_value(priv->gpio_power_hd, 0);
 	}
 }
 
@@ -1771,6 +1781,16 @@ static int geth_hw_init(struct platform_device *pdev)
 				ret = -EINVAL;
 				goto pin_err;
 			}
+		}
+
+		priv->gpio_power_hd = of_get_named_gpio(np, "gmac_phy_power_en", 0);
+		if (gpio_is_valid(priv->gpio_power_hd)) {
+			if (gpio_request(priv->gpio_power_hd, "gpio_phy_power_en") < 0) {
+				pr_err("gmac_phy_power_en gpio request fail!\n");
+				ret = -EINVAL;
+				goto pin_err;
+			}
+			gpio_direction_output(priv->gpio_power_hd, 1);
 		}
 
 		priv->pinctrl = devm_pinctrl_get_select_default(&pdev->dev);

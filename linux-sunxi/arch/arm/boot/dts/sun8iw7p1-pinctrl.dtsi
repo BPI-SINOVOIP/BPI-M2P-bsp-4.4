@@ -487,6 +487,32 @@
 				allwinner,drive = <1>;
 				allwinner,pull = <0>;
 			};
+
+                     	gmac_pins_a: gmac@0 {
+				allwinner,pins = "PD0", "PD1", "PD2", "PD3",
+						 "PD4", "PD5", "PD7",
+						 "PD8", "PD9", "PD10",
+						 "PD12", "PD13", "PD15",
+						 "PD16", "PD17";
+				allwinner,function = "gmac0";
+				allwinner,muxsel = <2>;
+				allwinner,drive = <3>;
+				allwinner,pull = <0>;
+			};
+
+			gmac_pins_b: gmac@1 {
+				allwinner,pins = "PD0", "PD1", "PD2", "PD3",
+						 "PD4", "PD5", "PD7",
+						 "PD8", "PD9", "PD10",
+						 "PD12", "PD13", "PD15",
+						 "PD16", "PD17";
+				allwinner,function = "io_disabled";
+				allwinner,muxsel = <7>;
+				allwinner,drive = <3>;
+				allwinner,pull = <0>;
+			};
+
+
 		};
 	};
 };
