@@ -20,6 +20,21 @@
 		wlan_en;
 		wlan_regon;
 		wlan_hostwake;
+		status = "disabled";
+	};
+
+	bt:bt {
+	        compatible = "allwinner,sunxi-bt";
+		clocks = <&clk_losc_out>;
+		bt_rst_n;
+		status = "okay";
+	};
+
+	btlpm:btlpm {
+	        compatible = "allwinner,sunxi-btlpm";
+		uart_index = <1>;
+		bt_wake;
+		bt_hostwake;
 		status = "okay";
 	};
 

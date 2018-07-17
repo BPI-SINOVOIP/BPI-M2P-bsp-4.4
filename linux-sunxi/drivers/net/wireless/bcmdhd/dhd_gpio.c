@@ -30,7 +30,7 @@ extern void sunxi_wlan_custom_mac_address(u8 *mac);
 extern void *dhd_wlan_mem_prealloc(int section, unsigned long size);
 #endif /* CONFIG_DHD_USE_STATIC_BUF */
 
-static int gpio_wl_reg_on = -1; // WL_HOST_WAKE is output pin of WLAN module
+static int gpio_wl_reg_on = -1; // WL_REG_ON is input pin of WLAN module
 #ifdef CUSTOMER_OOB
 static int gpio_wl_host_wake = -1; // WL_HOST_WAKE is output pin of WLAN module
 #endif
@@ -174,6 +174,22 @@ static int dhd_wlan_get_mac_addr(unsigned char *buf)
 		bcopy((char *)&ea_example, buf, sizeof(struct ether_addr));
 	}
 #endif /* EXAMPLE_GET_MAC */
+#ifdef EXAMPLE_GET_MAC_VER2
+	/* EXAMPLE code */
+	{
+		char mac[6] = {0x00,0x11,0x22,0x33,0x44,0xFF};
+		char macpad[56]= {
+		0x00,0xaa,0x9c,0x84,0xc7,0xbc,0x9b,0xf6,
+		0x02,0x33,0xa9,0x4d,0x5c,0xb4,0x0a,0x5d,
+		0xa8,0xef,0xb0,0xcf,0x8e,0xbf,0x24,0x8a,
+		0x87,0x0f,0x6f,0x0d,0xeb,0x83,0x6a,0x70,
+		0x4a,0xeb,0xf6,0xe6,0x3c,0xe7,0x5f,0xfc,
+		0x0e,0xa7,0xb3,0x0f,0x00,0xe4,0x4a,0xaf,
+		0x87,0x08,0x16,0x6d,0x3a,0xe3,0xc7,0x80};
+		bcopy(mac, buf, sizeof(mac));
+		bcopy(macpad, buf+6, sizeof(macpad));
+	}
+#endif /* EXAMPLE_GET_MAC_VER2 */
 
 #ifdef CUSTOMER_HW_ALLWINNER
 #ifdef CONFIG_CUSTOM_MAC_ADDRESS
@@ -182,7 +198,6 @@ static int dhd_wlan_get_mac_addr(unsigned char *buf)
 		memcpy(mac_addr.octet, mac, ETHER_ADDR_LEN);
 		bcopy((char *)&mac_addr, buf, sizeof(struct ether_addr));
 	}
-
 #endif
 #endif
 	return err;
@@ -268,6 +283,7 @@ int dhd_wlan_init_gpio(void)
 	int host_oob_irq = -1;
 	uint host_oob_irq_flags = 0;
 #endif
+
 	/* Please check your schematic and fill right GPIO number which connected to
 	* WL_REG_ON and WL_HOST_WAKE.
 	*/

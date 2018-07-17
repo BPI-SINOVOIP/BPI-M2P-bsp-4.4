@@ -25,6 +25,12 @@ config HID
 
 if HID
 
+config HID_PT71600_REMOTE
+	bool "PT71600 audio and motion remote control support"
+	depends on USB_HID
+	---help---
+	Support for PT71600 audio and motion remote control
+
 config HID_BATTERY_STRENGTH
 	bool "Battery level reporting for HID devices"
 	depends on HID

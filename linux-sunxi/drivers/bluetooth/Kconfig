@@ -18,6 +18,12 @@ config BT_QCA
 	tristate
 	select FW_LOADER
 
+config BT_RTKBTUSB
+    tristate "RTK HCI USB driver"
+    depends on USB
+    help
+       RTK Bluetooth HCI USB driver
+
 config BT_HCIBTUSB
 	tristate "HCI USB driver"
 	depends on USB
@@ -270,6 +276,46 @@ config BT_HCIVHCI
 
 	  Say Y here to compile support for virtual HCI devices into the
 	  kernel or say M to compile it as module (hci_vhci).
+
+config BCM_BT_LPM
+	tristate "Broadcom Bluetooth Low Power Manager Support"
+	help
+	  Bluetooth Low Power Manager Driver.
+	  This driver provides the dynamic active power saving mechanism for
+	  bluetooth radio devices special for android4.2.
+
+	  Say Y here to compile support for bt lmp support into the kernel
+	  or say M to compile it as module (btlmp).
+
+config BCM_BT_LPM_AXP
+	tristate "Broadcom Bluetooth Low Power Manager Support for AXP"
+	help
+	  Bluetooth Low Power Manager Driver.
+	  This driver provides the dynamic active power saving mechanism for
+	  bluetooth radio devices special for android4.2.
+
+	  Say Y here to compile support for bt lmp support into the kernel
+	  or say M to compile it as module (btlmp).
+
+config BCM_BT_LPM_RC
+	tristate "Broadcom Bluetooth Low Power Manager Support for remote control"
+	help
+	  Bluetooth Low Power Manager Driver.
+	  This driver provides the dynamic active power saving mechanism for
+	  bluetooth radio devices special for android4.2.
+
+	  Say Y here to compile support for bt lmp support into the kernel
+	  or say M to compile it as module (btlmp).
+
+config RTL_BT_LPM
+	tristate "Realtek Bluetooth Low Power Manager Support"
+	help
+	  Bluetooth Low Power Manager Driver.
+	  This driver provides the dynamic active power saving mechanism for
+	  bluetooth radio devices special for android4.2.
+
+	  Say Y here to compile support for bt lmp support into the kernel
+	  or say M to compile it as module (btlmp).
 
 config BT_MRVL
 	tristate "Marvell Bluetooth driver support"

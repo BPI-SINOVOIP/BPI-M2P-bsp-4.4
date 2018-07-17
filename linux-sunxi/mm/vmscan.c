@@ -354,6 +354,12 @@ static unsigned long do_shrink_slab(struct shrink_control *shrinkctl,
 		ret = shrinker->scan_objects(shrinker, shrinkctl);
 		if (ret == SHRINK_STOP)
 			break;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+		if (ret == SHRINK_ONECE) {
+			next_deferred = 0;
+			break;
+		}
+#endif
 		freed += ret;
 
 		count_vm_events(SLABS_SCANNED, nr_to_scan);

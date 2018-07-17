@@ -44,6 +44,29 @@ struct cma cma_areas[MAX_CMA_AREAS];
 unsigned cma_area_count;
 static DEFINE_MUTEX(cma_mutex);
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+static struct cma_consumed_state cma_consumed_st;
+
+int cma_should_shrinker_orphaned(void)
+{
+	unsigned long cma_consumed_page = 0, cma_total_page = 0;
+	unsigned int cma_count = 0;
+	bool should_shrink = 0;
+
+	mutex_lock(&(cma_consumed_st.state_lock));
+	cma_consumed_page = cma_consumed_st.cma_consumed_page;
+	mutex_unlock(&(cma_consumed_st.state_lock));
+
+	for (cma_count = 0; cma_count < cma_area_count; ++cma_count) {
+		cma_total_page += cma_areas[cma_count].count;
+	}
+	should_shrink = ((cma_total_page - cma_consumed_page) >
+		(CONFIG_CMA_ORPHANED_SHRINKER_RATIO * cma_consumed_page)) ?
+		0 : 1;
+	return should_shrink;
+}
+#endif
+
 phys_addr_t cma_get_base(const struct cma *cma)
 {
 	return PFN_PHYS(cma->base_pfn);
@@ -153,7 +176,9 @@ static int __init cma_init_reserved_areas(void)
 		if (ret)
 			return ret;
 	}
-
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	mutex_init(&cma_consumed_st.state_lock);
+#endif
 	return 0;
 }
 core_initcall(cma_init_reserved_areas);
@@ -417,6 +442,11 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
 		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA);
 		mutex_unlock(&cma_mutex);
 		if (ret == 0) {
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+			mutex_lock(&cma_consumed_st.state_lock);
+			cma_consumed_st.cma_consumed_page += count;
+			mutex_unlock(&cma_consumed_st.state_lock);
+#endif
 			page = pfn_to_page(pfn);
 			break;
 		}
@@ -465,6 +495,13 @@ bool cma_release(struct cma *cma, const struct page *pages, unsigned int count)
 
 	free_contig_range(pfn, count);
 	cma_clear_bitmap(cma, pfn, count);
+
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	mutex_lock(&(cma_consumed_st.state_lock));
+	cma_consumed_st.cma_consumed_page -= count;
+	mutex_unlock(&(cma_consumed_st.state_lock));
+#endif
+
 	trace_cma_release(pfn, pages, count);
 
 	return true;

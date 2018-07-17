@@ -114,6 +114,10 @@ extern int sysctl_nr_open_min, sysctl_nr_open_max;
 extern int sysctl_nr_trim_pages;
 #endif
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+extern int cma_orphaned_shrinker_enable;
+#endif
+
 /* Constants used for minimum and  maximum */
 #ifdef CONFIG_LOCKUP_DETECTOR
 static int sixty = 60;
@@ -1672,6 +1676,17 @@ static struct ctl_table vm_table[] = {
 		.extra2		= (void *)&mmap_rnd_compat_bits_max,
 	},
 #endif
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	{
+		.procname	= "cma_orphaned_shrinker_enable",
+		.data		= &cma_orphaned_shrinker_enable,
+		.maxlen		= sizeof(cma_orphaned_shrinker_enable),
+		.mode		= 0644,
+		.proc_handler	= cma_orphaned_sysctl_handler,
+		.extra1		= &zero,
+	},
+#endif
+
 	{ }
 };
 

@@ -13,6 +13,16 @@
 
 #endif
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+struct cma_consumed_state {
+	unsigned long cma_consumed_page;
+	struct mutex    state_lock;
+};
+extern int cma_should_shrinker_orphaned(void);
+#endif
+
+
+
 struct cma;
 
 extern unsigned long totalcma_pages;

@@ -37,6 +37,14 @@
 #include <linux/dma-buf.h>
 #include <linux/idr.h>
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+#include <linux/shrinker.h>
+#include <linux/of.h>
+#include <linux/cma.h>
+#include <linux/random.h>
+#include <linux/miscdevice.h>
+#endif
+
 #include "ion.h"
 #include "ion_priv.h"
 #include "compat_ion.h"
@@ -117,6 +125,22 @@ struct ion_handle {
 	unsigned int kmap_cnt;
 	int id;
 };
+
+
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+extern int cma_orphaned_shrinker_enable;
+static struct ion_device *pion_device;
+static int cma_heap_type;
+static int shrink_orphaned_size;
+LIST_HEAD(cma_shrink_orphaned_list);
+struct cma_shrinker_t_count {
+	int shrinker_try_time;
+	int shrinker_try_buffer_size;
+	int shrinker_state;
+	int random;
+	struct list_head list;
+};
+#endif
 
 bool ion_buffer_fault_user_mappings(struct ion_buffer *buffer)
 {
@@ -210,7 +234,6 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 
 	buffer->dev = dev;
 	buffer->size = len;
-
 	table = heap->ops->map_dma(heap, buffer);
 	if (WARN_ONCE(table == NULL,
 			"heap->ops->map_dma should return ERR_PTR on error"))
@@ -242,6 +265,11 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 
 	buffer->dev = dev;
 	buffer->size = len;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	buffer->align = align;
+	buffer->recycled = 0;
+	buffer->random = get_random_int();
+#endif
 	INIT_LIST_HEAD(&buffer->vmas);
 	mutex_init(&buffer->lock);
 	/*
@@ -272,14 +300,101 @@ err2:
 	return ERR_PTR(ret);
 }
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+static int ion_buffer_recycled_realloc(struct ion_buffer *buffer)
+{
+	struct scatterlist *sg;
+	struct sg_table *table;
+	int ret = 0, i = 0;
+
+	ret = buffer->heap->ops->allocate(buffer->heap, buffer,
+			buffer->size, buffer->align, buffer->flags);
+	if (ret) {
+		if (!(buffer->heap->flags & ION_HEAP_FLAG_DEFER_FREE))
+			goto err2;
+
+		ion_heap_freelist_drain(buffer->heap, 0);
+		ret = buffer->heap->ops->allocate(buffer->heap, buffer,
+			buffer->size, buffer->align, buffer->flags);
+		if (ret)
+			goto err2;
+	}
+
+	table = buffer->heap->ops->map_dma(buffer->heap, buffer);
+	if (WARN_ONCE(table == NULL,
+		"heap->ops->map_dma should return ERR_PTR on error"))
+		table = ERR_PTR(-EINVAL);
+
+	if (IS_ERR(table)) {
+		ret = -EINVAL;
+		goto err1;
+	}
+
+	buffer->sg_table = table;
+	if (ion_buffer_fault_user_mappings(buffer)) {
+		int num_pages = PAGE_ALIGN(buffer->size) / PAGE_SIZE;
+		struct scatterlist *sg;
+		int i, j, k = 0;
+
+		buffer->pages = vmalloc(sizeof(struct page *) * num_pages);
+		if (!buffer->pages) {
+			ret = -ENOMEM;
+			goto err;
+		}
+
+		for_each_sg(table->sgl, sg, table->nents, i) {
+			struct page *page = sg_page(sg);
+
+			for (j = 0; j < sg->length / PAGE_SIZE; j++)
+				buffer->pages[k++] = page++;
+		}
+	}
+
+	for_each_sg(buffer->sg_table->sgl, sg, buffer->sg_table->nents, i) {
+		sg_dma_address(sg) = sg_phys(sg);
+		sg_dma_len(sg) = sg->length;
+	}
+
+	mutex_lock(&pion_device->buffer_lock);
+	ion_buffer_add(pion_device, buffer);
+	mutex_unlock(&pion_device->buffer_lock);
+
+	buffer->recycled = 2;
+	shrink_orphaned_size -= buffer->size;
+
+	return ret;
+err:
+	buffer->heap->ops->unmap_dma(buffer->heap, buffer);
+err1:
+	buffer->heap->ops->free(buffer);
+err2:
+	buffer->recycled = 3;
+	return ret;
+
+}
+#endif
+
 void ion_buffer_destroy(struct ion_buffer *buffer)
 {
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 3) {
+		kfree(buffer);
+		return;
+	}
+#endif
 	if (WARN_ON(buffer->kmap_cnt > 0))
 		buffer->heap->ops->unmap_kernel(buffer->heap, buffer);
 	buffer->heap->ops->unmap_dma(buffer->heap, buffer);
 	buffer->heap->ops->free(buffer);
 	vfree(buffer->pages);
-	kfree(buffer);
+
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		return;
+	 kfree(buffer);
+#else
+	  kfree(buffer);
+#endif
 }
 
 static void _ion_buffer_destroy(struct kref *kref)
@@ -288,7 +403,43 @@ static void _ion_buffer_destroy(struct kref *kref)
 	struct ion_heap *heap = buffer->heap;
 	struct ion_device *dev = buffer->dev;
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	struct cma_shrinker_t_count *t_count, *t_tmp;
+#endif
 	mutex_lock(&dev->buffer_lock);
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (likely(list_empty(&cma_shrink_orphaned_list))) {
+		if (buffer->recycled == 1) {
+			shrink_orphaned_size -= buffer->size;
+			kfree(buffer);
+			mutex_unlock(&dev->buffer_lock);
+			return;
+		}
+		goto normal_handle;
+	} else {
+		list_for_each_entry_safe(t_count, t_tmp, &cma_shrink_orphaned_list, list) {
+			if (t_count->random == buffer->random) {
+				if (buffer->recycled != 1) {
+					list_del(&t_count->list);
+					kfree(t_count);
+					goto normal_handle;
+				} else if (buffer->recycled == 1) {
+					shrink_orphaned_size -= buffer->size;
+					kfree(buffer);
+					mutex_unlock(&dev->buffer_lock);
+					return;
+				}
+			}
+		}
+	}
+normal_handle:
+	if (buffer->recycled == 1 || buffer->recycled == 3) {
+		shrink_orphaned_size -= buffer->size;
+		kfree(buffer);
+		mutex_unlock(&dev->buffer_lock);
+		return;
+	}
+#endif
 	rb_erase(&buffer->node, &dev->buffers);
 	mutex_unlock(&dev->buffer_lock);
 
@@ -592,6 +743,10 @@ int ion_phys(struct ion_client *client, struct ion_handle *handle,
 	}
 
 	buffer = handle->buffer;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	if (!buffer->heap->ops->phys) {
 		pr_err("%s: ion_phys is not implemented by this heap (name=%s, type=%d).\n",
@@ -608,6 +763,10 @@ EXPORT_SYMBOL(ion_phys);
 static void *ion_buffer_kmap_get(struct ion_buffer *buffer)
 {
 	void *vaddr;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	if (buffer->kmap_cnt) {
 		buffer->kmap_cnt++;
@@ -642,6 +801,10 @@ static void *ion_handle_kmap_get(struct ion_handle *handle)
 
 static void ion_buffer_kmap_put(struct ion_buffer *buffer)
 {
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 	buffer->kmap_cnt--;
 	if (!buffer->kmap_cnt) {
 		buffer->heap->ops->unmap_kernel(buffer->heap, buffer);
@@ -676,6 +839,11 @@ void *ion_map_kernel(struct ion_client *client, struct ion_handle *handle)
 	}
 
 	buffer = handle->buffer;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
+
 
 	if (!handle->buffer->heap->ops->map_kernel) {
 		pr_err("%s: map_kernel is not implemented by this heap.\n",
@@ -699,6 +867,10 @@ void ion_unmap_kernel(struct ion_client *client, struct ion_handle *handle)
 	mutex_lock(&client->lock);
 	buffer = handle->buffer;
 	mutex_lock(&buffer->lock);
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 	ion_handle_kmap_put(handle);
 	mutex_unlock(&buffer->lock);
 	mutex_unlock(&client->lock);
@@ -895,6 +1067,11 @@ struct sg_table *ion_sg_table(struct ion_client *client,
 		return ERR_PTR(-EINVAL);
 	}
 	buffer = handle->buffer;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
+
 	table = buffer->sg_table;
 	mutex_unlock(&client->lock);
 	return table;
@@ -910,6 +1087,11 @@ static struct sg_table *ion_map_dma_buf(struct dma_buf_attachment *attachment,
 {
 	struct dma_buf *dmabuf = attachment->dmabuf;
 	struct ion_buffer *buffer = dmabuf->priv;
+
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	ion_buffer_sync_for_device(buffer, attachment->dev, direction);
 	return buffer->sg_table;
@@ -980,6 +1162,10 @@ static int ion_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	struct ion_buffer *buffer = vma->vm_private_data;
 	unsigned long pfn;
 	int ret;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	mutex_lock(&buffer->lock);
 	ion_buffer_page_dirty(buffer->pages + vmf->pgoff);
@@ -998,6 +1184,10 @@ static void ion_vm_open(struct vm_area_struct *vma)
 {
 	struct ion_buffer *buffer = vma->vm_private_data;
 	struct ion_vma_list *vma_list;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	vma_list = kmalloc(sizeof(struct ion_vma_list), GFP_KERNEL);
 	if (!vma_list)
@@ -1013,6 +1203,10 @@ static void ion_vm_close(struct vm_area_struct *vma)
 {
 	struct ion_buffer *buffer = vma->vm_private_data;
 	struct ion_vma_list *vma_list, *tmp;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	pr_debug("%s\n", __func__);
 	mutex_lock(&buffer->lock);
@@ -1037,6 +1231,11 @@ static int ion_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
 {
 	struct ion_buffer *buffer = dmabuf->priv;
 	int ret = 0;
+
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	if (!buffer->heap->ops->map_user) {
 		pr_err("%s: this heap does not define a method for mapping to userspace\n",
@@ -1064,7 +1263,6 @@ static int ion_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
 	if (ret)
 		pr_err("%s: failure mapping buffer to userspace\n",
 		       __func__);
-
 	return ret;
 }
 
@@ -1078,6 +1276,10 @@ static void ion_dma_buf_release(struct dma_buf *dmabuf)
 static void *ion_dma_buf_kmap(struct dma_buf *dmabuf, unsigned long offset)
 {
 	struct ion_buffer *buffer = dmabuf->priv;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	return buffer->vaddr + offset * PAGE_SIZE;
 }
@@ -1246,6 +1448,10 @@ static int ion_sync_for_device(struct ion_client *client, int fd)
 		return -EINVAL;
 	}
 	buffer = dmabuf->priv;
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	if (buffer->recycled == 1)
+		ion_buffer_recycled_realloc(buffer);
+#endif
 
 	dma_sync_sg_for_device(NULL, buffer->sg_table->sgl,
 			       buffer->sg_table->nents, DMA_BIDIRECTIONAL);
@@ -1491,18 +1697,29 @@ static int ion_debug_heap_show(struct seq_file *s, void *unused)
 			continue;
 		total_size += buffer->size;
 		if (!buffer->handle_count) {
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+			seq_printf(s, "%16s %16u %16zu %d %d %d\n",
+				   buffer->task_comm, buffer->pid,
+				   buffer->size, buffer->kmap_cnt,
+				   atomic_read(&buffer->ref.refcount), buffer->recycled);
+#else
 			seq_printf(s, "%16s %16u %16zu %d %d\n",
 				   buffer->task_comm, buffer->pid,
 				   buffer->size, buffer->kmap_cnt,
 				   atomic_read(&buffer->ref.refcount));
+#endif
 			total_orphaned_size += buffer->size;
 		}
 	}
 	mutex_unlock(&dev->buffer_lock);
 	seq_puts(s, "----------------------------------------------------\n");
-	seq_printf(s, "%16s %16zu\n", "total orphaned",
+	seq_printf(s, "%16s %16zu\n", "total orphaned_size",
 		   total_orphaned_size);
-	seq_printf(s, "%16s %16zu\n", "total ", total_size);
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	seq_printf(s, "%16s %16zu\n", "total orphaned_shrink_size",
+		  shrink_orphaned_size);
+#endif
+	seq_printf(s, "%16s %16zu\n", "total size", total_size);
 	if (heap->flags & ION_HEAP_FLAG_DEFER_FREE)
 		seq_printf(s, "%16s %16zu\n", "deferred free",
 				heap->free_list_size);
@@ -1674,7 +1891,7 @@ void ion_device_destroy(struct ion_device *dev)
 	misc_deregister(&dev->dev);
 	debugfs_remove_recursive(dev->debug_root);
 	/* XXX need to free the heaps and clients ? */
-	kfree(dev);
+kfree(dev);
 }
 EXPORT_SYMBOL(ion_device_destroy);
 
@@ -1712,3 +1929,178 @@ void __init ion_reserve(struct ion_platform_data *data)
 			data->heaps[i].size);
 	}
 }
+
+
+/**/
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+static unsigned long cma_orphaned_shrinker_count(struct shrinker *s,
+				  struct shrink_control *sc)
+{
+	return global_page_state(NR_ACTIVE_ANON) +
+		global_page_state(NR_ACTIVE_FILE) +
+		global_page_state(NR_INACTIVE_ANON) +
+		global_page_state(NR_INACTIVE_FILE);
+}
+
+static unsigned long cma_orphaned_shrinker_scan(struct shrinker *s, struct shrink_control *sc)
+{
+	unsigned long rem = 0;
+	struct rb_node *n;
+	int get_buffer = 0;
+	struct cma_shrinker_t_count *t_count, *tmp_count, *t_tmp;
+
+	if (!cma_should_shrinker_orphaned() || !cma_orphaned_shrinker_enable) {
+		return SHRINK_ONECE;
+	}
+
+	mutex_lock(&pion_device->buffer_lock);
+	for (n = rb_first(&pion_device->buffers); n; n = rb_next(n)) {
+		struct ion_buffer *buffer = rb_entry(n, struct ion_buffer, node);
+		if (buffer->heap->id != cma_heap_type || buffer->recycled != 0)
+			continue;
+		if (!buffer->handle_count) {
+			if (likely(list_empty(&cma_shrink_orphaned_list))) {
+				tmp_count = kmalloc(sizeof(struct cma_shrinker_t_count),
+							GFP_KERNEL);
+				if (!tmp_count) {
+					pr_err("%s:%d: alloc cma_shrinker_t_count faild\n",
+							__func__, __LINE__);
+					continue;
+				}
+				INIT_LIST_HEAD(&tmp_count->list);
+				tmp_count->shrinker_try_buffer_size = buffer->size;
+				tmp_count->shrinker_try_time = 1;
+				tmp_count->shrinker_state = 1;
+				tmp_count->random = buffer->random;
+				list_add(&tmp_count->list, &cma_shrink_orphaned_list);
+			} else {
+				get_buffer = 0;
+				list_for_each_entry(t_count, &cma_shrink_orphaned_list, list) {
+					if (t_count->random == buffer->random) {
+						if (++(t_count->shrinker_try_time) >= 10) {
+							pr_info("%s:%d:handle->count = %d, buffer->size = %d, refcount = %d\n",
+								__func__, __LINE__, buffer->handle_count, buffer->size, buffer->ref.refcount.counter);
+
+							if (atomic_read(&(buffer->ref.refcount)) == 0) {
+								buffer->recycled = 2;
+								t_count->shrinker_state = 0;
+								get_buffer = 1;
+								break;
+							}
+							buffer->recycled = 1;
+							rb_erase(&buffer->node, &pion_device->buffers);
+
+							if (buffer->heap->flags & ION_HEAP_FLAG_DEFER_FREE) {
+								ion_heap_freelist_add(buffer->heap, buffer);
+							} else {
+								ion_buffer_destroy(buffer);
+							}
+							t_count->shrinker_state = 0;
+							rem += buffer->size;
+						} else {
+							t_count->shrinker_state = 1;
+						}
+						get_buffer = 1;
+						break;
+					}
+				}
+				if (get_buffer == 0) {
+					tmp_count = kmalloc(sizeof (struct cma_shrinker_t_count), GFP_KERNEL);
+					if (!tmp_count) {
+						pr_err("%s:%d: alloc cma_shrinker_t_count faild\n",
+							__func__, __LINE__);
+						continue;
+					}
+					INIT_LIST_HEAD(&tmp_count->list);
+					tmp_count->shrinker_try_buffer_size = buffer->size;
+					tmp_count->shrinker_try_time = 1;
+					tmp_count->shrinker_state = 1;
+					tmp_count->random = buffer->random;
+					list_add(&tmp_count->list, &cma_shrink_orphaned_list);
+				}
+			}
+		}
+	}
+
+	list_for_each_entry_safe(t_count, t_tmp, &cma_shrink_orphaned_list, list) {
+		if (t_count->shrinker_state == 0) {
+			list_del(&t_count->list);
+			kfree(t_count);
+		} else {
+			t_count->shrinker_state = 0;
+		}
+	}
+	mutex_unlock(&pion_device->buffer_lock);
+
+	shrink_orphaned_size += rem;
+
+	return SHRINK_ONECE;
+}
+
+static struct shrinker cma_orphaned_shrinker = {
+	.scan_objects = cma_orphaned_shrinker_scan,
+	.count_objects = cma_orphaned_shrinker_count,
+	.seeks = DEFAULT_SEEKS,
+};
+
+static int __init cma_orphaned_init(void)
+{
+	struct device_node *np = NULL, *heap_node = NULL;
+	const char *cma_heap_name;
+	struct miscdevice *c;
+
+	pion_device = NULL;
+	shrink_orphaned_size = 0;
+	np = of_find_compatible_node(NULL, NULL, "allwinner,sunxi-ion");
+
+	c = get_miscdevice_by_name("ion");
+	if (c == NULL) {
+		pr_err("get ion miscdevice failed\n");
+		return -ENODEV;
+	}
+
+	if (c != NULL) {
+		pion_device = container_of(c, struct ion_device, dev);
+		/*struct plist_node * node_pos;
+		  plist_for_each(node_pos, &test_head) {
+			ion_cma_heap = container_of(node_pos,
+					struct ion_heap, node);
+			if (!strcmp(ion_cma_heap->name, "cma")) {
+				break;
+			} else {
+				ion_cma_heap = NULL;
+				continue;
+			}
+		}
+		ion_cma_heap = container_of(pion_device, struct ion_heap, dev);*/
+	} else {
+		pr_err("cma_shrinker get the ion misc device failed\n");
+		return 0;
+	}
+
+	while (pion_device != NULL) {
+		heap_node = of_get_next_child(np, heap_node);
+		if (!heap_node)
+			break;
+
+		if (of_property_read_string(heap_node, "name",
+					&cma_heap_name)) {
+			pr_err("You need config the heap node 'name'\n");
+			continue;
+		}
+		if (!strcmp("cma", cma_heap_name)) {
+			if (of_property_read_u32(heap_node, "type", &cma_heap_type)) {
+				pr_err("You need config the heap node 'type'\n");
+				continue;
+			}
+		}
+	}
+
+	if (pion_device != NULL) {
+		register_shrinker(&cma_orphaned_shrinker);
+	}
+	return 0;
+}
+late_initcall(cma_orphaned_init);
+#endif
+/**/

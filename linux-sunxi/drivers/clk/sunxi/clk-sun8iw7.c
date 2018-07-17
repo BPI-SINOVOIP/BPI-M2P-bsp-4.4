@@ -757,7 +757,7 @@ void __init sunxi_clocks_init(struct device_node *node)
 {
 	sunxi_clk_base = of_iomap(node, 0);
 	sunxi_clk_cpus_base = of_iomap(node, 1);
-	sunxi_clk_periph_losc_out.gate.bus = of_iomap(node, 2);
+	sunxi_clk_periph_losc_out.gate.bus = of_iomap(node, 2) + LOSC_OUT_GATE;
 	/*do some initialize arguments here*/
 	sunxi_clk_factor_initlimits();
 	sunxi_set_clocks_priv_ops();

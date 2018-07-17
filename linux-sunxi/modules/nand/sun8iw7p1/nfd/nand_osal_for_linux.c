@@ -1,17 +1,13 @@
 /*
-*********************************************************************************************************
-*											        eBIOS
-*						            the Easy Portable/Player Develop Kits
-*									           dma sub system
-*
-*						        (c) Copyright 2006-2008, David China
-*											All	Rights Reserved
-*
-* File    : clk_for_nand.c
-* By      : Richard
-* Version : V1.00
-*********************************************************************************************************
-*/
+ * nand_osal_for_linux.c for  SUNXI NAND .
+ *
+ * Copyright (C) 2016 Allwinner.
+ *
+ *
+ * This file is licensed under the terms of the GNU General Public
+ * License version 2.  This program is licensed "as is" without any
+ * warranty of any kind, whether express or implied.
+ */
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -45,9 +41,14 @@
 #include <linux/dma/sunxi-dma.h>
 
 #define  NAND_DRV_VERSION_0		0x03
-#define  NAND_DRV_VERSION_1		0x6014
-#define  NAND_DRV_DATE			0x20170828
-#define  NAND_DRV_TIME			0x1826
+#define  NAND_DRV_VERSION_1		0x6015
+#define  NAND_DRV_DATE			0x20171214
+#define  NAND_DRV_TIME			0x16801444
+/*
+ * 1680--aw1680--H3
+ * 14--uboot2014
+ * 44--linux4.4
+*/
 
 struct clk *pll6;
 struct clk *nand0_clk;

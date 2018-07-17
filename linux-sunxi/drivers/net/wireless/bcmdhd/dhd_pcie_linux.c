@@ -615,10 +615,22 @@ dhdpcie_request_irq(dhdpcie_info_t *dhdpcie_info)
 	if (!bus->irq_registered) {
 		snprintf(dhdpcie_info->pciname, sizeof(dhdpcie_info->pciname),
 		    "dhdpcie:%s", pci_name(pdev));
+#ifdef DHD_USE_MSI
+		printf("%s: MSI enabled\n", __FUNCTION__);
+		err = pci_enable_msi(pdev);
+		if (err < 0) {
+			DHD_ERROR(("%s: pci_enable_msi() failed, %d, fall back to INTx\n", __FUNCTION__, err));
+		}
+#else
+		printf("%s: MSI not enabled\n", __FUNCTION__);
+#endif /* DHD_USE_MSI */
 		err = request_irq(pdev->irq, dhdpcie_isr, IRQF_SHARED,
 			dhdpcie_info->pciname, bus);
 		if (err) {
 			DHD_ERROR(("%s: request_irq() failed\n", __FUNCTION__));
+#ifdef DHD_USE_MSI
+			pci_disable_msi(pdev);
+#endif /* DHD_USE_MSI */
 			return -1;
 		} else {
 			bus->irq_registered = TRUE;
@@ -1005,6 +1017,9 @@ dhdpcie_free_irq(dhd_bus_t *bus)
 		pdev = bus->dev;
 		free_irq(pdev->irq, bus);
 		bus->irq_registered = FALSE;
+#ifdef DHD_USE_MSI
+		pci_disable_msi(pdev);
+#endif /* DHD_USE_MSI */
 	} else {
 		DHD_ERROR(("%s: PCIe IRQ is not registered\n", __FUNCTION__));
 	}

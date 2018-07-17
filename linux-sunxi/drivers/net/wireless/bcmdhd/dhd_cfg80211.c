@@ -149,8 +149,10 @@ struct net_device * dhd_cfg80211_netdev_free(struct net_device *ndev)
 			kfree(ndev->ieee80211_ptr);
 			ndev->ieee80211_ptr = NULL;
 		}
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
 		free_netdev(ndev);
 		return NULL;
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0) */
 	}
 
 	return ndev;
@@ -161,8 +163,10 @@ void dhd_netdev_free(struct net_device *ndev)
 #ifdef WL_CFG80211
 	ndev = dhd_cfg80211_netdev_free(ndev);
 #endif
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
 	if (ndev)
 		free_netdev(ndev);
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0) */
 }
 
 static s32

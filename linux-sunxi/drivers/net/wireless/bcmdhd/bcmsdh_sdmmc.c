@@ -138,7 +138,7 @@ sdioh_sdmmc_card_enablefuncs(sdioh_info_t *sd)
 	err_ret = sdio_enable_func(sd->func[1]);
 	sdio_release_host(sd->func[1]);
 	if (err_ret) {
-		sd_err(("bcmsdh_sdmmc: Failed to enable F1 Err: 0x%08x", err_ret));
+		sd_err(("bcmsdh_sdmmc: Failed to enable F1 Err: 0x%08x\n", err_ret));
 	}
 
 	return FALSE;
@@ -548,7 +548,6 @@ sdioh_iovar_op(sdioh_info_t *si, const char *name,
 		/* Now set it */
 		si->client_block_size[func] = blksize;
 
-#ifdef USE_DYNAMIC_F2_BLKSIZE
 		if (si->func[func] == NULL) {
 			sd_err(("%s: SDIO Device not present\n", __FUNCTION__));
 			bcmerror = BCME_NORESOURCE;
@@ -560,7 +559,6 @@ sdioh_iovar_op(sdioh_info_t *si, const char *name,
 			sd_err(("%s: Failed to set F%d blocksize to %d(%d)\n",
 				__FUNCTION__, func, blksize, bcmerror));
 		sdio_release_host(si->func[func]);
-#endif /* USE_DYNAMIC_F2_BLKSIZE */
 		break;
 	}
 
@@ -1422,6 +1420,7 @@ sdioh_request_word(sdioh_info_t *sd, uint cmd_type, uint rw, uint func, uint add
 	return (((err_ret == 0)&&(err_ret2 == 0)) ? SDIOH_API_RC_SUCCESS : SDIOH_API_RC_FAIL);
 }
 
+#ifdef BCMSDIOH_TXGLOM
 static SDIOH_API_RC
 sdioh_request_packet_chain(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
                      uint addr, void *pkt)
@@ -1440,11 +1439,9 @@ sdioh_request_packet_chain(sdioh_info_t *sd, uint fix_inc, uint write, uint func
 	uint32 sg_count;
 	struct sdio_func *sdio_func = sd->func[func];
 	struct mmc_host *host = sdio_func->card->host;
-#ifdef BCMSDIOH_TXGLOM
 	uint8 *localbuf = NULL;
 	uint local_plen = 0;
 	uint pkt_len = 0;
-#endif /* BCMSDIOH_TXGLOM */
 	struct timespec now, before;
 
 	sd_trace(("%s: Enter\n", __FUNCTION__));
@@ -1462,11 +1459,9 @@ sdioh_request_packet_chain(sdioh_info_t *sd, uint fix_inc, uint write, uint func
 	pkt_offset = 0;
 	pnext = pkt;
 
-#ifdef BCMSDIOH_TXGLOM
 	ttl_len = 0;
 	sg_count = 0;
 	if(sd->txglom_mode == SDPCM_TXGLOM_MDESC) {
-#endif
 	while (pnext != NULL) {
 		ttl_len = 0;
 		sg_count = 0;
@@ -1554,7 +1549,6 @@ sdioh_request_packet_chain(sdioh_info_t *sd, uint fix_inc, uint write, uint func
 			return SDIOH_API_RC_FAIL;
 		}
 	}
-#ifdef BCMSDIOH_TXGLOM
 	} else if(sd->txglom_mode == SDPCM_TXGLOM_CPY) {
 		for (pnext = pkt; pnext; pnext = PKTNEXT(sd->osh, pnext)) {
 			ttl_len += PKTLEN(sd->osh, pnext);
@@ -1634,7 +1628,6 @@ txglomfail:
 
 	if (localbuf)
 		MFREE(sd->osh, localbuf, ttl_len);
-#endif /* BCMSDIOH_TXGLOM */
 
 	if (sd_msglevel & SDH_COST_VAL) {
 		getnstimeofday(&now);
@@ -1645,6 +1638,7 @@ txglomfail:
 	sd_trace(("%s: Exit\n", __FUNCTION__));
 	return SDIOH_API_RC_SUCCESS;
 }
+#endif /* BCMSDIOH_TXGLOM */
 
 static SDIOH_API_RC
 sdioh_buffer_tofrom_bus(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
@@ -1734,12 +1728,13 @@ sdioh_request_buffer(sdioh_info_t *sd, uint pio_dma, uint fix_inc, uint write, u
 		getnstimeofday(&before);
 
 	if (pkt) {
+#ifdef BCMSDIOH_TXGLOM
 		/* packet chain, only used for tx/rx glom, all packets length
 		 * are aligned, total length is a block multiple
 		 */
 		if (PKTNEXT(sd->osh, pkt))
 			return sdioh_request_packet_chain(sd, fix_inc, write, func, addr, pkt);
-
+#endif /* BCMSDIOH_TXGLOM */
 		/* non-glom mode, ignore the buffer parameter and use the packet pointer
 		 * (this shouldn't happen)
 		 */

@@ -7,15 +7,6 @@
 #include <linux/ratelimit.h>
 #include <linux/msdos_fs.h>
 
-#define FAT_DEBUG
-#ifdef FAT_DEBUG
-	#define DBG_INFO(fmt, ...) \
-	printk(KERN_EMERG "fat(%s:%i)->%s(%i): " fmt "\n",	\
-	current->comm, current->pid, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#else
-	#define DBG_INFO(fmt, ...)
-#endif
-
 /*
  * vfat shortname flags
  */
@@ -127,7 +118,6 @@ struct msdos_inode_info {
 	/* NOTE: mmu_private is 64bits, so must hold ->i_mutex to access */
 	loff_t mmu_private;	/* physically allocated size */
 
-	int i_prealloc;	/* for prealloc */
 	int i_start;		/* first cluster or 0 */
 	int i_logstart;		/* logical first cluster */
 	int i_attrs;		/* unused attribute bits */
@@ -154,16 +144,6 @@ static inline struct msdos_sb_info *MSDOS_SB(struct super_block *sb)
 static inline struct msdos_inode_info *MSDOS_I(struct inode *inode)
 {
 	return container_of(inode, struct msdos_inode_info, vfs_inode);
-}
-
-static inline int check_prealloc(struct inode *inode)
-{
-	return MSDOS_I(inode)->i_prealloc;
-}
-
-static inline void mark_prealloc(struct inode *inode)
-{
-	MSDOS_I(inode)->i_prealloc = 1;
 }
 
 /*

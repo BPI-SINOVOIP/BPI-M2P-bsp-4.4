@@ -43,7 +43,6 @@
 /* bits that are used by the Windows 95/Windows NT extended FAT */
 #define ATTR_EXT	(ATTR_RO | ATTR_HIDDEN | ATTR_SYS | ATTR_VOLUME)
 
-#define CASE_LOWER_PREA 1	/* proalloc */
 #define CASE_LOWER_BASE	8	/* base is lower case */
 #define CASE_LOWER_EXT	16	/* extension is lower case */
 

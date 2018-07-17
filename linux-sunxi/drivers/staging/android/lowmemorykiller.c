@@ -79,6 +79,28 @@ static unsigned long lowmem_count(struct shrinker *s,
 		global_page_state(NR_INACTIVE_FILE);
 }
 
+#define PROCESS_COM_SLOT 5
+#define PROCESS_COM_DEFAULT_STR	{ [0 ... (PROCESS_COM_SLOT-1)] = NULL }
+static char *process_com[PROCESS_COM_SLOT] = PROCESS_COM_DEFAULT_STR;
+static const char lowmem_special_whitelist[][TASK_COMM_LEN] = {
+	/* not need killable app comm list*/
+	"special_list",
+};
+static int lowmem_special_fixup(struct task_struct *p)
+{
+	int i;
+
+	for (i = 0; (i < PROCESS_COM_SLOT) && (process_com[i] != NULL); i++)
+		if (!strcmp(p->comm, process_com[i]))
+			goto ignore_kill_check;
+	for (i = 0; i < ARRAY_SIZE(lowmem_special_whitelist); i++)
+		if (!strcmp(p->comm, lowmem_special_whitelist[i]))
+			goto ignore_kill_check;
+
+	return 0;
+ignore_kill_check:
+	return -1;
+}
 static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 {
 	struct task_struct *tsk;
@@ -143,6 +165,12 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 			task_unlock(p);
 			continue;
 		}
+
+		if (lowmem_special_fixup(p) < 0) {
+			task_unlock(p);
+			continue;
+		}
+
 		tasksize = get_mm_rss(p->mm);
 		task_unlock(p);
 		if (tasksize <= 0)
@@ -305,3 +333,5 @@ module_param_array_named(minfree, lowmem_minfree, uint, &lowmem_minfree_size,
 			 S_IRUGO | S_IWUSR);
 module_param_named(debug_level, lowmem_debug_level, uint, S_IRUGO | S_IWUSR);
 
+module_param_array(process_com, charp, NULL, 0644);
+MODULE_PARM_DESC(process_com, "process comm string for special whitelist");

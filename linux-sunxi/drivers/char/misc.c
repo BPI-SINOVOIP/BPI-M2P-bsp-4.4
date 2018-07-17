@@ -56,6 +56,24 @@
 static LIST_HEAD(misc_list);
 static DEFINE_MUTEX(misc_mtx);
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+struct miscdevice *get_miscdevice_by_name(const char *name)
+{
+	struct miscdevice *c = NULL;
+
+	mutex_lock(&misc_mtx);
+	list_for_each_entry(c, &misc_list, list) {
+		 if (!strcmp(c->name, (const char *)name)) {
+			pr_info("cma_shrinker get the %s misc device\n", name);
+			break;
+		 }
+	}
+	mutex_unlock(&misc_mtx);
+
+	return c;
+}
+#endif
+
 /*
  * Assigned numbers, used for dynamic minors
  */

@@ -90,6 +90,7 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #define CMD_BTCOEXSCAN_STOP	"BTCOEXSCAN-STOP"
 #define CMD_BTCOEXMODE		"BTCOEXMODE"
 #define CMD_SETSUSPENDOPT	"SETSUSPENDOPT"
+#define CMD_SETSUSPENDMODE      "SETSUSPENDMODE"
 #define CMD_P2P_DEV_ADDR	"P2P_DEV_ADDR"
 #define CMD_SETFWPATH		"SETFWPATH"
 #define CMD_SETBAND		"SETBAND"
@@ -492,6 +493,26 @@ static int wl_android_set_suspendopt(struct net_device *dev, char *command, int 
 			ANDROID_ERROR(("%s: failed %d\n", __FUNCTION__, ret));
 		}
 	}
+
+	return ret;
+}
+
+static int wl_android_set_suspendmode(struct net_device *dev, char *command, int total_len)
+{
+	int ret = 0;
+
+#if !defined(CONFIG_HAS_EARLYSUSPEND) || !defined(DHD_USE_EARLYSUSPEND)
+	int suspend_flag;
+
+	suspend_flag = *(command + strlen(CMD_SETSUSPENDMODE) + 1) - '0';
+	if (suspend_flag != 0)
+		suspend_flag = 1;
+
+	if (!(ret = net_os_set_suspend(dev, suspend_flag, 0)))
+		ANDROID_INFO(("%s: Suspend Mode %d\n", __FUNCTION__, suspend_flag));
+	else
+		ANDROID_ERROR(("%s: failed %d\n", __FUNCTION__, ret));
+#endif
 
 	return ret;
 }
@@ -936,14 +957,14 @@ static int wl_android_wbtext(struct net_device *dev, char *command, int total_le
 #ifdef PNO_SUPPORT
 #define PNO_PARAM_SIZE 50
 #define VALUE_SIZE 50
-#define LIMIT_STR_FMT  ("%49s %49s")
+#define LIMIT_STR_FMT  ("%50s %50s")
 static int
 wls_parse_batching_cmd(struct net_device *dev, char *command, int total_len)
 {
 	int err = BCME_OK;
 	uint i, tokens;
 	char *pos, *pos2, *token, *token2, *delim;
-	char param[PNO_PARAM_SIZE], value[VALUE_SIZE];
+	char param[PNO_PARAM_SIZE+1], value[VALUE_SIZE+1];
 	struct dhd_pno_batch_params batch_params;
 	ANDROID_INFO(("%s: command=%s, len=%d\n", __FUNCTION__, command, total_len));
 	if (total_len < strlen(CMD_WLS_BATCHING)) {
@@ -1354,6 +1375,7 @@ int wl_android_wifi_on(struct net_device *dev)
 			}
 		}
 #endif /* !BCMPCIE */
+
 #ifdef IAPSTA_PREINIT
 		conf = dhd_get_conf(dev);
 		if (conf) {
@@ -1631,6 +1653,7 @@ wl_android_set_auto_channel(struct net_device *dev, const char* cmd_str,
 	u8 *reqbuf = NULL;
 	uint32 band = WLC_BAND_2G;
 	uint32 buf_size;
+	char *pos = command;
 
 	if (cmd_str) {
 		ANDROID_INFO(("Command: %s len:%d \n", cmd_str, (int)strlen(cmd_str)));
@@ -1712,7 +1735,7 @@ wl_android_set_auto_channel(struct net_device *dev, const char* cmd_str,
 		goto done2;
 	}
 
-	buf_size = (band == WLC_BAND_AUTO) ? sizeof(int) : CHANSPEC_BUF_SIZE;
+	buf_size = CHANSPEC_BUF_SIZE;
 	ret = wldev_ioctl(dev, WLC_START_CHANNEL_SEL, (void *)reqbuf,
 		buf_size, true);
 	if (ret < 0) {
@@ -1742,6 +1765,18 @@ wl_android_set_auto_channel(struct net_device *dev, const char* cmd_str,
 			chosen = dtoh32(chosen);
 		}
 
+		if ((ret == 0) && (dtoh32(chosen) != 0)) {
+			uint chip;
+			chip = dhd_conf_get_chip(dhd_get_pub(dev));
+			if (chip != BCM43362_CHIP_ID &&	chip != BCM4330_CHIP_ID) {
+				u32 chanspec = 0;
+				chanspec = wl_chspec_driver_to_host(chosen);
+				ANDROID_INFO(("selected chanspec = 0x%x\n", chanspec));
+				chosen = wf_chspec_ctlchan(chanspec);
+				ANDROID_INFO(("selected chosen = 0x%x\n", chosen));
+			}
+		}
+
 		if (chosen) {
 			int chosen_band;
 			int apcs_band;
@@ -1756,8 +1791,11 @@ wl_android_set_auto_channel(struct net_device *dev, const char* cmd_str,
 #endif /* D11AC_IOTYPES */
 			apcs_band = (band == WLC_BAND_AUTO) ? WLC_BAND_2G : band;
 			chosen_band = (channel <= CH_MAX_2G_CHANNEL) ? WLC_BAND_2G : WLC_BAND_5G;
-			if (apcs_band == chosen_band) {
+			if (band == WLC_BAND_AUTO) {
 				ANDROID_ERROR(("selected channel = %d\n", channel));
+				break;
+			} else if (apcs_band == chosen_band) {
+				printf("%s: selected channel = %d\n", __FUNCTION__, channel);
 				break;
 			}
 		}
@@ -1788,7 +1826,11 @@ done2:
 	}
 
 	if (channel) {
-		snprintf(command, 4, "%d", channel);
+		if (channel < 15)
+			pos += snprintf(pos, total_len, "2g=");
+		else
+			pos += snprintf(pos, total_len, "5g=");
+		pos += snprintf(pos, total_len, "%d", channel);
 		ANDROID_INFO(("command result is %s \n", command));
 		return strlen(command);
 	} else {
@@ -2958,6 +3000,9 @@ int wl_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 	}
 	else if (strnicmp(command, CMD_SETSUSPENDOPT, strlen(CMD_SETSUSPENDOPT)) == 0) {
 		bytes_written = wl_android_set_suspendopt(net, command, priv_cmd.total_len);
+	}
+	else if (strnicmp(command, CMD_SETSUSPENDMODE, strlen(CMD_SETSUSPENDMODE)) == 0) {
+		bytes_written = wl_android_set_suspendmode(net, command, priv_cmd.total_len);
 	}
 	else if (strnicmp(command, CMD_SETBAND, strlen(CMD_SETBAND)) == 0) {
 		uint band = *(command + strlen(CMD_SETBAND) + 1) - '0';

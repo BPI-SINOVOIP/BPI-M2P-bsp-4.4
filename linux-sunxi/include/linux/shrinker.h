@@ -26,6 +26,9 @@ struct shrink_control {
 };
 
 #define SHRINK_STOP (~0UL)
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+#define SHRINK_ONECE (0xfffefefd)
+#endif
 /*
  * A callback you can register to apply pressure to ageable caches.
  *

@@ -117,9 +117,6 @@ static inline int __fat_get_block(struct inode *inode, sector_t iblock,
 	unsigned long mapped_blocks;
 	sector_t phys;
 	int err, offset;
-#ifdef FAT_DEBUG
-	int prealloc_lost = 0;
-#endif
 
 	err = fat_bmap(inode, iblock, &phys, &mapped_blocks, create);
 	if (err)
@@ -141,17 +138,9 @@ static inline int __fat_get_block(struct inode *inode, sector_t iblock,
 	offset = (unsigned long)iblock & (sbi->sec_per_clus - 1);
 	if (!offset) {
 		/* TODO: multiple cluster allocation would be desirable. */
-#ifdef FAT_DEBUG
-		if (check_prealloc(inode) && !MSDOS_I(inode)->i_start) {
-			prealloc_lost = 1;
-			DBG_INFO("*max_blocks = %lu", *max_blocks);
-		}
-#endif
-		if (!check_prealloc(inode)) {
-			err = fat_add_cluster(inode);
-			if (err)
-				return err;
-		}
+		err = fat_add_cluster(inode);
+		if (err)
+			return err;
 	}
 	/* available blocks on this cluster */
 	mapped_blocks = sbi->sec_per_clus - offset;
@@ -159,26 +148,9 @@ static inline int __fat_get_block(struct inode *inode, sector_t iblock,
 	*max_blocks = min(mapped_blocks, *max_blocks);
 	MSDOS_I(inode)->mmu_private += *max_blocks << sb->s_blocksize_bits;
 
-#ifdef FAT_DEBUG
-		if (prealloc_lost) {
-			DBG_INFO("mapped_blocks = %lu", mapped_blocks);
-			DBG_INFO("*max_blocks = %lu", *max_blocks);
-			DBG_INFO("mmu_private = %lld", MSDOS_I(inode)->mmu_private);
-		}
-#endif
-
 	err = fat_bmap(inode, iblock, &phys, &mapped_blocks, create);
 	if (err)
 		return err;
-
-#ifdef FAT_DEBUG
-		if (prealloc_lost || (*max_blocks != mapped_blocks)) {
-			DBG_INFO("prealloc_lost = %i", prealloc_lost);
-			DBG_INFO("mapped_blocks = %lu", mapped_blocks);
-			DBG_INFO("*max_blocks = %lu", *max_blocks);
-			DBG_INFO("mmu_private = %lld", MSDOS_I(inode)->mmu_private);
-		}
-#endif
 
 	BUG_ON(!phys);
 	BUG_ON(*max_blocks != mapped_blocks);
@@ -516,28 +488,6 @@ int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de)
 		inode->i_fop = &fat_file_operations;
 		inode->i_mapping->a_ops = &fat_aops;
 		MSDOS_I(inode)->mmu_private = inode->i_size;
-
-		if (de->lcase & CASE_LOWER_PREA) {
-			MSDOS_I(inode)->i_prealloc = 1;
-			error = fat_calc_dir_size(inode);
-			if (error < 0) {
-				return error;
-			}
-			if (0 == inode->i_size) {
-#ifdef FAT_DEBUG
-				char name[MSDOS_NAME+1] = {0};
-				memset(name, '\0', sizeof(name));
-				memcpy(name, de->name, MSDOS_NAME);
-				DBG_INFO("prealloc lost %s, start = %i", name, MSDOS_I(inode)->i_start);
-				BUG();
-#else
-				fat_msg(sb, KERN_ERR, "prealloc lost %s, start = %i", name, MSDOS_I(inode)->i_start);
-				return -EFAULT;
-#endif
-			}
-		} else {
-			MSDOS_I(inode)->i_prealloc = 0;
-		}
 	}
 	if (de->attr & ATTR_SYS) {
 		if (sbi->options.sys_immutable)
@@ -547,10 +497,6 @@ int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de)
 
 	inode->i_blocks = ((inode->i_size + (sbi->cluster_size - 1))
 			   & ~((loff_t)sbi->cluster_size - 1)) >> 9;
-
-	if (check_prealloc(inode)) {
-		inode->i_size = MSDOS_I(inode)->mmu_private;
-	}
 
 	fat_time_fat2unix(sbi, &inode->i_mtime, de->time, de->date, 0);
 	if (sbi->options.isvfat) {
@@ -717,7 +663,6 @@ static void init_once(void *foo)
 {
 	struct msdos_inode_info *ei = (struct msdos_inode_info *)foo;
 
-	memset(ei, 0, sizeof(*ei));
 	spin_lock_init(&ei->cache_lru_lock);
 	ei->nr_caches = 0;
 	ei->cache_valid_id = FAT_CACHE_VALID + 1;
@@ -827,18 +772,6 @@ retry:
 	}
 
 	raw_entry = &((struct msdos_dir_entry *) (bh->b_data))[offset];
-#ifdef FAT_DEBUG
-	if (check_prealloc(inode) && !MSDOS_I(inode)->i_logstart) {
-		DBG_INFO("inode->i_size = %lld", inode->i_size);
-		DBG_INFO("raw_entry->size = %u", raw_entry->size);
-		DBG_INFO("raw_entry->starthi = 0x%x", raw_entry->starthi);
-		DBG_INFO("raw_entry->start = 0x%x", raw_entry->start);
-		BUG();
-	}
-#endif
-	if (check_prealloc(inode)) {
-		raw_entry->lcase |= CASE_LOWER_PREA;
-	}
 	if (S_ISDIR(inode->i_mode))
 		raw_entry->size = 0;
 	else
@@ -987,10 +920,6 @@ static int fat_show_options(struct seq_file *m, struct dentry *root)
 		seq_puts(m, ",discard");
 	if (opts->dos1xfloppy)
 		seq_puts(m, ",dos1xfloppy");
-
-#ifdef FAT_DEBUG
-	seq_printf(m, ",version(%s/%s)", "TIME", "DATE"/*__TIME__, __DATE__*/);
-#endif
 
 	return 0;
 }

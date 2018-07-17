@@ -291,7 +291,7 @@ static void ir_reg_cfg(void __iomem *reg_base)
 	ir_sample_config(reg_base, IR_IDLE_TH); /* Set Idle Threshold */
 
 	ir_sample_config(reg_base, IR_ACTIVE_TH_SAMPLE);         /* rc5 Set Active Threshold */
-	ir_sample_config(reg_base, IR_FILTER_TH_RC5);		/* Set Filter Threshold */
+	ir_sample_config(reg_base, IR_FILTER_TH_NEC); /* Set Filter Threshold */
 	ir_signal_invert(reg_base);
 	/* Clear All Rx Interrupt Status */
 	ir_irq_config(reg_base, IR_IRQ_STATUS_CLEAR);

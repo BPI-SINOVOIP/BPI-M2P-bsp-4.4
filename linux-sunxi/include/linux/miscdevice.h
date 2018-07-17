@@ -70,6 +70,10 @@ struct miscdevice  {
 extern int misc_register(struct miscdevice *misc);
 extern void misc_deregister(struct miscdevice *misc);
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+extern struct miscdevice *get_miscdevice_by_name(const char *name);
+#endif
+
 #define MODULE_ALIAS_MISCDEV(minor)				\
 	MODULE_ALIAS("char-major-" __stringify(MISC_MAJOR)	\
 	"-" __stringify(minor))

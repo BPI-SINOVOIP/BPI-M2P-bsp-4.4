@@ -10,6 +10,22 @@ menuconfig ION
 	  If you're not using Android its probably safe to
 	  say N here.
 
+config CMA_ORPHANED_SHRINKER
+	bool "Ion cma orphaned shrinker"
+	depends on ION && ION_SUNXI
+	---help---
+	  Choose this option to create cma_orphaned_shrinker that can be used
+	  to recycle cma-orphaned.
+config CMA_ORPHANED_SHRINKER_RATIO
+	int "Ion cma orphaned shrinker ratio"
+	depends on CMA_ORPHANED_SHRINKER
+	default 2
+	---help---
+	  The value will indicate the cma-consumed-ratio that will touch off
+	  Ion cma orphaned shrinker. if 0,trigger shrinker anyway,if 1,
+	  1/2 cma-consumed will trigger shrinker,by parity of reasoning.
+
+
 config ION_TEST
 	tristate "Ion Test Device"
 	depends on ION

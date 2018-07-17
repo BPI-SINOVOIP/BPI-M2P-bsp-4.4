@@ -52,6 +52,7 @@
 #include <pcie_core.h>
 #include <bcmpcie.h>
 #include <dhd_pcie.h>
+#include <dhd_config.h>
 
 #if defined(DHD_LB)
 #include <linux/cpu.h>
@@ -2806,7 +2807,7 @@ static INLINE void * BCMFASTPATH
 dhd_prot_packet_get(dhd_pub_t *dhd, uint32 pktid, uint8 pkttype, bool free_pktid)
 {
 	void *PKTBUF;
-	dmaaddr_t pa = 0;
+	dmaaddr_t pa = NULL;
 	uint32 len = 0;
 	void *dmah = NULL;
 	void *secdma;
@@ -3770,7 +3771,7 @@ dhd_prot_txstatus_process(dhd_pub_t *dhd, void *msg)
 	unsigned long flags;
 	uint32 pktid;
 	void *pkt = NULL;
-	dmaaddr_t pa = 0;
+	dmaaddr_t pa = NULL;
 	uint32 len = 0;
 	void *dmah = NULL;
 	void *secdma;
@@ -4080,7 +4081,7 @@ dhd_prot_txdata(dhd_pub_t *dhd, void *PKTBUF, uint8 ifidx)
 	unsigned long flags;
 	dhd_prot_t *prot = dhd->prot;
 	host_txbuf_post_t *txdesc = NULL;
-	dmaaddr_t pa = 0, meta_pa;
+	dmaaddr_t pa = NULL, meta_pa;
 	uint8 *pktdata;
 	uint32 pktlen = 0;
 	uint32 pktid;
@@ -4695,6 +4696,7 @@ dhd_msgbuf_wait_ioctl_cmplt(dhd_pub_t *dhd, uint32 len, void *buf)
 	int timeleft;
 	unsigned long flags;
 	int ret = 0;
+	static uint cnt = 0;
 
 	DHD_TRACE(("%s: Enter\n", __FUNCTION__));
 
@@ -4709,7 +4711,27 @@ dhd_msgbuf_wait_ioctl_cmplt(dhd_pub_t *dhd, uint32 len, void *buf)
 
 	dhd_msgbuf_rxbuf_post_ioctlresp_bufs(dhd);
 
-	timeleft = dhd_os_ioctl_resp_wait(dhd, &prot->ioctl_received);
+	timeleft = dhd_os_ioctl_resp_wait(dhd, &prot->ioctl_received, false);
+
+	if (dhd->conf->ctrl_resched > 0 && timeleft == 0) {
+		cnt++;
+		if (cnt <= dhd->conf->ctrl_resched) {
+			uint32 intstatus = 0, intmask = 0;
+			intstatus = si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, PCIMailBoxInt, 0, 0);
+			intmask = si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, PCIMailBoxMask, 0, 0);
+			if (intstatus) {
+				DHD_ERROR(("%s: reschedule dhd_dpc, cnt=%d, intstatus=0x%x, intmask=0x%x\n",
+					__FUNCTION__, cnt, intstatus, intmask));
+				dhd->bus->ipend = TRUE;
+				dhd->bus->dpc_sched = TRUE;
+				dhd_sched_dpc(dhd);
+				timeleft = dhd_os_ioctl_resp_wait(dhd, &prot->ioctl_received, true);
+			}
+		}
+	} else {
+		cnt = 0;
+	}
+
 	if (timeleft == 0) {
 		dhd->rxcnt_timeout++;
 		dhd->rx_ctlerrs++;

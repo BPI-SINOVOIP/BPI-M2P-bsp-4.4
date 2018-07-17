@@ -32,6 +32,7 @@
 #include <linux/compiler.h>
 #include <linux/sort.h>
 #include <linux/psci.h>
+#include <linux/sunxi-sid.h>
 
 #include <asm/unified.h>
 #include <asm/cp15.h>
@@ -1080,6 +1081,11 @@ static int c_show(struct seq_file *m, void *v)
 {
 	int i, j;
 	u32 cpuid;
+#if defined(CONFIG_ARCH_SUNXI)
+	u32 serial[4];
+	memset(serial, 0, sizeof(serial));
+	sunxi_get_serial((u8 *)serial);
+#endif
 
 	for_each_online_cpu(i) {
 		/*
@@ -1137,7 +1143,12 @@ static int c_show(struct seq_file *m, void *v)
 
 	seq_printf(m, "Hardware\t: %s\n", machine_name);
 	seq_printf(m, "Revision\t: %04x\n", system_rev);
+#if defined(CONFIG_ARCH_SUNXI)
+	seq_printf(m, "Serial\t\t: %04x%08x%08x\n",
+		serial[2], serial[1], serial[0]);
+#else
 	seq_printf(m, "Serial\t\t: %s\n", system_serial);
+#endif
 
 	return 0;
 }

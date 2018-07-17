@@ -246,6 +246,10 @@ int user_min_free_kbytes = -1;
  */
 int extra_free_kbytes = 0;
 
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+int cma_orphaned_shrinker_enable;
+#endif
+
 static unsigned long __meminitdata nr_kernel_pages;
 static unsigned long __meminitdata nr_all_pages;
 static unsigned long __meminitdata dma_reserve;
@@ -6339,6 +6343,24 @@ out:
 	mutex_unlock(&pcp_batch_high_lock);
 	return ret;
 }
+
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+/*
+ * lowmem_reserve_ratio_sysctl_handler - just a wrapper around
+ *	proc_dointvec() so that we can call setup_per_zone_lowmem_reserve()
+ *	whenever sysctl_lowmem_reserve_ratio changes.
+ *
+ * The reserve ratio obviously has absolutely no relation with the
+ * minimum watermarks. The lowmem reserve ratio can only make sense
+ * if in function of the boot time zone sizes.
+ */
+int cma_orphaned_sysctl_handler(struct ctl_table *table, int write,
+	void __user *buffer, size_t *length, loff_t *ppos)
+{
+	proc_dointvec_minmax(table, write, buffer, length, ppos);
+	return 0;
+}
+#endif
 
 #ifdef CONFIG_NUMA
 int hashdist = HASHDIST_DEFAULT;

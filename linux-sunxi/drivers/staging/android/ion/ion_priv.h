@@ -87,6 +87,13 @@ struct ion_buffer {
 	int handle_count;
 	char task_comm[TASK_COMM_LEN];
 	pid_t pid;
+
+#if defined(CONFIG_CMA_ORPHANED_SHRINKER)
+	/*add for recycled*/
+	int recycled;
+	int align;
+	int random;
+#endif
 };
 void ion_buffer_destroy(struct ion_buffer *buffer);
 

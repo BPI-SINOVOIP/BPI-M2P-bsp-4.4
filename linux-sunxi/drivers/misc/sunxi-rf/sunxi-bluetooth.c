@@ -25,6 +25,7 @@ struct sunxi_bt_platdata {
 	int power_state;
 	struct rfkill *rfkill;
 	struct platform_device *pdev;
+	int btwake_enable;
 };
 
 extern void sunxi_wlan_gpio_set_power(bool on_off);
@@ -36,7 +37,9 @@ static int sunxi_bt_on(struct sunxi_bt_platdata *data, bool on_off)
 
 	if (!on_off && gpio_is_valid(data->gpio_bt_rst)) {
 		gpio_direction_output(data->gpio_bt_rst, 0);
-		sunxi_wlan_gpio_set_power(0);
+		if (data->btwake_enable != 1) {
+			sunxi_wlan_gpio_set_power(0);
+		}
 	}
 
 	if(data->bt_power_name){
@@ -142,6 +145,7 @@ static int sunxi_bt_probe(struct platform_device *pdev)
 	struct gpio_config config;
 	const char *power,*io_regulator;
 	int ret = 0;
+	struct device_node *tmp_node;
 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	if (!dev)
@@ -150,6 +154,7 @@ static int sunxi_bt_probe(struct platform_device *pdev)
 	data->pdev = pdev;
 	if (of_property_read_string(np, "bt_power", &power)) {
 		dev_warn(dev, "Missing bt_power.\n");
+		dev_err(dev, "Missing bt_power.\n");
 	}else{
 		data->bt_power_name = devm_kzalloc(dev, 64, GFP_KERNEL);
 		if(!data->bt_power_name)
@@ -158,6 +163,7 @@ static int sunxi_bt_probe(struct platform_device *pdev)
 			strcpy(data->bt_power_name,power);
 	}
 	dev_info(dev, "bt_power_name (%s)\n", data->bt_power_name);
+	dev_err(dev, "bt_power_name (%s)\n", data->bt_power_name);
 
 	if (of_property_read_string(np, "bt_io_regulator", &io_regulator)) {
 		dev_warn(dev, "Missing bt_io_regulator.\n");
@@ -221,6 +227,19 @@ static int sunxi_bt_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, data);
 
 	data->power_state = 0;
+
+	tmp_node = of_get_child_by_name(of_get_parent(np), "btlpm");
+	if (tmp_node != NULL) {
+		if (!of_property_read_u32(tmp_node, "bt_hostwake_enable", &data->btwake_enable)) {
+			if (data->btwake_enable == 1) {
+				dev_warn(dev, "bt hostwake is enable, set module power on\n");
+				sunxi_bt_on(data, 1);
+			}
+		}
+	} else {
+		dev_warn(dev, "can not find sunxi-btlpm node\n");
+	}
+
 	return 0;
 
 fail_rfkill:

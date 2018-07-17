@@ -18,9 +18,10 @@
 
 #define IR_ACTIVE_T		((0&0xff)<<16)		/* Active Threshold (0+1)*128clock*21us = 2.6ms */
 
-#define IR_RXFILT_VAL		(((0x10)&0x3f)<<2)	/* Filter Threshold = 16*21us = 336us < 500us */
+/* Filter Threshold = 16*21us = 336us < 500us */
+#define IR_RXFILT_VAL		(((16)&0x3f)<<2)
 
-#define IR_RXFILT_VAL_RC5	(((0x16)&0x3f)<<2)	/* Filter Threshold = 22*21us = 336us < 500us */
+#define IR_RXFILT_VAL_RC5	(((22)&0x3f)<<2)	/* Filter Threshold = 22*21us = 336us < 500us */
 #define IR_RXIDLE_VAL		(((5)&0xff)<<8)	/* Idle Threshold = (5+1)*128clock*21us = 16ms > 9ms */
 #define IR_ACTIVE_T_SAMPLE	((16&0xff)<<16)	/* Active Threshold (0+1)*128clock*21us = 2.6ms */
 
