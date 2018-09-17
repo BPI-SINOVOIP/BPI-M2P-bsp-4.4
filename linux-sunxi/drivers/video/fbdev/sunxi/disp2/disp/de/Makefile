@@ -1,5 +1,7 @@
 MIPI_DSI_IP_VERSION ?= 40
 
+sub_dir = lowlevel_sun8iw7
+
 ifeq ($(CONFIG_ARCH_SUN8IW11),y)
 sub_dir = lowlevel_v2x
 endif
