@@ -12,8 +12,8 @@ TOPDIR=`pwd`
 #TARGET_PRODUCT="BPI-M2P"
 
 CUR_DIR=$PWD
-CROSS_COMPILE=$CUR_DIR/allwinner-tools/gcc-linaro/bin
-NEW_CROSS_COMPILE=$CUR_DIR/allwinner-tools/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin
+U_CROSS_COMPILE=$CUR_DIR/allwinner-tools/gcc-linaro/bin
+K_CROSS_COMPILE=$CUR_DIR/allwinner-tools/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin
 
 list_boards() {
 	(cd sunxi-pack/chips/$MACH/configs ; ls -1d BPI* )
@@ -27,8 +27,8 @@ generate_board_mk() {
 	BOARD=$BOARD
 	SOC=$SOC
 	MACH=$MACH
-	COMPILE_TOOL=$CROSS_COMPILE
-	NEW_COMPILE_TOOL=$NEW_CROSS_COMPILE
+	U_COMPILE_TOOL=$U_CROSS_COMPILE
+	K_COMPILE_TOOL=$K_CROSS_COMPILE
 	UBOOT_CONFIG=$MACH
 	KERNEL_CONFIG=${MACH}smp_${board}_defconfig
 	LICHEE_PLATFORM=linux
