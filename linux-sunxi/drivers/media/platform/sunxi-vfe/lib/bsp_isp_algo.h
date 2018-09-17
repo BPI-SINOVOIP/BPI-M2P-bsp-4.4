@@ -698,18 +698,17 @@ struct isp_init_config {
 	struct isp_iso_param           isp_iso_settings;
 };
 
-
 /*
  * Struct	: isp_hdr_setting_t -
  * &:
  * &:
  */
 struct hdr_setting_t {
-  int hdr_en;
-  int hdr_mode;
-  int frames_count;
-  int total_frames;
-  int values[5];
+	int hdr_en;
+	int hdr_mode;
+	int frames_count;
+	int total_frames;
+	int values[5];
 };
 /*
  *

@@ -551,10 +551,8 @@ int cfg_write_file(struct file *fp, char *buf, size_t len)
 	/*printk("bin len = %d\n", buf_len);*/
 	if (buf_len < 0)
 		return -1;
-	if (buf_len != len)
-		/*printk("buf_len = %x, len = %x\n", buf_len, len);*/
 
-		return buf_len;
+	return buf_len;
 }
 
 

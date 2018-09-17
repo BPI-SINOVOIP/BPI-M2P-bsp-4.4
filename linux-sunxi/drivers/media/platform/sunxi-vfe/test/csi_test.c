@@ -60,7 +60,7 @@ extern unsigned long ion_alloc(int size);
 extern int ion_free(void *pbuf);
 extern unsigned long ion_vir2phy(void *pbuf);
 extern unsigned long ion_phy2vir(void *pbuf);
-extern void ion_flush_cache(voidi *startAddr, int size);
+extern void ion_flush_cache(void *startAddr, int size);
 extern void ion_flush_cache_all(void);
 extern unsigned long ion_alloc_drm(int size);
 int buf_size[3] = {0};

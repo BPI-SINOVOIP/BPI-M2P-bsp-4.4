@@ -144,7 +144,8 @@ static const struct of_device_id sunxi_cci_match[] = {
 	{},
 };
 
-MODULE_DEVICE_TABLE(of, sunxi_cci_match);
+/*bpi, disable vfe_v4l2 auto loaded*/
+/*MODULE_DEVICE_TABLE(of, sunxi_cci_match);*/
 
 static struct platform_driver cci_platform_driver = {
 	.probe    = cci_probe,

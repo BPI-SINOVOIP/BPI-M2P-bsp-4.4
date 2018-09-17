@@ -56,182 +56,182 @@ extern "C" {
 /*  */
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int en                   :  1;    /* Default: 0x0; */
-    unsigned int unpk_en              :  1;    /* Default: 0x1; */
-    unsigned int res0                 : 28;    /* Default:; */
-    unsigned int ver_en               :  1;    /* Default: 0x0; */
-    unsigned int rst                  :  1;    /* Default: 0x0; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int en                   :  1;    /* Default: 0x0; */
+		unsigned int unpk_en              :  1;    /* Default: 0x1; */
+		unsigned int res0                 : 28;    /* Default:; */
+		unsigned int ver_en               :  1;    /* Default: 0x0; */
+		unsigned int rst                  :  1;    /* Default: 0x0; */
+	} bits;
 } MIPI_CSI2_CTL_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int dl_cfg               :  2;    /* Default: 0x0; */
-    unsigned int res0                 :  2;    /* Default:; */
-    unsigned int ph_byte_ord          :  2;    /* Default: 0x0; */
-    unsigned int ph_bit_ord           :  1;    /* Default: 0x0; */
-    unsigned int pl_bit_ord           :  1;    /* Default: 0x0; */
-    unsigned int ch_mode              :  2;    /* Default: 0x0; */
-    unsigned int res1                 : 22;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int dl_cfg               :  2;    /* Default: 0x0; */
+		unsigned int res0                 :  2;    /* Default:; */
+		unsigned int ph_byte_ord          :  2;    /* Default: 0x0; */
+		unsigned int ph_bit_ord           :  1;    /* Default: 0x0; */
+		unsigned int pl_bit_ord           :  1;    /* Default: 0x0; */
+		unsigned int ch_mode              :  2;    /* Default: 0x0; */
+		unsigned int res1                 : 22;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CFG_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int ch0_dt               :  6;    /* Default: 0x1E; */
-    unsigned int ch0_vc               :  2;    /* Default: 0x0; */
-    unsigned int ch1_dt               :  6;    /* Default: 0x1E; */
-    unsigned int ch1_vc               :  2;    /* Default: 0x1; */
-    unsigned int ch2_dt               :  6;    /* Default: 0x1E; */
-    unsigned int ch2_vc               :  2;    /* Default: 0x2; */
-    unsigned int ch3_dt               :  6;    /* Default: 0x1E; */
-    unsigned int ch3_vc               :  2;    /* Default: 0x3; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int ch0_dt               :  6;    /* Default: 0x1E; */
+		unsigned int ch0_vc               :  2;    /* Default: 0x0; */
+		unsigned int ch1_dt               :  6;    /* Default: 0x1E; */
+		unsigned int ch1_vc               :  2;    /* Default: 0x1; */
+		unsigned int ch2_dt               :  6;    /* Default: 0x1E; */
+		unsigned int ch2_vc               :  2;    /* Default: 0x2; */
+		unsigned int ch3_dt               :  6;    /* Default: 0x1E; */
+		unsigned int ch3_vc               :  2;    /* Default: 0x3; */
+	} bits;
 } MIPI_CSI2_VCDT_RX_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int pkt_num;    /* Default: 0x0; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int pkt_num;    /* Default: 0x0; */
+	} bits;
 } MIPI_CSI2_RX_PKT_NUM_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int ver;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int ver;    /* Default:; */
+	} bits;
 } MIPI_CSI2_VER_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int line_sync            :  1;    /* Default: 0x0; */
-    unsigned int embd_dat_en          :  1;    /* Default: 0x0; */
-    unsigned int itl_sync             :  1;    /* Default: 0x0; */
-    unsigned int src_sel              :  1;    /* Default: 0x0; */
-    unsigned int res0                 : 28;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int line_sync            :  1;    /* Default: 0x0; */
+		unsigned int embd_dat_en          :  1;    /* Default: 0x0; */
+		unsigned int itl_sync             :  1;    /* Default: 0x0; */
+		unsigned int src_sel              :  1;    /* Default: 0x0; */
+		unsigned int res0                 : 28;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CH_CFG_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int fifo_over_int        :  1;    /* Default: 0x0; */
-    unsigned int res0                 :  7;    /* Default:; */
-    unsigned int frame_end_sync_int   :  1;    /* Default: 0x0; */
-    unsigned int frame_start_sync_int :  1;    /* Default: 0x0; */
-    unsigned int line_end_sync_int    :  1;    /* Default: 0x0; */
-    unsigned int line_start_sync_int  :  1;    /* Default: 0x0; */
-    unsigned int res1                 :  4;    /* Default:; */
-    unsigned int ph_update_int        :  1;    /* Default: 0x0; */
-    unsigned int pf_int               :  1;    /* Default: 0x0; */
-    unsigned int emb_data_int         :  1;    /* Default: 0x0; */
-    unsigned int res2                 :  5;    /* Default:; */
-    unsigned int frame_sync_err_int   :  1;    /* Default: 0x0; */
-    unsigned int line_sync_err_int    :  1;    /* Default: 0x0; */
-    unsigned int ecc_err_int          :  1;    /* Default: 0x0; */
-    unsigned int ecc_wrn_int          :  1;    /* Default: 0x0; */
-    unsigned int chksum_err_int       :  1;    /* Default: 0x0; */
-    unsigned int eot_err_int          :  1;    /* Default: 0x0; */
-    unsigned int res3                 :  2;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int fifo_over_int        :  1;    /* Default: 0x0; */
+		unsigned int res0                 :  7;    /* Default:; */
+		unsigned int frame_end_sync_int   :  1;    /* Default: 0x0; */
+		unsigned int frame_start_sync_int :  1;    /* Default: 0x0; */
+		unsigned int line_end_sync_int    :  1;    /* Default: 0x0; */
+		unsigned int line_start_sync_int  :  1;    /* Default: 0x0; */
+		unsigned int res1                 :  4;    /* Default:; */
+		unsigned int ph_update_int        :  1;    /* Default: 0x0; */
+		unsigned int pf_int               :  1;    /* Default: 0x0; */
+		unsigned int emb_data_int         :  1;    /* Default: 0x0; */
+		unsigned int res2                 :  5;    /* Default:; */
+		unsigned int frame_sync_err_int   :  1;    /* Default: 0x0; */
+		unsigned int line_sync_err_int    :  1;    /* Default: 0x0; */
+		unsigned int ecc_err_int          :  1;    /* Default: 0x0; */
+		unsigned int ecc_wrn_int          :  1;    /* Default: 0x0; */
+		unsigned int chksum_err_int       :  1;    /* Default: 0x0; */
+		unsigned int eot_err_int          :  1;    /* Default: 0x0; */
+		unsigned int res3                 :  2;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CH_INT_EN_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int fifo_over_pd         :  1;    /* Default: 0x0; */
-    unsigned int res0                 :  7;    /* Default:; */
-    unsigned int frame_end_sync_pd    :  1;    /* Default: 0x0; */
-    unsigned int frame_start_sync_pd  :  1;    /* Default: 0x0; */
-    unsigned int line_end_sync_pd     :  1;    /* Default: 0x0; */
-    unsigned int line_start_sync_pd   :  1;    /* Default: 0x0; */
-    unsigned int res1                 :  4;    /* Default:; */
-    unsigned int ph_update_pd         :  1;    /* Default: 0x0; */
-    unsigned int pf_pd                :  1;    /* Default: 0x0; */
-    unsigned int emb_data_pd          :  1;    /* Default: 0x0; */
-    unsigned int res2                 :  5;    /* Default:; */
-    unsigned int frame_sync_err_pd    :  1;    /* Default: 0x0; */
-    unsigned int line_sync_err_pd     :  1;    /* Default: 0x0; */
-    unsigned int ecc_err_pd           :  1;    /* Default: 0x0; */
-    unsigned int ecc_wrn_pd           :  1;    /* Default: 0x0; */
-    unsigned int chksum_err_pd        :  1;    /* Default: 0x0; */
-    unsigned int eot_err_pd           :  1;    /* Default: 0x0; */
-    unsigned int res3                 :  2;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int fifo_over_pd         :  1;    /* Default: 0x0; */
+		unsigned int res0                 :  7;    /* Default:; */
+		unsigned int frame_end_sync_pd    :  1;    /* Default: 0x0; */
+		unsigned int frame_start_sync_pd  :  1;    /* Default: 0x0; */
+		unsigned int line_end_sync_pd     :  1;    /* Default: 0x0; */
+		unsigned int line_start_sync_pd   :  1;    /* Default: 0x0; */
+		unsigned int res1                 :  4;    /* Default:; */
+		unsigned int ph_update_pd         :  1;    /* Default: 0x0; */
+		unsigned int pf_pd                :  1;    /* Default: 0x0; */
+		unsigned int emb_data_pd          :  1;    /* Default: 0x0; */
+		unsigned int res2                 :  5;    /* Default:; */
+		unsigned int frame_sync_err_pd    :  1;    /* Default: 0x0; */
+		unsigned int line_sync_err_pd     :  1;    /* Default: 0x0; */
+		unsigned int ecc_err_pd           :  1;    /* Default: 0x0; */
+		unsigned int ecc_wrn_pd           :  1;    /* Default: 0x0; */
+		unsigned int chksum_err_pd        :  1;    /* Default: 0x0; */
+		unsigned int eot_err_pd           :  1;    /* Default: 0x0; */
+		unsigned int res3                 :  2;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CH_INT_PD_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int fs                   :  1;    /* Default: 0x0; */
-    unsigned int fe                   :  1;    /* Default: 0x0; */
-    unsigned int ls                   :  1;    /* Default: 0x0; */
-    unsigned int le                   :  1;    /* Default: 0x0; */
-    unsigned int res0                 :  4;    /* Default:; */
-    unsigned int gs0                  :  1;    /* Default: 0x0; */
-    unsigned int gs1                  :  1;    /* Default: 0x0; */
-    unsigned int gs2                  :  1;    /* Default: 0x0; */
-    unsigned int gs3                  :  1;    /* Default: 0x0; */
-    unsigned int gs4                  :  1;    /* Default: 0x0; */
-    unsigned int gs5                  :  1;    /* Default: 0x0; */
-    unsigned int gs6                  :  1;    /* Default: 0x0; */
-    unsigned int gs7                  :  1;    /* Default: 0x0; */
-    unsigned int gl                   :  1;    /* Default: 0x0; */
-    unsigned int yuv                  :  1;    /* Default: 0x0; */
-    unsigned int rgb                  :  1;    /* Default: 0x0; */
-    unsigned int raw                  :  1;    /* Default: 0x0; */
-    unsigned int res1                 : 12;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int fs                   :  1;    /* Default: 0x0; */
+		unsigned int fe                   :  1;    /* Default: 0x0; */
+		unsigned int ls                   :  1;    /* Default: 0x0; */
+		unsigned int le                   :  1;    /* Default: 0x0; */
+		unsigned int res0                 :  4;    /* Default:; */
+		unsigned int gs0                  :  1;    /* Default: 0x0; */
+		unsigned int gs1                  :  1;    /* Default: 0x0; */
+		unsigned int gs2                  :  1;    /* Default: 0x0; */
+		unsigned int gs3                  :  1;    /* Default: 0x0; */
+		unsigned int gs4                  :  1;    /* Default: 0x0; */
+		unsigned int gs5                  :  1;    /* Default: 0x0; */
+		unsigned int gs6                  :  1;    /* Default: 0x0; */
+		unsigned int gs7                  :  1;    /* Default: 0x0; */
+		unsigned int gl                   :  1;    /* Default: 0x0; */
+		unsigned int yuv                  :  1;    /* Default: 0x0; */
+		unsigned int rgb                  :  1;    /* Default: 0x0; */
+		unsigned int raw                  :  1;    /* Default: 0x0; */
+		unsigned int res1                 : 12;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CH_DT_TRM_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int cur_dt               :  6;    /* Default: 0x0; */
-    unsigned int cur_vc               :  2;    /* Default: 0x0; */
-    unsigned int res0                 :  8;    /* Default:; */
-    unsigned int cur_wc               : 16;    /* Default: 0x0; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int cur_dt               :  6;    /* Default: 0x0; */
+		unsigned int cur_vc               :  2;    /* Default: 0x0; */
+		unsigned int res0                 :  8;    /* Default:; */
+		unsigned int cur_wc               : 16;    /* Default: 0x0; */
+	} bits;
 } MIPI_CSI2_CH_CUR_PH_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int rxd_ecc              :  8;    /* Default: 0x0; */
-    unsigned int res0                 :  8;    /* Default:; */
-    unsigned int cal_ecc              :  8;    /* Default: 0x0; */
-    unsigned int res1                 :  8;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int rxd_ecc              :  8;    /* Default: 0x0; */
+		unsigned int res0                 :  8;    /* Default:; */
+		unsigned int cal_ecc              :  8;    /* Default: 0x0; */
+		unsigned int res1                 :  8;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CH_ECC_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int rxd_cks              : 16;    /* Default: 0x0; */
-    unsigned int cal_cks              : 16;    /* Default: 0x0; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int rxd_cks              : 16;    /* Default: 0x0; */
+		unsigned int cal_cks              : 16;    /* Default: 0x0; */
+	} bits;
 } MIPI_CSI2_CH_CKS_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int frame_num            : 16;    /* Default: 0x0; */
-    unsigned int res0                 : 16;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int frame_num            : 16;    /* Default: 0x0; */
+		unsigned int res0                 : 16;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CH_FRAME_NUM_t;
 
 typedef union {
-  unsigned int dwval;
-  struct {
-    unsigned int line_num             : 16;    /* Default: 0x0; */
-    unsigned int res0                 : 16;    /* Default:; */
-  } bits;
+	unsigned int dwval;
+	struct {
+		unsigned int line_num             : 16;    /* Default: 0x0; */
+		unsigned int res0                 : 16;    /* Default:; */
+	} bits;
 } MIPI_CSI2_CH_LINE_NUM_t;
 
 

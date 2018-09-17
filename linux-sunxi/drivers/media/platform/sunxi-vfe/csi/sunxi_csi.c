@@ -518,7 +518,8 @@ static const struct of_device_id sunxi_csi_match[] = {
 	{},
 };
 
-MODULE_DEVICE_TABLE(of, sunxi_csi_match);
+/*bpi, disable vfe-v4l2 auto loaded*/
+/*MODULE_DEVICE_TABLE(of, sunxi_csi_match);*/
 
 static struct platform_driver csi_platform_driver = {
 	.probe    = csi_probe,

@@ -106,7 +106,7 @@ module_param(vips, uint, S_IRUGO | S_IWUSR);
 static ssize_t vfe_dbg_en_show(struct device *dev,
 		    struct device_attribute *attr, char *buf)
 {
-	return sprintf(buf, "%d\n", vfe_dbg_en);
+	return sprintf(buf, "%u\n", vfe_dbg_en);
 }
 
 static ssize_t vfe_dbg_en_store(struct device *dev,
@@ -135,7 +135,7 @@ static ssize_t vfe_dbg_en_store(struct device *dev,
 static ssize_t vfe_dbg_lv_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	return sprintf(buf, "%d\n", vfe_dbg_lv);
+	return sprintf(buf, "%u\n", vfe_dbg_lv);
 }
 
 static ssize_t vfe_dbg_lv_store(struct device *dev,
@@ -164,7 +164,7 @@ static ssize_t vfe_dbg_lv_store(struct device *dev,
 static ssize_t isp_reparse_flag_show(struct device *dev,
 		    struct device_attribute *attr, char *buf)
 {
-	return sprintf(buf, "%d\n", isp_reparse_flag);
+	return sprintf(buf, "%u\n", isp_reparse_flag);
 }
 
 static ssize_t isp_reparse_flag_store(struct device *dev,
@@ -192,7 +192,7 @@ static ssize_t isp_reparse_flag_store(struct device *dev,
 static ssize_t vfe_dbg_dump_show(struct device *dev,
 		    struct device_attribute *attr, char *buf)
 {
-	return sprintf(buf, "%d\n", vfe_dump);
+	return sprintf(buf, "%u\n", vfe_dump);
 }
 
 static ssize_t vfe_dbg_dump_store(struct device *dev,
@@ -1482,7 +1482,10 @@ static int vidioc_querycap(struct file *file, void  *priv,
 
 	cap->version = VFE_VERSION;
 	cap->capabilities = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING | \
-						V4L2_CAP_READWRITE;
+			V4L2_CAP_READWRITE | V4L2_CAP_DEVICE_CAPS;
+
+	cap->device_caps |= V4L2_CAP_EXT_PIX_FORMAT;
+
 	return 0;
 }
 
@@ -1510,6 +1513,8 @@ static int vidioc_enum_framesizes(struct file *file, void *fh,
 {
 	struct vfe_dev *dev = video_drvdata(file);
 	struct v4l2_subdev_frame_size_enum fse;
+	struct v4l2_frmsize_discrete *discrete = &fsize->discrete;
+	int ret;
 
 	vfe_dbg(0, "vidioc_enum_framesizes\n");
 
@@ -1517,7 +1522,17 @@ static int vidioc_enum_framesizes(struct file *file, void *fh,
 	if (dev == NULL || dev->sd->ops->pad->enum_frame_size == NULL)
 		return -EINVAL;
 
-	return v4l2_subdev_call(dev->sd, pad, enum_frame_size, NULL, &fse);
+	ret = v4l2_subdev_call(dev->sd, pad, enum_frame_size, NULL, &fse);
+	if (ret)
+		vfe_err("enum frame sizes fail!!\n");
+
+	fsize->type = V4L2_FRMSIZE_TYPE_DISCRETE;
+	discrete->width = fse.max_width;
+	discrete->height = fse.max_height;
+
+	vfe_dbg(0, "vidioc_enum_framesizes, width=%d, height=%d\n", discrete->width, discrete->height);
+
+	return ret;
 }
 
 static int vidioc_g_fmt_vid_cap(struct file *file, void *priv,
@@ -1665,7 +1680,7 @@ static int s_fmt_internal(struct vfe_dev *dev, void *priv,
 	struct v4l2_subdev_format fmat;
 	struct v4l2_mbus_framefmt *ccm_fmt = &fmat.format;
 	struct v4l2_mbus_config mbus_cfg;
-	u32 *bus_pix_code;
+	u32 bus_pix_code;
 	struct sensor_win_size win_cfg;
 	struct main_channel_cfg main_cfg;
 	struct v4l2_subdev_format csi_fmt;
@@ -1679,14 +1694,14 @@ static int s_fmt_internal(struct vfe_dev *dev, void *priv,
 		return -EBUSY;
 	}
 
-	bus_pix_code = try_fmt_internal(dev, f);
+	bus_pix_code = *try_fmt_internal(dev, f);
 	if (!bus_pix_code) {
 		vfe_err("pixel format (0x%08x) width %d height %d invalid at %s.\n", \
 			f->fmt.pix.pixelformat, f->fmt.pix.width, f->fmt.pix.height, __func__);
 		ret = -EINVAL;
 		goto out;
 	}
-	vfe_dbg(0, "bus pixel code = %x at %s\n", *bus_pix_code, __func__);
+	vfe_dbg(0, "bus pixel code = %x at %s\n", bus_pix_code, __func__);
 	vfe_dbg(0, "pix->width = %d at %s\n", f->fmt.pix.width, __func__);
 	vfe_dbg(0, "pix->height = %d at %s\n", f->fmt.pix.height, __func__);
 
@@ -1714,7 +1729,7 @@ static int s_fmt_internal(struct vfe_dev *dev, void *priv,
 		}
 
 		mipi_fmt.reserved[0] = win_cfg.mipi_bps;
-		mipi_fmt.format.code = *bus_pix_code;
+		mipi_fmt.format.code = bus_pix_code;
 		mipi_fmt.format.field = f->fmt.pix.field;
 
 		ret = v4l2_subdev_call(dev->mipi_sd, pad, set_fmt, NULL, &mipi_fmt);
@@ -1730,7 +1745,7 @@ static int s_fmt_internal(struct vfe_dev *dev, void *priv,
 	}
 
 	/* init device */
-	ccm_fmt->code = *bus_pix_code;
+	ccm_fmt->code = bus_pix_code;
 	ccm_fmt->width = f->fmt.pix.width;
 	ccm_fmt->height = f->fmt.pix.height;
 	ccm_fmt->field = f->fmt.pix.field;
@@ -1760,13 +1775,13 @@ static int s_fmt_internal(struct vfe_dev *dev, void *priv,
 		goto out;
 	}
 
-	dev->fmt.bus_pix_code = *bus_pix_code;
+	dev->fmt.bus_pix_code = bus_pix_code;
 	dev->fmt.field = ccm_fmt->field;
 
 	if (dev->is_isp_used) {
 		main_cfg.pix = f->fmt.pix;
 		main_cfg.win_cfg = win_cfg;
-		main_cfg.bus_code = find_bus_type((enum bus_pixelcode)(*bus_pix_code));
+		main_cfg.bus_code = find_bus_type((enum bus_pixelcode)(bus_pix_code));
 		ret = v4l2_subdev_call(dev->isp_sd, core, ioctl, VIDIOC_SUNXI_ISP_MAIN_CH_CFG, &main_cfg);
 		if (ret < 0)
 			vfe_err("vidioc_set_main_channel error! ret = %d\n", ret);

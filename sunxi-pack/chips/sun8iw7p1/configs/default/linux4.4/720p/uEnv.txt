@@ -27,7 +27,7 @@ rdaddr=0x43100000
 root=/dev/mmcblk0p2 rootfstype=ext4 rw rootwait bootmenutimeout=10 datadev=mmcblk0p2
 console=ttyS0,115200 console=tty1
 #bootopts=enforcing=1 initcall_debug=0 loglevel=8 init=/init vmalloc=384M panic=10
-bootopts=loglevel=8 init=/sbin/init panic=10
+bootopts=loglevel=8 init=/sbin/init cma_list=128M@0,256M@0,80M@1,160M@1 vmalloc=384M panic=10
 #
 # from sys_config.fex
 #
