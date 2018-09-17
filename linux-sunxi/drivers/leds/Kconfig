@@ -566,6 +566,14 @@ config LEDS_SEAD3
 	  This driver can also be built as a module. If so the module
 	  will be called leds-sead3.
 
+config LEDS_SUNXI
+	tristate "LED Support for Sunxi"
+	depends on LEDS_CLASS
+	help
+	  This option enables support for on-chip LED for Sunxi. If you
+	  want to enable trigger function, you have to slect trigger option
+	  below.
+
 comment "LED driver for blink(1) USB RGB LED is under Special HID drivers (HID_THINGM)"
 
 config LEDS_BLINKM

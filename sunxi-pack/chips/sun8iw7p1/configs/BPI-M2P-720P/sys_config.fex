@@ -185,6 +185,17 @@ jtag_ck         = port:PA01<3><default><default><default>
 jtag_do         = port:PA02<3><default><default><default>
 jtag_di         = port:PA03<3><default><default><default>
 
+;----------------------------------------------------------------------------------
+;
+;LED support
+;----------------------------------------------------------------------------------
+[led_para]
+compatible              = "allwinner,sunxi-leds"
+led_used		= 1
+led_num	 	 	= 1
+led1			= port:PL10<1><default><default><default>
+led1_trigger		= "heartbeat"
+
 [clock]
 pll_video        = 297
 pll_ve           = 402
@@ -369,7 +380,7 @@ manual_cs     = 0
 [gpio_para]
 gpio_para_used       = 1
 compatible              = "allwinner,sunxi-init-gpio"
-gpio_num        = 29
+gpio_num        = 28
 gpio_pin_1      = port:PA12<1><default><default><0>
 gpio_pin_2      = port:PA11<1><default><default><0>
 gpio_pin_3      = port:PA06<1><default><default><0>
@@ -400,12 +411,6 @@ gpio_pin_27     = port:PA21<1><default><default><0>
 gpio_pin_28     = port:PA20<1><default><default><0>
 gpio_pin_29     = port:PL10<0><default><default><1>
 
-;[led_assign]
-normal_led      = "gpio_pin_29"
-;standby_led     = "gpio_pin_10"
-easy_light_used = 1
-normal_led_light = 1
-;standby_led_light = 1
 
 ;----------------------------------------------------------------------------------
 ;thermal configuration
@@ -1080,7 +1085,7 @@ adcdrc_used       		= 0
 dacdrc_used       		= 0
 adchpf_used       		= 0
 dachpf_used       		= 0
-audio_pa_ctrl          	= port:PA16<1><default><default><0>
+audio_pa_ctrl          		= 
 
 [spdif0]
 spdif_used          	= 0
@@ -1099,9 +1104,9 @@ hdmi_used 	= 1
 [s_cir0]
 s_cir0_used         = 1
 ir_used             = 1
-ir_rx               = port:PL11<2><1><default><default>
-ir_power_key_code0  = 0x57
-ir_addr_code0       = 0x9f00
+ir_protocol_used    = 0
+ir_power_key_code0  = 0x46
+ir_addr_code0       = 0x4040
 ir_power_key_code1  = 0x1a
 ir_addr_code1       = 0xfb04
 ir_power_key_code2  = 0x14
@@ -1112,26 +1117,10 @@ ir_power_key_code4  = 0x0b
 ir_addr_code4       = 0xF708
 ir_power_key_code5  = 0x03
 ir_addr_code5       = 0x00EF
-ir_power_key_code6  = 0x9f
-ir_addr_code6       = 0x4CB3
+ir_power_key_code6  = 0xdc
+ir_addr_code6       = 0x4cb3
 ir_power_key_code7  = 0x0a
 ir_addr_code7       = 0x7748
-ir_power_key_code8  = 0x45
-ir_addr_code8       = 0xbd02
-ir_power_key_code9  = 0x4d
-ir_addr_code9       = 0xde21
-ir_power_key_code10  = 0x18
-ir_addr_code10       = 0xfe01
-ir_power_key_code11  = 0x57
-ir_addr_code11       = 0xff00
-ir_power_key_code12  = 0x4d
-ir_addr_code12       = 0xff40
-ir_power_key_code13  = 0x88
-ir_addr_code13       = 0xdd22
-ir_power_key_code14  = 0x0d
-ir_addr_code14       = 0xbc00
-ir_power_key_code15  = 0x0d
-ir_addr_code15       = 0xfc00
 
 ;----------------------------------------------------------------------------------
 ;ir tx--- infra remote configuration

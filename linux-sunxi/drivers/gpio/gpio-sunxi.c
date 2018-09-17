@@ -555,7 +555,7 @@ static struct platform_driver gpio_sw_driver = {
 		   },
 };
 
-static void __exit gpio_sw_exit(void)
+static void gpio_sw_exit(void)
 {
 	int i, cnt;
 	struct gpio_config config;
@@ -729,8 +729,14 @@ static int __init sunxi_gpio_init(void)
 	return 0;
 }
 
+static void __exit sunxi_gpio_exit(void)
+{
+	gpio_sw_exit();
+	platform_driver_unregister(&sunxi_gpio_driver);
+}
+
 module_init(sunxi_gpio_init);
-module_exit(gpio_sw_exit);
+module_exit(sunxi_gpio_exit);
 
 MODULE_AUTHOR("yanjianbo");
 MODULE_DESCRIPTION("SW GPIO USER driver");
