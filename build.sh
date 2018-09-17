@@ -48,9 +48,14 @@ R="${SD}/BPI-ROOT"
 	#
 	mkdir -p $R/usr/lib/u-boot/bananapi/${board}
 	cp -a $U/*.gz $R/usr/lib/u-boot/bananapi/${board}/
+	## modules
 	rm -rf $R/lib/modules
 	mkdir -p $R/lib/modules
 	cp -a $T/linux-sunxi/output/lib/modules/${kernel} $R/lib/modules
+	## headers
+	rm -rf $R/usr/src
+        mkdir -p $R/usr/src
+        cp -a $T/linux-sunxi/output/usr/src/${headers} $R/usr/src/
 	#
 	## create files for bpi-tools & bpi-migrate
 	#
@@ -62,6 +67,8 @@ R="${SD}/BPI-ROOT"
 	(cd $R ; mv lib/modules/${kernel}/kernel/net $R/net)
 	(cd $R ; tar czvf $SD/${kernel}.tgz lib/modules)
 	(cd $R ; mv $R/net lib/modules/${kernel}/kernel/net)
+	# BPI-ROOT: kernel headers
+	(cd $R ; tar czvf $SD/${headers}.tgz usr/src/${headers})
 	# BPI-ROOT: BOOTLOADER
 	(cd $R ; tar czvf $SD/BOOTLOADER-${board}-linux4.4.tgz usr/lib/u-boot/bananapi)
 
@@ -102,6 +109,7 @@ case $BOARD in
     board="bpi-m2p"
 #    kernel="3.4.113-BPI-M2P-Kernel"
     kernel="4.4.55-BPI-M2P-Kernel"
+    headers="linux-headers-4.4.55-BPI-M2P-Kernel"
     BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/default/linux4.4
     ;;
   BPI-M2Z*)
