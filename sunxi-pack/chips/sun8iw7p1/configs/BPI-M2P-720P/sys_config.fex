@@ -819,7 +819,7 @@ sdc2_clk         = port:PC05<3><1><3><default>
 sdc2_cmd         = port:PC06<3><1><3><default>
 sdc2_d0          = port:PC08<3><1><3><default>
 sdc2_d1          = port:PC09<3><1><3><default>
-sdc2_d2          = port:PC010<3><1><3><default>
+sdc2_d2          = port:PC10<3><1><3><default>
 sdc2_d3          = port:PC11<3><1><3><default>
 sdc2_d4          = port:PC12<3><1><3><default>
 sdc2_d5          = port:PC13<3><1><3><default>
@@ -828,10 +828,10 @@ sdc2_d7          = port:PC15<3><1><3><default>
 sdc2_emmc_rst    = port:PC16<3><1><3><default>
 sunxi-power-save-mode =
 sunxi-dis-signal-vol-sw =
-mmc-ddr-1_8v	   =
+;mmc-ddr-1_8v	   =
 
-vmmc="vcc-nand"
-vqmmc="vcc33-pc"
+vmmc="none"
+vqmmc="none"
 vdmmc="none"
 
 ; ------------------------------------------------------------------------------|
