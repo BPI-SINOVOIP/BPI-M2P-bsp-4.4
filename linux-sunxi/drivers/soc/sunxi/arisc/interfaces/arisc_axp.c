@@ -496,6 +496,8 @@ static int arisc_pmu_reboot(u32 type)
 {
 	struct arisc_message *pmessage;
 
+	ARISC_LOG("arisc power off\n");
+
 	/* allocate a message frame */
 	pmessage = arisc_message_allocate(ARISC_MESSAGE_ATTR_ASYN);
 	if (pmessage == NULL) {

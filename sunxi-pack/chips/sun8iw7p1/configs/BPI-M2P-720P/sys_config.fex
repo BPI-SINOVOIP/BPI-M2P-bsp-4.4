@@ -1142,52 +1142,54 @@ ir_tx               = port:PH07<2><default><default><default>
 ; max_freq: cpu maximum frequency, based on Hz, can not be more than 1200MHz
 ; min_freq: cpu minimum frequency, based on Hz, can not be less than 60MHz
 ;
-; LV_count: count of LV_freq/LV_volt, must be < 16
+; lv_count: count of lv_freq/lv_volt, must be < 16
 ;
-; LV1: core vdd is 1.50v if cpu frequency is (1296Mhz,  1536Mhz]
-; LV2: core vdd is 1.34v if cpu frequency is (1200Mhz,  1296Mhz]
-; LV3: core vdd is 1.32v if cpu frequency is (1008Mhz,  1200Mhz]
-; LV4: core vdd is 1.20v if cpu frequency is (816Mhz,   1008Mhz]
-; LV5: core vdd is 1.10v if cpu frequency is (648Mhz,    816Mhz]
-; LV6: core vdd is 1.04v if cpu frequency is (0Mhz,      648Mhz]
-; LV7: core vdd is 1.04v if cpu frequency is (0Mhz,      648Mhz]
-; LV8: core vdd is 1.04v if cpu frequency is (0Mhz,      648Mhz]
+; lv1: core vdd is 1.50v if cpu frequency is (1296Mhz,  1536Mhz]
+; lv2: core vdd is 1.34v if cpu frequency is (1200Mhz,  1296Mhz]
+; lv3: core vdd is 1.32v if cpu frequency is (1008Mhz,  1200Mhz]
+; lv4: core vdd is 1.20v if cpu frequency is (816Mhz,   1008Mhz]
+; lv5: core vdd is 1.10v if cpu frequency is (648Mhz,    816Mhz]
+; lv6: core vdd is 1.04v if cpu frequency is (0Mhz,      648Mhz]
+; lv7: core vdd is 1.04v if cpu frequency is (0Mhz,      648Mhz]
+; lv8: core vdd is 1.04v if cpu frequency is (0Mhz,      648Mhz]
 ;
 ;----------------------------------------------------------------------------------
 [dvfs_table]
-pmuic_type = 0
-;pmu_gpio0         = port:PL06<1><1><2><1>
-;pmu_level0        = 11300
-;pmu_level1        = 01100
+pmuic_type	  = 0
+pmu_gpio0         = port:PL01<1><1><2><1>
+pmu_level0        = 11300
+pmu_level1        = 01100
+
 ;extremity_freq = 1344000000
-;max_freq = 1008000000
-;min_freq = 480000000
-;boot_freq = 1008000000
-;LV_count = 8
+max_freq = 1008000000
+min_freq = 480000000
+boot_freq = 1008000000
 
-;LV1_freq = 1200000000
-;LV1_volt = 1300
+lv_count = 8
 
-;LV2_freq = 1008000000
-;LV2_volt = 1200
+lv1_freq = 1200000000
+lv1_volt = 1300
 
-;LV3_freq = 0
-;LV3_volt = 1100
+lv2_freq = 1008000000
+lv2_volt = 1300
 
-;LV4_freq = 0
-;LV4_volt = 1100
+lv3_freq = 912000000
+lv3_volt = 1100
 
-;LV5_freq = 0
-;LV5_volt = 1100
+lv4_freq = 648000000
+lv4_volt = 1100
 
-;LV6_freq = 0
-;LV6_volt = 1100
+lv5_freq = 480000000
+lv5_volt = 1100
 
-;LV7_freq = 0
-;LV7_volt = 1100
+lv6_freq = 0
+lv6_volt = 1100
 
-;LV8_freq = 0
-;LV8_volt = 1100
+lv7_freq = 0
+lv7_volt = 1100
+
+lv8_freq = 0
+lv8_volt = 1100
 
 [gpu_dvfs_table]
 
@@ -1245,7 +1247,7 @@ s_uart_rx         = port:PL03<2><default><default><default>
 ;s_rsb_used  --s_rsb0 whether used for arisc
 ;----------------------------------------------------------------------------------
 [s_rsb0]
-s_rsb_used        = 1
+s_rsb_used        = 0
 s_rsb_sck         = port:PL00<2><1><2><default>
 s_rsb_sda         = port:PL01<2><1><2><default>
 

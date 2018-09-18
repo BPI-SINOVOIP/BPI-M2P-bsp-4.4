@@ -1390,10 +1390,12 @@ static void sunxi_rest_cfg(void)
 		ARISC_WRN("config dram paras failed\n");
 	}
 
-	if (!pm_power_off)
+	if (!pm_power_off) {
 		pm_power_off = arisc_power_off;
+		ARISC_LOG("arisc pm_power_off registed\n");
+	}
 	else
-		ARISC_WRN("pm_power_off aleardy been registered!\n");
+		ARISC_LOG("pm_power_off aleardy been registered!\n");
 }
 #else
 static void sunxi_rest_cfg(void)
