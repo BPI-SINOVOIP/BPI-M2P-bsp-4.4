@@ -498,7 +498,7 @@ nand0_ndqs          = port:PC16<2><0><1><default>
 [boot_disp]
 output_disp = 0
 output_type = 3
-output_mode = 10
+output_mode = 5
 ;output_full = 1
 ;auto_hpd = 1
 
@@ -518,7 +518,7 @@ disp_init_enable         = 1
 disp_mode                = 0
 
 screen0_output_type      = 3
-screen0_output_mode      = 10
+screen0_output_mode      = 5
 
 screen1_output_type      = 2
 screen1_output_mode      = 11
@@ -587,7 +587,7 @@ hdmi_io_regulator      = "vdd09-hdmi"
 ;NOTE:              tv0,tv1 can not use the same dac_src.
 ;----------------------------------------------------------------------------------
 [tv0]
-used            = 1
+used            = 0
 
 dac_src0        = 0
 dac_type0       = 0
@@ -1126,7 +1126,7 @@ ir_addr_code7       = 0x7748
 ;ir tx--- infra remote configuration
 ;----------------------------------------------------------------------------------
 [cir]
-ir_used             = 1
+ir_used             = 0
 ir_tx               = port:PH07<2><default><default><default>
 
 
@@ -1247,7 +1247,7 @@ s_uart_rx         = port:PL03<2><default><default><default>
 ;s_rsb_used  --s_rsb0 whether used for arisc
 ;----------------------------------------------------------------------------------
 [s_rsb0]
-s_rsb_used        = 0
+s_rsb_used        = 1
 s_rsb_sck         = port:PL00<2><1><2><default>
 s_rsb_sda         = port:PL01<2><1><2><default>
 
@@ -1311,7 +1311,7 @@ tsc_d7			= port:PE11<3><default><default><default>
 ;gpio key
 ;--------------------------------------------------------------------------------
 [gpio_power_key]
-key_used		= 1
+key_used		= 0
 key_io			= port:PL03<6><default><default><0>
 
 ;----------------------------------------------------------------------------------
