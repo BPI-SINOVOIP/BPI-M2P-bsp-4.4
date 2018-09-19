@@ -368,7 +368,11 @@
 #define CONFIG_SYS_I2C_SPEED 400000
 #define CONFIG_SYS_I2C_SLAVE 0x68
 
-#define CONFIG_SUNXI_KEY_SUPPORT
+/* disable key support to disable fel key check, 
+ * because powerkey adc value is not stable and 
+ * will trigger fel mode sometimes
+ */
+/* #define CONFIG_SUNXI_KEY_SUPPORT */
 
 /*-----------------------------------------------------------------------
  * Stack sizes
