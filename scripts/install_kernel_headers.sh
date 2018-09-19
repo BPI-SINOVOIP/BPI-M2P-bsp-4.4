@@ -67,6 +67,9 @@ find "$TARGET/scripts" -type f | while read i; do if file -b $i | egrep -q "^ELF
 find arch/$LINUX_ARCH/include   \
                -print | cpio -pdL --preserve-modification-time "$TARGET";
 
+find arch/$LINUX_ARCH/mach-sunxi/include   \
+               -print | cpio -pdL --preserve-modification-time "$TARGET";
+
 mkdir -p "$TARGET/arch/um"
 cp -a arch/um/Makefile* "$TARGET/arch/um/"
 mkdir -p "$TARGET/arch/$LINUX_ARCH/kernel"
