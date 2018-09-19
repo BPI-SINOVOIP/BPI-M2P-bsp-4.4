@@ -36,6 +36,17 @@ config BT_HCIBTUSB
 	  Say Y here to compile support for Bluetooth USB devices into the
 	  kernel or say M to compile it as module (btusb).
 
+config BT_RTKHCIBTUSB
+	tristate "Realtek HCI USB driver(8723BU)"
+        depends on USB
+        help
+          Realtek Bluetooth HCI USB driver.
+          This driver is required if you want to use Realtek Bluetooth devices with
+          USB interface.
+           Say Y here to compile support for Realtek Bluetooth USB devices into the
+          kernel or say M to compile it as module (btusb).
+
+
 config BT_HCIBTUSB_BCM
 	bool "Broadcom protocol support"
 	depends on BT_HCIBTUSB
