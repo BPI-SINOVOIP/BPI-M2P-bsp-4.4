@@ -1,22 +1,26 @@
-;H3 dolphin-p1 board application
-;H3 dolphin-p1 board application
+;H3 bpi-m2p board application
+;H3 bpi-m2p board application
 ;---------------------------------------------------------------------------------------------------------
 ; 说明： 脚本中的字符串区分大小写，用户可以修改"="后面的数值，但是不要修改前面的字符串
 ; 描述gpio的形式：Port:端口+组内序号<功能分配><内部电阻状态><驱动能力><输出电平状态>
 ;---------------------------------------------------------------------------------------------------------
 
+;---------------------------------------------------------------------------------------------------------
+; machine: the name must less than 16 bytes
+;---------------------------------------------------------------------------------------------------------
 [product]
 version = "100"
 machine = "bpi-m2p"
 
 ;---------------------------------------------------------------------------------------------------------
+; debug_mode - 1 print debug message, 0 - do not print any message
 ; eraseflag - 1 erase data partition, 0 - do not erase data partition
 ; next_work - action after burn, 0x0 by config, 0x1, normal, 0x2 reboot 0x3 ,shutdown,0x4 reupdate ,0x5 boot
 ;---------------------------------------------------------------------------------------------------------
 [platform]
-debug_mode = 1
+debug_mode  = 1
 eraseflag   = 1
-next_work = 2
+next_work   = 2
 
 ;----------------------------------------------------------------------------------
 ;[target]  system bootup configuration
@@ -81,32 +85,31 @@ led_power = 0
 led_state = 0
 
 ;-------------------------------------------------------------------------------
-; 	boot阶段上电初始化GPIO
-;		used		:模块使能端     置1：开启模块   置0：关闭模块
-;		gpiox ：上电初始化gpio （名称自定，但不能重复，并且GPIO允许可以多个）
-;		PH06  : 系统显示LED GPIO
+;boot阶段上电初始化GPIO
+;used	:模块使能端     置1：开启模块   置0：关闭模块
+;gpiox ：上电初始化gpio （名称自定，但不能重复，并且GPIO允许可以多个）
+;PH06  : 系统显示LED GPIO
 ;-------------------------------------------------------------------------------
 [boot_init_gpio]
-boot_init_gpio_used	=	1
-gpio0 =  port:PL10<1><default><default><1>
-gpio1	=  port:PA15<1><default><default><1>
+boot_init_gpio_used	= 1
+gpio0 			= port:PL10<1><default><default><1>
 
 ;----------------------------------------------------------------------------------
-;	used: 模块使能端     1：开启模块          0：关闭模块
-;	mode: 模式选择       1：一键进入OTA升级   2：一键恢复（通过sysrecovery分区来恢复）其他值：无效
-;       trigger: 触发电平    0: 低电平触发(默认)  1: 高电平触发
-;	recovery_key: 按键配置  （例如：recovery_key= port:PH16<0><default>）
+;used: 模块使能端     1：开启模块          0：关闭模块
+;mode: 模式选择       1：一键进入OTA升级   2：一键恢复（通过sysrecovery分区来恢复）其他值：无效
+;trigger: 触发电平    0: 低电平触发(默认)  1: 高电平触发
+;recovery_key: 按键配置  （例如：recovery_key= port:PH16<0><default>）
 ;----------------------------------------------------------------------------------
 [recovery_para]
-used =	0
-mode =	2
-trigger = 0
-recovery_key = port:PL04<0><default><default><default>
+used 		= 0
+mode 		= 2
+trigger 	= 0
+recovery_key 	= port:PL04<0><default><default><default>
 
 ;----------------------------------------------------------------------------------
-;	hid_used: 多份配置、硬件版本检测功能模块. 1: 开启, 0:关闭
-;	hid_count: 硬件版本标示gpio数目, 该项不允许更改
-;	hid_bit_x: gpio引脚配置, 该项不允许更改
+;hid_used: 多份配置、硬件版本检测功能模块. 1: 开启, 0:关闭
+;hid_count: 硬件版本标示gpio数目, 该项不允许更改
+;hid_bit_x: gpio引脚配置, 该项不允许更改
 ;----------------------------------------------------------------------------------
 [hardware_version]
 hid_used	    = 0
@@ -116,11 +119,11 @@ hid_bit_1	    = port:PD01<0><1><default><default>
 hid_bit_2	    = port:PD02<0><1><default><default>
 
 ;----------------------------------------------------------------------------------
-;	table_count: 支持的配置数目
-;	table_x = "coding:config_name": 格式描述:
-;	table_x: 根据配置的table_count, 从table_1开始配置
-;	coding:config_name: coding: 表示硬件版本号,通过硬件GPIO进行标识,十进制表示 config_name: 配置文件名称, 需要与硬件版本对应
-;	注: table_count 配置数目需要与table_x的实际个数相匹配
+;table_count: 支持的配置数目
+;table_x = "coding:config_name": 格式描述:
+;table_x: 根据配置的table_count, 从table_1开始配置
+;coding:config_name: coding: 表示硬件版本号,通过硬件GPIO进行标识,十进制表示 config_name: 配置文件名称, 需要与硬件版本对应
+;注: table_count 配置数目需要与table_x的实际个数相匹配
 ;----------------------------------------------------------------------------------
 [hardware_code_table]
 table_count	= 3
@@ -133,7 +136,7 @@ table_3	    	= "0:sys_000"
 ; else, support normal standby.
 ;---------------------------------------------------------------------------------------------------------
 [pm_para]
-standby_mode		= 1
+standby_mode	= 1
 
 [card0_boot_para]
 card_ctrl       = 0
@@ -161,7 +164,7 @@ sdc_d5          = port:PC13<3><1><2><default>
 sdc_d6          = port:PC14<3><1><2><default>
 sdc_d7          = port:PC15<3><1><2><default>
 sdc_2xmode   	= 1
-sdc_ddrmode		= 1
+sdc_ddrmode	= 1
 
 [twi_para]
 twi_port        = 0
@@ -190,11 +193,11 @@ jtag_di         = port:PA03<3><default><default><default>
 ;LED support
 ;----------------------------------------------------------------------------------
 [led_para]
-compatible              = "allwinner,sunxi-leds"
-led_used		= 1
-led_num	 	 	= 1
-led1			= port:PL10<1><default><default><default>
-led1_trigger		= "heartbeat"
+compatible       = "allwinner,sunxi-leds"
+led_used	 = 1
+led_num	 	 = 1
+led1		 = port:PL10<1><default><default><default>
+led1_trigger	 = "heartbeat"
 
 [clock]
 pll_video        = 297
@@ -333,7 +336,7 @@ uart2_cts        = port:PA03<2><1><default><default>
 [uart3]
 uart3_used       = 1
 uart3_port       = 3
-uart3_type       = 2
+uart3_type       = 4
 uart3_tx         = port:PA13<3><1><default><default>
 uart3_rx         = port:PA14<3><1><default><default>
 uart3_rts        = port:PA15<3><1><default><default>
@@ -378,8 +381,8 @@ manual_cs     = 0
 ; ** COMMENT THE PINS USED IN OTHER INTERFACES (I2C, SPI, 1-WIRE...)
 ;----------------------------------------------------------------------------------
 [gpio_para]
-gpio_para_used       = 1
-compatible              = "allwinner,sunxi-init-gpio"
+gpio_para_used  = 1
+compatible      = "allwinner,sunxi-init-gpio"
 gpio_num        = 28
 gpio_pin_1      = port:PA12<1><default><default><0>
 gpio_pin_2      = port:PA11<1><default><default><0>
@@ -496,11 +499,11 @@ nand0_ndqs          = port:PC16<2><0><1><default>
 ;                     (0:decide output type according to sys_config)
 ;----------------------------------------------------------------------------------
 [boot_disp]
-output_disp = 0
-output_type = 3
-output_mode = 5
+output_disp  = 0
+output_type  = 3
+output_mode  = 10
 ;output_full = 1
-;auto_hpd = 1
+;auto_hpd    = 1
 
 ;----------------------------------------------------------------------------------
 ;disp init configuration
@@ -518,7 +521,7 @@ disp_init_enable         = 1
 disp_mode                = 0
 
 screen0_output_type      = 3
-screen0_output_mode      = 5
+screen0_output_mode      = 10
 
 screen1_output_type      = 2
 screen1_output_mode      = 11
@@ -593,11 +596,16 @@ dac_src0        = 0
 dac_type0       = 0
 
 interface       = 1
+
 ;----------------------------------------------------------------------------------
 ;pwm config
 ;----------------------------------------------------------------------------------
 [pwm0_para]
 pwm_used            = 0
+pwm_positive        = port:PA05<3><0><default><default>
+
+[pwm1_para]
+pwm_used            = 1
 pwm_positive        = port:PA06<3><0><default><default>
 
 ;------------------------------------------------------------------------------;
@@ -797,7 +805,7 @@ vdmmc="vcc-pf"
 
 [sdc1]
 sdc1_used          = 1
-bus-width	= 4
+bus-width	   = 4
 sdc1_clk           = port:PG00<2><1><3><default>
 sdc1_cmd           = port:PG01<2><1><3><default>
 sdc1_d0            = port:PG02<2><1><3><default>
@@ -806,14 +814,14 @@ sdc1_d2            = port:PG04<2><1><3><default>
 sdc1_d3            = port:PG05<2><1><3><default>
 ;sunxi-power-save-mode =
 
-cap-sdio-irq			=
+cap-sdio-irq		=
 keep-power-in-suspend	=
 ignore-pm-notify	=
 
 
 [sdc2]
-sdc2_used          = 1
-non-removable	=
+sdc2_used         = 1
+non-removable	 =
 bus-width	 = 8
 sdc2_clk         = port:PC05<3><1><3><default>
 sdc2_cmd         = port:PC06<3><1><3><default>
@@ -932,7 +940,6 @@ luns                = 3
 [serial_feature]
 serial_unique       = 0
 
-
 ;--------------------------------------------------------------------------------
 ;wifi/bt/fm/gps/nfc modules configuration
 ;module_power0: axp used by module, "axp22_dldo1" - use dldo1, not use keep it empty
@@ -954,32 +961,31 @@ serial_unique       = 0
 
 ;--------------------------------------------------------------------------------
 ;wifi configuration
-;wifi_sdc_id:    0- SDC0, 1- SDC1, 2- SDC2, 3- SDC3
-;wifi_usbc_id:   0- USB0, 1- USB1, 2- USB2
-;wifi_usbc_type: 1- EHCI(speed 2.0), 2- OHCI(speed 1.0)
-;wl_reg_on:      wifi function enable pin
-;wl_host_wake:   wlan device wake-up host pin
+;wifi_sdc_id:         0- SDC0, 1- SDC1, 2- SDC2, 3- SDC3
+;wifi_usbc_id:        0- USB0, 1- USB1, 2- USB2
+;wifi_usbc_type:      1- EHCI(speed 2.0), 2- OHCI(speed 1.0)
+;wl_reg_on:           wifi function enable pin
+;wl_host_wake:        wlan device wake-up host pin
 ;wl_host_wake_invert: whether wl_host_wake use inverter between ap and module
 ;                     0: not used, 1: used
 ;--------------------------------------------------------------------------------
 [wlan]
 wlan_used             = 1
 wlan_busnum           = 1
-;wlan_power            =
-;wlan_en               = port:PL00<1><default><default><0>
+;wlan_power           =
+;wlan_en              = 
 wlan_hostwake         = port:PG10<0><default><default><0>
-wlan_regon            = port:PL07<1><default><default><1>
+wlan_regon            = port:PL07<1><default><default><0>
 
 ;--------------------------------------------------------------------------------
 ;bluetooth configuration
-;bt_used:       0- no used, 1- used
+;bt_used:       	0- no used, 1- used
 ;bt_uard_id:		0- uart0, 1- uart1, 2- uart2
-;bt_uart_baud:  uart baud rate, unit: bps
-;bt_rst_n:      bt function enable io
-;bt_wake:       host wake-up bluetooth device
-;bt_host_wake:  bt device wake-up host
-;bt_host_wake_invert: whether bt_host_wake use inverter between ap and module
-;                     0: not used, 1: used
+;bt_uart_baud:  	uart baud rate, unit: bps
+;bt_rst_n:      	bt function enable io
+;bt_wake:       	host wake-up bluetooth device
+;bt_host_wake:  	bt device wake-up host
+;bt_host_wake_invert:   whether bt_host_wake use inverter between ap and module 0: not used, 1: used
 ;--------------------------------------------------------------------------------
 [bt]
 bt_used             = 1
@@ -1028,23 +1034,23 @@ bt_hostwake         = port:PG11<6><default><default><0>
 ;--------------------------------------------------------------------------------
 [daudio0]
 daudio_used         = 0
-daudio_master		= 4
-daudio_select  		= 1
-audio_format		= 1
-signal_inversion	= 1
-mclk_fs				= 128
+daudio_master	    = 4
+daudio_select  	    = 1
+audio_format	    = 1
+signal_inversion    = 1
+mclk_fs		    = 128
 sample_resolution   = 16
-slot_width_select 	= 32
-;pcm_sync_period 	= 256
-pcm_lrck_period		= 32
-pcm_lrckr_period 	= 1
+slot_width_select   = 32
+;pcm_sync_period    = 256
+pcm_lrck_period	    = 32
+pcm_lrckr_period    = 1
 msb_lsb_first 	    = 0
-sign_extend 		= 0
-slot_index 		    = 0
-slot_width 		    = 32
-frame_width 		= 0
-tx_data_mode 		= 0
-rx_data_mode 		= 0
+sign_extend 	    = 0
+slot_index 	    = 0
+slot_width 	    = 32
+frame_width 	    = 0
+tx_data_mode 	    = 0
+rx_data_mode 	    = 0
 i2s_mclk            = port:PA18<2><1><default><default>
 i2s_bclk            = port:PA19<2><1><default><default>
 i2s_dout0           = port:PA20<2><1><default><default>
@@ -1052,44 +1058,44 @@ i2s_din             = port:PA21<2><1><default><default>
 
 
 [daudio1]
-daudio1_used         = 0
-daudio_master		= 4
-daudio_select  		= 1
-audio_format		= 1
-signal_inversion	= 1
-mclk_fs				= 128
+daudio1_used        = 0
+daudio_master	    = 4
+daudio_select  	    = 1
+audio_format	    = 1
+signal_inversion    = 1
+mclk_fs		    = 128
 sample_resolution   = 16
-slot_width_select 	= 32
-;pcm_sync_period 	= 256
-pcm_lrck_period		= 32
-pcm_lrckr_period 	= 1
+slot_width_select   = 32
+;pcm_sync_period    = 256
+pcm_lrck_period	    = 32
+pcm_lrckr_period    = 1
 msb_lsb_first 	    = 0
-sign_extend 		= 0
-slot_index 		    = 0
-slot_width 		    = 32
-frame_width 		= 0
-tx_data_mode 		= 0
-rx_data_mode 		= 0
+sign_extend 	    = 0
+slot_index 	    = 0
+slot_width 	    = 32
+frame_width 	    = 0
+tx_data_mode 	    = 0
+rx_data_mode 	    = 0
 i2s_mclk            = port:PG10<2><1><default><default>
 i2s_bclk            = port:PG11<2><1><default><default>
 i2s_dout0           = port:PG12<2><1><default><default>
 i2s_din             = port:PG13<2><1><default><default>
 
 [codec]
-codec_used          	= 1
-lineout_vol				= 0x1f
-cap_vol					= 0x5
-audio_hp_ldo       	= "none"
-adcagc_used       		= 0
-adcdrc_used       		= 0
-dacdrc_used       		= 0
-adchpf_used       		= 0
-dachpf_used       		= 0
-audio_pa_ctrl          		= 
+codec_used          = 1
+lineout_vol	    = 0x1f
+cap_vol		    = 0x5
+audio_hp_ldo        = "none"
+adcagc_used         = 0
+adcdrc_used         = 0
+dacdrc_used         = 0
+adchpf_used         = 0
+dachpf_used         = 0
+audio_pa_ctrl       = 
 
 [spdif0]
-spdif_used          	= 0
-spdif_dout          	= port:PA17<2><1><default><default>
+spdif_used          = 0
+spdif_dout          = port:PA17<2><1><default><default>
 
 [audiohub]
 hub_used    	= 0
@@ -1160,36 +1166,36 @@ pmu_gpio0         = port:PL01<1><1><2><1>
 pmu_level0        = 11300
 pmu_level1        = 01100
 
-;extremity_freq = 1344000000
-max_freq = 1008000000
-min_freq = 480000000
-boot_freq = 1008000000
+;extremity_freq   = 1344000000
+max_freq 	  = 1008000000
+min_freq 	  = 480000000
+boot_freq 	  = 1008000000
 
-lv_count = 8
+lv_count 	  = 8
 
-lv1_freq = 1200000000
-lv1_volt = 1300
+lv1_freq 	  = 1200000000
+lv1_volt 	  = 1300
 
-lv2_freq = 1008000000
-lv2_volt = 1300
+lv2_freq 	  = 1008000000
+lv2_volt 	  = 1300
 
-lv3_freq = 912000000
-lv3_volt = 1100
+lv3_freq 	  = 912000000
+lv3_volt 	  = 1100
 
-lv4_freq = 648000000
-lv4_volt = 1100
+lv4_freq 	  = 648000000
+lv4_volt 	  = 1100
 
-lv5_freq = 480000000
-lv5_volt = 1100
+lv5_freq 	  = 480000000
+lv5_volt 	  = 1100
 
-lv6_freq = 0
-lv6_volt = 1100
+lv6_freq 	  = 0
+lv6_volt 	  = 1100
 
-lv7_freq = 0
-lv7_volt = 1100
+lv7_freq 	  = 0
+lv7_volt 	  = 1100
 
-lv8_freq = 0
-lv8_volt = 1100
+lv8_freq 	  = 0
+lv8_volt 	  = 1100
 
 [gpu_dvfs_table]
 
@@ -1293,26 +1299,26 @@ scr_det             = port:PA10<2><default><default><default>
 ;tsc configuration
 ;--------------------------------------------------------------------------------
 [ts0]
-tsc_used		= 0
-tsc_clk			= port:PE00<3><default><default><default>
-tsc_err			= port:PE01<3><default><default><default>
-tsc_sync		= port:PE02<3><default><default><default>
-tsc_dvld		= port:PE03<3><default><default><default>
-tsc_d0			= port:PE04<3><default><default><default>
-tsc_d1			= port:PE05<3><default><default><default>
-tsc_d2			= port:PE06<3><default><default><default>
-tsc_d3			= port:PE07<3><default><default><default>
-tsc_d4			= port:PE08<3><default><default><default>
-tsc_d5			= port:PE09<3><default><default><default>
-tsc_d6			= port:PE10<3><default><default><default>
-tsc_d7			= port:PE11<3><default><default><default>
+tsc_used	    = 0
+tsc_clk		    = port:PE00<3><default><default><default>
+tsc_err		    = port:PE01<3><default><default><default>
+tsc_sync	    = port:PE02<3><default><default><default>
+tsc_dvld	    = port:PE03<3><default><default><default>
+tsc_d0		    = port:PE04<3><default><default><default>
+tsc_d1		    = port:PE05<3><default><default><default>
+tsc_d2		    = port:PE06<3><default><default><default>
+tsc_d3		    = port:PE07<3><default><default><default>
+tsc_d4		    = port:PE08<3><default><default><default>
+tsc_d5		    = port:PE09<3><default><default><default>
+tsc_d6		    = port:PE10<3><default><default><default>
+tsc_d7		    = port:PE11<3><default><default><default>
 
 ;--------------------------------------------------------------------------------
 ;gpio key
 ;--------------------------------------------------------------------------------
 [gpio_power_key]
-key_used		= 0
-key_io			= port:PL03<6><default><default><0>
+key_used	    = 0
+key_io		    = port:PL03<6><default><default><0>
 
 ;----------------------------------------------------------------------------------
 ; key para
@@ -1324,23 +1330,23 @@ key_io			= port:PL03<6><default><default><0>
 ; For example: if key2_vol < $(keyadc value) < key3_vol, then key3 be reported.
 ;----------------------------------------------------------------------------------
 [key_para]
-key_used                = 0
-key_cnt                 = 5
-key1_vol		= 222
-key2_vol		= 444
-key3_vol		= 666
-key4_vol		= 857
-key5_vol		= 2000
+key_used            = 0
+key_cnt             = 5
+key1_vol	    = 222
+key2_vol	    = 444
+key3_vol	    = 666
+key4_vol	    = 857
+key5_vol	    = 2000
 
 
 ;----------------------------------------------------------------------------------
 ;display seven segment para
 ;----------------------------------------------------------------------------------
 [d7s_para]
-d7s_used		= 0
-din_gpio		= port:PD00<1><default><default><1>
-clk_gpio		= port:PD01<1><default><default><1>
-stb_gpio		= port:PD02<1><default><default><1>
+d7s_used	    = 0
+din_gpio	    = port:PD00<1><default><default><1>
+clk_gpio	    = port:PD01<1><default><default><1>
+stb_gpio	    = port:PD02<1><default><default><1>
 
 
 ;----------------------------------------------------------------------------------
@@ -1363,20 +1369,20 @@ dvfs_status       = 0
 temp_ctrl_status  = 1
 scene_ctrl_status = 1
 
-max_level   = 4
-begin_level = 4
+max_level   	  = 4
+begin_level	  = 4
 
-lv0_freq = 144
-lv0_volt = 1200
+lv0_freq 	  = 144
+lv0_volt 	  = 1200
 
-lv1_freq = 264
-lv1_volt = 1200
+lv1_freq	  = 264
+lv1_volt 	  = 1200
 
-lv2_freq = 384
-lv2_volt = 1200
+lv2_freq 	  = 384
+lv2_volt 	  = 1200
 
-lv3_freq = 456
-lv3_volt = 1200
+lv3_freq 	  = 456
+lv3_volt 	  = 1200
 
-lv4_freq = 576
-lv4_volt = 1200
+lv4_freq 	  = 576
+lv4_volt 	  = 1200
