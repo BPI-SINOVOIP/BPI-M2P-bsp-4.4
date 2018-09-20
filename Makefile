@@ -9,19 +9,17 @@ U_CROSS_COMPILE=$(U_COMPILE_TOOL)/arm-linux-gnueabi-
 K_CROSS_COMPILE=$(K_COMPILE_TOOL)/arm-linux-gnueabihf-
 
 LICHEE_KDIR=$(CURDIR)/linux-sunxi
-LICHEE_MOD_DIR=$(LICHEE_KDIR)/output/lib/modules/4.4.55-BPI-M2P-Kernel
 ROOTFS=$(CURDIR)/rootfs/linux/default_linux_rootfs.tar.gz
 
 Q=
 J=$(shell expr `grep ^processor /proc/cpuinfo  | wc -l` \* 2)
 
+bsp: u-boot kernel
 all: bsp
 
-## clean all
 clean: u-boot-clean kernel-clean
 	rm -f chosen_board.mk
 
-## pack
 pack: sunxi-pack
 	$(Q)scripts/mk_pack.sh
 
@@ -36,12 +34,9 @@ kernel:
 	$(Q)$(MAKE) -C linux-sunxi ARCH=arm $(KERNEL_CONFIG)
 	$(Q)$(MAKE) -C linux-sunxi ARCH=arm CROSS_COMPILE=${K_CROSS_COMPILE} -j$J INSTALL_MOD_PATH=output uImage dtbs modules
 	$(Q)$(MAKE) -C linux-sunxi ARCH=arm CROSS_COMPILE=${K_CROSS_COMPILE} -j$J INSTALL_MOD_PATH=output modules_install
-	$(Q)$(MAKE) -C linux-sunxi/modules/gpu CROSS_COMPILE=$(K_CROSS_COMPILE) ARCH=arm LICHEE_MOD_DIR=${LICHEE_MOD_DIR} LICHEE_KDIR=${LICHEE_KDIR}
-	$(Q)$(MAKE) -C linux-sunxi/modules/gpu CROSS_COMPILE=$(K_CROSS_COMPILE) ARCH=arm LICHEE_MOD_DIR=${LICHEE_MOD_DIR} LICHEE_KDIR=${LICHEE_KDIR} install
 	$(Q)scripts/install_kernel_headers.sh $(K_CROSS_COMPILE)
 
 kernel-clean:
-	$(Q)$(MAKE) -C linux-sunxi/modules/gpu CROSS_COMPILE=$(K_CROSS_COMPILE) ARCH=arm LICHEE_MOD_DIR=${LICHEE_MOD_DIR} LICHEE_KDIR=${LICHEE_KDIR} clean
 	$(Q)$(MAKE) -C linux-sunxi ARCH=arm CROSS_COMPILE=${K_CROSS_COMPILE} -j$J distclean
 	rm -rf linux-sunxi/output/
 	rm -f linux-sunxi/bImage
@@ -51,10 +46,6 @@ kernel-config:
 	$(Q)$(MAKE) -C linux-sunxi ARCH=arm CROSS_COMPILE=${K_CROSS_COMPILE} -j$J menuconfig
 	cp linux-sunxi/.config linux-sunxi/arch/arm/configs/$(KERNEL_CONFIG)
 
-## bsp
-bsp: u-boot kernel
-
-## linux
 linux: 
 	$(Q)scripts/mk_linux.sh $(ROOTFS)
 
