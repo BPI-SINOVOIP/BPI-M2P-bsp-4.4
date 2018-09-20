@@ -739,6 +739,8 @@ int update_fdt_para_for_kernel(void* dtb_base)
 		case STORAGE_SD:
 		{
 			uint32_t dragonboard_test = 0;
+			uint32_t sd_emmc = 0;
+			
 			ret = script_parser_fetch("target", "dragonboard_test", (int *)&dragonboard_test, 1);
 			if(dragonboard_test == 1)
 			{
@@ -751,7 +753,12 @@ int update_fdt_para_for_kernel(void* dtb_base)
 			else
 			{
 				disable_node("nand0");
-				/* disable_node("mmc2"); bpi, enable emmc */
+				/* bpi, enable emmc */
+				ret = script_parser_fetch("target", "sd_emmc", (int *)&sd_emmc, 1);
+				if(sd_emmc != 1)
+				{
+					disable_node("mmc2"); 
+				}
 				disable_node("mmc3");
 			}
 		}
