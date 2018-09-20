@@ -4,7 +4,7 @@
 
 T=
 MACH="sun8iw7p1"
-BPIMACH="sun8iw7p1 sun8iw11p1"
+BPIMACH="sun8iw7p1"
 BOARD=$1
 board=
 kernel=
