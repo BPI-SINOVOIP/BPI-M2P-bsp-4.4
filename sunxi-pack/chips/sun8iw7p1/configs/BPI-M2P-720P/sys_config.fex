@@ -26,10 +26,12 @@ next_work   = 2
 ;[target]  system bootup configuration
 ;boot_clock	= CPU boot frequency, Unit: MHz
 ;storage_type	= boot medium, 0-nand, 1-card0, 2-card2, -1(defualt)auto scan
+;sd_emmc	= 0 - sd card boot without emmc, 1 - sd card boot with emmc
 ;----------------------------------------------------------------------------------
 [target]
-boot_clock   	= 1008
-storage_type    = -1
+boot_clock   	 = 1008
+storage_type     = -1
+sd_emmc		 = 1
 
 ;---------------------------------------------------------------------------------
 ; uboot key detect enable
@@ -60,11 +62,11 @@ fel_key_min            =02
 ;			next_work	： 卡量产完成，工作状态(默认关机)
 ;-------------------------------------------------------------------------------
 [card_boot]
-logical_start   = 40960
+logical_start   	= 40960
 sprite_work_delay	= 500
 sprite_err_delay	= 200
-sprite_gpio0    = port:PA15<1><default><default><default>
-next_work       = 3
+sprite_gpio0    	= 
+next_work       	= 3
 
 ;---------------------------------------------------------------------------------
 ; used       : 1: used this config, 0: not
@@ -623,7 +625,7 @@ pwm_positive        = port:PA06<3><0><default><default>
 ;   PD05  *                 PD11   *           *    PD17   *           *       ;
 ;------------------------------------------------------------------------------;
 [gmac0]
-gmac0_used          = 1
+gmac0_used         = 1
 phy-mode           = "rgmii"
 gmac_rxd3          = port:PD00<2><default><3><default>
 gmac_rxd2          = port:PD01<2><default><3><default>
@@ -820,27 +822,27 @@ ignore-pm-notify	=
 
 
 [sdc2]
-sdc2_used         = 1
-non-removable	 =
-bus-width	 = 8
-sdc2_clk         = port:PC05<3><1><3><default>
-sdc2_cmd         = port:PC06<3><1><3><default>
-sdc2_d0          = port:PC08<3><1><3><default>
-sdc2_d1          = port:PC09<3><1><3><default>
-sdc2_d2          = port:PC10<3><1><3><default>
-sdc2_d3          = port:PC11<3><1><3><default>
-sdc2_d4          = port:PC12<3><1><3><default>
-sdc2_d5          = port:PC13<3><1><3><default>
-sdc2_d6          = port:PC14<3><1><3><default>
-sdc2_d7          = port:PC15<3><1><3><default>
-sdc2_emmc_rst    = port:PC16<3><1><3><default>
-sunxi-power-save-mode =
+sdc2_used         	= 1
+non-removable	 	=
+bus-width	 	= 8
+sdc2_clk         	= port:PC05<3><1><3><default>
+sdc2_cmd         	= port:PC06<3><1><3><default>
+sdc2_d0          	= port:PC08<3><1><3><default>
+sdc2_d1          	= port:PC09<3><1><3><default>
+sdc2_d2          	= port:PC10<3><1><3><default>
+sdc2_d3          	= port:PC11<3><1><3><default>
+sdc2_d4          	= port:PC12<3><1><3><default>
+sdc2_d5          	= port:PC13<3><1><3><default>
+sdc2_d6          	= port:PC14<3><1><3><default>
+sdc2_d7         	= port:PC15<3><1><3><default>
+sdc2_emmc_rst    	= port:PC16<3><1><3><default>
+sunxi-power-save-mode 	=
 sunxi-dis-signal-vol-sw =
-;mmc-ddr-1_8v	   =
+;mmc-ddr-1_8v	   	=
 
-vmmc="none"
-vqmmc="none"
-vdmmc="none"
+vmmc			="none"
+vqmmc			="none"
+vdmmc			="none"
 
 ; ------------------------------------------------------------------------------|
 ; sim card configuration
