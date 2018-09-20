@@ -26,13 +26,5 @@ pack_bootloader()
   $TOPDIR/scripts/bootloader.sh $BOARD
 }
 
-
-if [[ $BOARD =~ "BPI-M2P" ]]
-then
-	BOARDS=`(cd sunxi-pack/chips/$MACH/configs ; ls -1d BPI*)`
-	for IN in $BOARDS ; do
-  	  pack_bootloader $IN
-	done
-else
-        pack_bootloader $BOARD
-fi
+echo "pack $BOARD"
+pack_bootloader $BOARD

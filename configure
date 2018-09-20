@@ -74,15 +74,14 @@ BOARD=$1
 
 case $BOARD in
   BPI-M2P*)
-    board="bpi"
+    board="bpi-m2p"
     ;;
   BPI-M2Z*)
-#    board="bpi-m2z"
-    board="bpi"
+    board="bpi-m2z"
     ;;
   BPI-M2U*)
     MACH=sun8iw11p1
-    board="bpi"
+    board="bpi-m2u"
     ;;
   *)
     board=$(echo $BOARD | tr '[A-Z]' '[a-z]')

@@ -32,10 +32,6 @@ u-boot:
 u-boot-clean:
 	$(Q)$(MAKE) -C u-boot-sunxi CROSS_COMPILE=$(U_CROSS_COMPILE) -j$J distclean
 
-## linux
-$(K_DOT_CONFIG): linux-sunxi
-	mkdir -p linux-sunxi/output/lib/firmware
-
 kernel:
 	$(Q)$(MAKE) -C linux-sunxi ARCH=arm $(KERNEL_CONFIG)
 	$(Q)$(MAKE) -C linux-sunxi ARCH=arm CROSS_COMPILE=${K_CROSS_COMPILE} -j$J INSTALL_MOD_PATH=output uImage dtbs modules

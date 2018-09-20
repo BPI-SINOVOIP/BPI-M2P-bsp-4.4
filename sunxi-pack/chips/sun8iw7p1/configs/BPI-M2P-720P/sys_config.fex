@@ -501,7 +501,7 @@ nand0_ndqs          = port:PC16<2><0><1><default>
 [boot_disp]
 output_disp  = 0
 output_type  = 3
-output_mode  = 10
+output_mode  = 5
 ;output_full = 1
 ;auto_hpd    = 1
 
@@ -521,7 +521,7 @@ disp_init_enable         = 1
 disp_mode                = 0
 
 screen0_output_type      = 3
-screen0_output_mode      = 10
+screen0_output_mode      = 5
 
 screen1_output_type      = 2
 screen1_output_mode      = 11

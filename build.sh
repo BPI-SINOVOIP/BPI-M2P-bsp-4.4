@@ -33,7 +33,7 @@ R="${SD}/BPI-ROOT"
 	#
 	## copy files to 100MB
 	#
-	cp -a $T/out/100MB/* $U
+	cp -a $T/out/100MB/${BOARD}-linux4.4-8k.img.gz $U
 	#cp -a $T/u-boot-sunxi/out/*.img.gz $U
 	#
 	## copy files to BPI-BOOT
@@ -107,15 +107,14 @@ T="$TOPDIR"
 case $BOARD in
   BPI-M2P*)
     board="bpi-m2p"
-#    kernel="3.4.113-BPI-M2P-Kernel"
     kernel="4.4.55-BPI-M2P-Kernel"
     headers="linux-headers-4.4.55-BPI-M2P-Kernel"
-    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/default/linux4.4
+    BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
     ;;
   BPI-M2Z*)
     board="bpi-m2z"
-#    kernel="3.4.113-BPI-M2Z-Kernel"
-    kernel="4.4.55-BPI-M2P-Kernel"
+    kernel="4.4.55-BPI-M2Z-Kernel"
+    headers="linux-headers-4.4.55-BPI-M2Z-Kernel"
     BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
     ;;
   BPI-M2U*)
@@ -125,7 +124,6 @@ case $BOARD in
     ;;
   *)
     board=$(echo $BOARD | tr '[A-Z]' '[a-z]')
-#    kernel="3.4.113-${BOARD}-Kernel"
     kernel="4.4.55-${BOARD}-Kernel"
     BOOT_PACK_P=$T/sunxi-pack/chips/${MACH}/configs/${BOARD}/linux4.4
     ;;
