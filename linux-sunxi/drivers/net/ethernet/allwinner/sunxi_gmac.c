@@ -26,6 +26,8 @@
 #include <linux/pinctrl/consumer.h>
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/crypto.h>
+#include <crypto/algapi.h>
+#include <crypto/hash.h>
 #include <linux/err.h>
 #include <linux/scatterlist.h>
 #include <linux/regulator/consumer.h>
@@ -181,7 +183,7 @@ static ssize_t adjust_bgs_show(struct device *dev, struct device_attribute *attr
 
 	if (priv->phy_ext == INT_PHY) {
 		value = readl(priv->base_phy) >> 28;
-		if (0 != sunxi_efuse_read(EFUSE_OEM_NAME, &efuse_value))
+		if (sunxi_efuse_read(EFUSE_OEM_NAME, &efuse_value) != 0)
 			pr_err("get PHY efuse fail!\n");
 		else
 #if defined(CONFIG_ARCH_SUN50IW2)
@@ -207,7 +209,7 @@ static ssize_t adjust_bgs_write(struct device *dev, struct device_attribute *att
 
 	if (priv->phy_ext == INT_PHY) {
 		clk_value &= ~(0xF << 28);
-		if (0 != sunxi_efuse_read(EFUSE_OEM_NAME, &efuse_value))
+		if (sunxi_efuse_read(EFUSE_OEM_NAME, &efuse_value) != 0)
 			pr_err("get PHY efuse fail!\n");
 		else
 #if defined(CONFIG_ARCH_SUN50IW2)
@@ -223,7 +225,7 @@ static ssize_t adjust_bgs_write(struct device *dev, struct device_attribute *att
 }
 
 static struct device_attribute adjust_reg[] = {
-	__ATTR(adjust_bgs, 0777, adjust_bgs_show, adjust_bgs_write),
+	__ATTR(adjust_bgs, 0664, adjust_bgs_show, adjust_bgs_write),
 };
 
 static int geth_create_attrs(struct net_device *ndev)
@@ -268,12 +270,12 @@ static ssize_t gphy_test_show(struct device *dev,
 {
 	struct net_device *ndev = dev_get_drvdata(dev);
 
-	if (dev == NULL) {
+	if (!dev) {
 		pr_err("Argment is invalid\n");
 		return 0;
 	}
 
-	if (ndev == NULL) {
+	if (!ndev) {
 		pr_err("Net device is null\n");
 		return 0;
 	}
@@ -295,12 +297,12 @@ static ssize_t gphy_test_store(struct device *dev,
 	int ret = 0;
 	u16 data = 0;
 
-	if (dev == NULL) {
+	if (!dev) {
 		pr_err("Argument is invalid\n");
 		return count;
 	}
 
-	if (ndev == NULL) {
+	if (!ndev) {
 		pr_err("Net device is null\n");
 		return count;
 	}
@@ -341,7 +343,7 @@ static int geth_power_on(struct geth_priv *priv)
 		for (i = 0; i < POWER_CHAN_NUM; i++) {
 			if (IS_ERR_OR_NULL(priv->gmac_power[i]))
 				continue;
-			if (0 != regulator_enable(priv->gmac_power[i])) {
+			if (regulator_enable(priv->gmac_power[i]) != 0) {
 				pr_err("gmac-power%d enable error\n", i);
 				return -EINVAL;
 			}
@@ -435,7 +437,6 @@ static void geth_adjust_link(struct net_device *ndev)
 			priv->speed = phydev->speed;
 		}
 
-
 		if (priv->link == 0) {
 			new_state = 1;
 			priv->link = phydev->link;
@@ -472,16 +473,16 @@ static int geth_phy_init(struct net_device *ndev)
 		goto resume;
 
 	/* Fixup the phy interface type */
-	if (priv->phy_ext == INT_PHY)
+	if (priv->phy_ext == INT_PHY) {
 		priv->phy_interface = PHY_INTERFACE_MODE_MII;
-	else {
+	} else {
 		/* If config gpio to reset the phy device, we should reset it */
 		if (gpio_is_valid(priv->phyrst)) {
 			gpio_direction_output(priv->phyrst,
-					      priv->rst_active_low);
+					priv->rst_active_low);
 			msleep(50);
 			gpio_direction_output(priv->phyrst,
-					      !priv->rst_active_low);
+					!priv->rst_active_low);
 			msleep(50);
 		}
 	}
@@ -519,6 +520,7 @@ static int geth_phy_init(struct net_device *ndev)
 			}
 		}
 	}
+
 	if (!phydev) {
 		netdev_err(ndev, "No PHY found!\n");
 		goto err;
@@ -565,7 +567,6 @@ resume:
 		phy_write(phydev, 0x17, phy_read(phydev, 0x17) & (~(1<<3)));
 		phy_write(phydev, 0x1f, 0x0000); /* switch to page 0 */
 	}
-
 	if (priv->is_suspend)
 		phy_init_hw(phydev);
 
@@ -771,6 +772,8 @@ static int geth_suspend(struct device *dev)
 	struct net_device *ndev = dev_get_drvdata(dev);
 	struct geth_priv *priv = netdev_priv(ndev);
 
+	cancel_work_sync(&priv->eth_work);
+
 	if (!ndev || !netif_running(ndev))
 		return 0;
 
@@ -782,10 +785,8 @@ static int geth_suspend(struct device *dev)
 
 	geth_stop(ndev);
 
-	if (EXT_PHY == priv->phy_ext)
+	if (priv->phy_ext == EXT_PHY)
 		geth_select_gpio_state(priv->pinctrl, PINCTRL_STATE_SLEEP);
-
-	cancel_work_sync(&priv->eth_work);
 
 	return 0;
 }
@@ -799,7 +800,7 @@ static void geth_resume_work(struct work_struct *work)
 	if (!netif_running(ndev))
 		return;
 
-	if (EXT_PHY == priv->phy_ext)
+	if (priv->phy_ext == EXT_PHY)
 		geth_select_gpio_state(priv->pinctrl, PINCTRL_STATE_DEFAULT);
 
 	spin_lock(&priv->lock);
@@ -841,14 +842,14 @@ static const struct dev_pm_ops geth_pm_ops = {
 static const struct dev_pm_ops geth_pm_ops;
 #endif /* CONFIG_PM */
 
-#define sunxi_get_soc_chipid(x) {}
+/*#define sunxi_get_soc_chipid(x) {}*/
 static void geth_chip_hwaddr(u8 *addr)
 {
 #define MD5_SIZE	16
 #define CHIP_SIZE	16
 
-	struct crypto_hash *tfm;
-	struct hash_desc desc;
+	struct crypto_ahash *tfm;
+	struct ahash_request *req;
 	struct scatterlist sg;
 	u8 result[MD5_SIZE];
 	u8 chipid[CHIP_SIZE];
@@ -860,32 +861,39 @@ static void geth_chip_hwaddr(u8 *addr)
 
 	sunxi_get_soc_chipid((u8 *)chipid);
 
-	tfm = crypto_alloc_hash("md5", 0, CRYPTO_ALG_ASYNC);
+	tfm = crypto_alloc_ahash("md5", 0, CRYPTO_ALG_ASYNC);
 	if (IS_ERR(tfm)) {
 		pr_err("Failed to alloc md5\n");
 		return;
 	}
-	desc.tfm = tfm;
-	desc.flags = 0;
 
-	ret = crypto_hash_init(&desc);
-	if (ret < 0) {
-		pr_err("crypto_hash_init() failed\n");
+	req = ahash_request_alloc(tfm, GFP_KERNEL);
+	if (!req)
+		goto out;
+
+	ahash_request_set_callback(req, 0, NULL, NULL);
+
+	ret = crypto_ahash_init(req);
+	if (ret) {
+		pr_err("crypto_ahash_init() failed\n");
 		goto out;
 	}
 
 	sg_init_one(&sg, chipid, sizeof(chipid) - 1);
-	ret = crypto_hash_update(&desc, &sg, sizeof(chipid) - 1);
-	if (ret < 0) {
-		pr_err("crypto_hash_update() failed for id\n");
+	ahash_request_set_crypt(req, &sg, result, sizeof(chipid) - 1);
+	ret = crypto_ahash_update(req);
+	if (ret) {
+		pr_err("crypto_ahash_update() failed for id\n");
 		goto out;
 	}
 
-	crypto_hash_final(&desc, result);
-	if (ret < 0) {
-		pr_err("crypto_hash_final() failed for result\n");
+	ret = crypto_ahash_final(req);
+	if (ret) {
+		pr_err("crypto_ahash_final() failed for result\n");
 		goto out;
 	}
+
+	ahash_request_free(req);
 
 	/* Choose md5 result's [0][2][4][6][8][10] byte as mac address */
 	for (i = 0; i < ETH_ALEN; i++)
@@ -894,7 +902,7 @@ static void geth_chip_hwaddr(u8 *addr)
 	addr[0] |= 0x02; /* set local assignment bit (IEEE802) */
 
 out:
-	crypto_free_hash(tfm);
+	crypto_free_ahash(tfm);
 }
 
 static void geth_check_addr(struct net_device *ndev, unsigned char *mac)
@@ -926,7 +934,7 @@ static void geth_clk_enable(struct geth_priv *priv)
 		pr_err("try to enable geth_clk failed!\n");
 
 	if (((priv->phy_ext == INT_PHY) || g_use_ephy_clk)
-			&&  !IS_ERR_OR_NULL(priv->ephy_clk)) {
+			&& !IS_ERR_OR_NULL(priv->ephy_clk)) {
 		if (clk_prepare_enable(priv->ephy_clk))
 			pr_err("try to enable ephy_clk failed!\n");
 	}
@@ -969,7 +977,7 @@ static void geth_clk_enable(struct geth_priv *priv)
 static void geth_clk_disable(struct geth_priv *priv)
 {
 	if (((priv->phy_ext == INT_PHY) || g_use_ephy_clk)
-			&&  !IS_ERR_OR_NULL(priv->ephy_clk))
+			&& !IS_ERR_OR_NULL(priv->ephy_clk))
 		clk_disable_unprepare(priv->ephy_clk);
 
 	clk_disable_unprepare(priv->geth_clk);
@@ -1044,7 +1052,7 @@ static int geth_open(struct net_device *ndev)
 	if (ret)
 		goto err;
 
-	ret = sunxi_mac_reset((void *)priv->base, &sunxi_udelay, 10000);
+	ret = sunxi_mac_reset((void *)priv->base, &sunxi_udelay, 50000);
 	if (ret) {
 		netdev_err(ndev, "Initialize hardware error\n");
 		goto desc_err;
@@ -1098,8 +1106,6 @@ err:
 	geth_clk_disable(priv);
 	if (priv->is_suspend)
 		napi_enable(&priv->napi);
-
-	geth_power_off(priv);
 
 	return ret;
 }
@@ -1656,7 +1662,7 @@ static int geth_hw_init(struct platform_device *pdev)
 	int ret = 0;
 	struct resource *res;
 	u32 value;
-	struct gpio_config  cfg;
+	struct gpio_config cfg;
 	const char *gmac_power;
 	char power[20];
 	int i;
@@ -1775,6 +1781,7 @@ static int geth_hw_init(struct platform_device *pdev)
 	if (EXT_PHY == priv->phy_ext) {
 		priv->phyrst = of_get_named_gpio_flags(np, "phy-rst", 0, (enum of_gpio_flags *)&cfg);
 		priv->rst_active_low = (cfg.data == OF_GPIO_ACTIVE_LOW) ? 1 : 0;
+
 		if (gpio_is_valid(priv->phyrst)) {
 			if (gpio_request(priv->phyrst, "phy-rst") < 0) {
 				pr_err("gmac gpio request fail!\n");
@@ -1846,7 +1853,6 @@ static void geth_hw_release(struct platform_device *pdev)
 
 		if (gpio_is_valid(priv->phyrst))
 			gpio_free(priv->phyrst);
-
 	}
 
 	if (!IS_ERR_OR_NULL(priv->ephy_clk))
