@@ -23,6 +23,9 @@ clean: u-boot-clean kernel-clean
 pack: sunxi-pack
 	$(Q)scripts/mk_pack.sh
 
+install:
+	$(Q)scripts/mk_install_sd.sh
+
 u-boot:
 	$(Q)$(MAKE) -C u-boot-sunxi $(MACH)_config CROSS_COMPILE=$(U_CROSS_COMPILE) -j$J
 	$(Q)$(MAKE) -C u-boot-sunxi all CROSS_COMPILE=$(U_CROSS_COMPILE) -j$J
