@@ -279,7 +279,9 @@ static int initr_serial(void)
 #ifdef CONFIG_AUTO_UPDATE
 extern int auto_update_check(void);
 #endif
+#ifdef CONFIG_WIDEVINE_KEY_INSTALL
 extern int sunxi_widevine_keybox_install(void);
+#endif
 extern void mem_noncache_malloc_init(uint noncache_start, uint noncache_size);
 static int initr_malloc(void)
 {
