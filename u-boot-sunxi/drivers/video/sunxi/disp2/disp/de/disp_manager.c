@@ -410,7 +410,7 @@ static s32 disp_lyr_save_and_dirty_check(struct disp_layer *lyr,
 			(pre_config->info.screen_win.width != config->info.screen_win.width) ||
 			(pre_config->info.screen_win.height != config->info.screen_win.height))
 			lyrp->cfg->flag |= LAYER_SIZE_DIRTY;
-			lyrp->cfg->flag = LAYER_ALL_DIRTY;
+		lyrp->cfg->flag = LAYER_ALL_DIRTY;
 		__disp_config_transfer2inner(&lyrp->cfg->config, config);
 	} else {
 		DE_INF("cfg is NULL\n");

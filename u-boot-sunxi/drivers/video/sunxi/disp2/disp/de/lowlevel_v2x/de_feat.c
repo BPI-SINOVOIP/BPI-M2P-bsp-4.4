@@ -146,6 +146,7 @@ static const struct de_feat sun8iw7_de_features = {
 
 #endif /*endif CONFIG_ARCH_SUN8IW7P1 */
 
+#if defined(CONFIG_ARCH_SUN50IW2P1)
 static const int sun50iw2_de_num_chns[] = {
 	/* DISP0 */
 	4,
@@ -290,7 +291,9 @@ static const struct de_feat sun50iw2_de_features = {
 	.scale_line_buffer_rgb = sun50iw2_de_scale_line_buffer_rgb,
 	.scale_line_buffer_ed = sun50iw2_de_scale_line_buffer_ed,
 };
+#endif
 
+#if defined(CONFIG_ARCH_SUN50IW1P1)
 static const int sun50iw1_de_num_chns[] = {
 	/* DISP0 */
 	4,
@@ -431,7 +434,9 @@ static const struct de_feat sun50iw1_de_features = {
 	.scale_line_buffer_rgb = sun50iw1_de_scale_line_buffer_rgb,
 	.scale_line_buffer_ed = sun50iw1_de_scale_line_buffer_ed,
 };
+#endif
 
+#if defined(CONFIG_ARCH_SUN8IW11P1)
 static const int sun8iw11_de_num_chns[] = {
 	/* DISP0 */
 	4,
@@ -576,7 +581,9 @@ static const struct de_feat sun8iw11_de_features = {
 	.scale_line_buffer_rgb = sun8iw11_de_scale_line_buffer_rgb,
 	.scale_line_buffer_ed = sun8iw11_de_scale_line_buffer_ed,
 };
+#endif
 
+#if defined(CONFIG_ARCH_SUN8IW17P1)
 static const int sun8iw17_de_num_chns[] = {
 	/* DISP0 */
 	4,
@@ -719,7 +726,9 @@ static const struct de_feat sun8iw17_de_features = {
 	.scale_line_buffer_rgb = sun8iw17_de_scale_line_buffer_rgb,
 	.scale_line_buffer_ed = sun8iw17_de_scale_line_buffer_ed,
 };
+#endif
 
+#if 0
 static const int default_de_num_chns[] = {
 	/* DISP0 */
 	4,
@@ -860,6 +869,7 @@ static const struct de_feat default_de_features = {
 	.scale_line_buffer_rgb = default_de_scale_line_buffer_rgb,
 	.scale_line_buffer_ed = default_de_scale_line_buffer_ed,
 };
+#endif
 
 int de_feat_get_num_screens(void)
 {
