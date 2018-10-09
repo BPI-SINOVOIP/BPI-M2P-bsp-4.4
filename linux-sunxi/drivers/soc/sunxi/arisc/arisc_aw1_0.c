@@ -20,6 +20,8 @@
 #include "arisc_i.h"
 #include <linux/sunxi-sid.h>
 #include <linux/sunxi-smc.h>
+#include <linux/sunxi-gpio.h>
+#include <linux/of_gpio.h>
 
 #if defined CONFIG_ARCH_SUN8IW7P1
 #include <asm/firmware.h>
@@ -1241,18 +1243,128 @@ u32 sunxi_load_arisc(void *image, u32 image_size, void *para, u32 para_size)
 #endif
 
 #ifdef CONFIG_ARCH_SUN8IW7P1
+#define ARISC_DVFS_VF_TABLE_MAX (16)
+typedef struct arisc_freq_voltage
+{
+	u32 freq;		//cpu frequency
+	u32 voltage;	//voltage for the frequency
+	u32 axi_div;	//the divide ratio of axi bus
+};
+
+static struct arisc_freq_voltage arisc_vf_table[ARISC_DVFS_VF_TABLE_MAX] =
+{
+	//freq          //voltage   //axi_div
+	{900000000,     1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (600Mhz, 1008Mhz]
+	{600000000,     1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (420Mhz, 600Mhz]
+	{420000000,     1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (360Mhz, 420Mhz]
+	{360000000,     1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (300Mhz, 360Mhz]
+	{300000000,     1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (240Mhz, 300Mhz]
+	{240000000,     1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (120Mhz, 240Mhz]
+	{120000000,     1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (60Mhz,  120Mhz]
+	{60000000,      1200,       3}, //cpu0 vdd is 1.20v if cpu freq is (0Mhz,   60Mhz]
+	{0,             1200,       3}, //end of cpu dvfs table
+	{0,             1200,       3}, //end of cpu dvfs table
+	{0,             1200,       3}, //end of cpu dvfs table
+	{0,             1200,       3}, //end of cpu dvfs table
+	{0,             1200,       3}, //end of cpu dvfs table
+	{0,             1200,       3}, //end of cpu dvfs table
+	{0,             1200,       3}, //end of cpu dvfs table
+	{0,             1200,       3}, //end of cpu dvfs table
+};
+
+/* [pmuic_type]:0~2, 0:none, 1:gpio, 2:i2c
+ * [gpio0_cfg ]:bit0~15:gpio num, bit16:used
+ * [gpio1_cfg ]:bit0~15:gpio num, bit16:used
+ * [pmu_level0]:bit0~15:voltage(mV), bit16~19:gpio0 state, bit20~23:gpio1 state
+ * [pmu_level1]:bit0~15:voltage(mV), bit16~19:gpio0 state, bit20~23:gpio1 state
+ * [pmu_level2]:bit0~15:voltage(mV), bit16~19:gpio0 state, bit20~23:gpio1 state
+ * [pmu_level3]:bit0~15:voltage(mV), bit16~19:gpio0 state, bit20~23:gpio1 state
+ */
+#define GPIO_USED_CFG(x) ((x) | (1<<16))
+#define VOL_LEVEL_CFG(x) ((x)%10000) | ((((x)/10000)%10)<<16) | ((((x)/100000)%10)<<20)
+
 static int arisc_pmu_config(void)
 {
 	int result = 0;
 	unsigned int pmu_type;
 	struct device_node *pmu_config_node = NULL;
 	struct arisc_message *pmessage;
+	int    vf_table_size = 0;
+	int    index = 0;
+	u32    value = 0;
+	int pin_count = 0;
+	struct gpio_config pin_cfg;
+	char pin_name[64];
+	char   vf_table_sub_key[64];
+	u32 script_val;
+	unsigned long config;
+	char gpio_name[32];
 
 	/* allocate a message frame */
 	pmessage = arisc_message_allocate(ARISC_MESSAGE_ATTR_HARDSYN);
 	if (pmessage == NULL) {
 		ARISC_WRN("allocate message failed\n");
 		return -ENOMEM;
+	}
+
+	pmu_config_node = of_find_node_by_type(NULL, "dvfs_table");
+	if (pmu_config_node == NULL) {
+		arisc_message_free(pmessage);
+		ARISC_ERR("pmu config get node error\n");
+		return -EINVAL;
+	}
+
+	/* parse system config v-f table information */
+	if (of_property_read_u32(pmu_config_node, "lv_count", &vf_table_size)) {
+		ARISC_WRN("parse system config dvfs_table size fail\n");
+	}
+	for (index = 0; index < vf_table_size; index++) {
+		sprintf(vf_table_sub_key, "lv%d_freq", index + 1);
+		if (of_property_read_u32(pmu_config_node, vf_table_sub_key, &value) == 0) {
+			arisc_vf_table[index].freq = value;
+		}
+		sprintf(vf_table_sub_key, "lv%d_volt", index + 1);
+		if (of_property_read_u32(pmu_config_node, vf_table_sub_key, &value) == 0) {
+			if (value < 1100) {
+				value = 1100;
+			}
+			arisc_vf_table[index].voltage = value;
+		}
+	}
+	/* allocate a message frame */
+	pmessage = arisc_message_allocate(ARISC_MESSAGE_ATTR_HARDSYN);
+	if (pmessage == NULL) {
+		ARISC_WRN("allocate message failed\n");
+		return -ENOMEM;
+	}
+	for (index = 0; index < ARISC_DVFS_VF_TABLE_MAX; index++) {
+		/* initialize message
+		 *
+		 * |paras[0]|paras[1]|paras[2]|paras[3]|paras[4]|
+		 * | index  |  freq  |voltage |axi_div |  pll  |
+		 */
+		pmessage->type       = ARISC_CPUX_DVFS_CFG_VF_REQ;
+		pmessage->paras[0]   = index;
+		pmessage->paras[1]   = arisc_vf_table[index].freq;
+		pmessage->paras[2]   = arisc_vf_table[index].voltage;
+		pmessage->paras[3]   = arisc_vf_table[index].axi_div;
+		pmessage->paras[4]   = 0;
+		pmessage->state      = ARISC_MESSAGE_INITIALIZED;
+		pmessage->cb.handler = NULL;
+		pmessage->cb.arg     = NULL;
+
+		ARISC_INF("v-f table: index %d freq %d vol %d axi_div %d\n",
+		pmessage->paras[0], pmessage->paras[1], pmessage->paras[2], pmessage->paras[3]);
+
+		/* send request message */
+		arisc_hwmsgbox_send_message(pmessage, ARISC_SEND_MSG_TIMEOUT);
+
+		//check config fail or not
+		if (pmessage->result) {
+			ARISC_WRN("config dvfs v-f table [%d] fail\n", index);
+			result = -EINVAL;
+			break;
+		}
 	}
 
 /* [pmuic_type]:0~2, 0:none, 1:gpio, 2:i2c
@@ -1264,13 +1376,6 @@ static int arisc_pmu_config(void)
  * [pmu_level3]:bit0~15:voltage(mV), bit16~19:gpio0 state, bit20~23:gpio1 state
  */
 	/*get pmuic type */
-	pmu_config_node = of_find_node_by_type(NULL, "dvfs_table");
-	if (pmu_config_node == NULL) {
-		arisc_message_free(pmessage);
-		ARISC_ERR("pmu config get node error\n");
-		return -EINVAL;
-	}
-
 	if (of_property_read_u32(pmu_config_node, "pmuic_type", &pmu_type)) {
 		arisc_message_free(pmessage);
 		ARISC_ERR("pmu config get type error\n");
@@ -1279,13 +1384,45 @@ static int arisc_pmu_config(void)
 
 	pmessage->paras[0] = pmu_type;
 
-	if (pmessage->paras[0] != 0) {
-		arisc_message_free(pmessage);
-		ARISC_ERR("pmu has the wrong type\n");
-		return -EINVAL;
+	if (pmessage->paras[0] != 1) /* not gpio pmu */
+		goto out;
 
+	/* get gpio config */
+	pmessage->paras[1] = 0;
+	pmessage->paras[2] = 0;
+
+	//of_property_read_u32(pmu_config_node, "pin_count", &pin_count);
+	pin_count = 1;
+	for (index = 0; index < pin_count; index++) {
+		sprintf(gpio_name, "pmu_gpio%d", index);
+		pin_cfg.gpio = of_get_named_gpio_flags(pmu_config_node, gpio_name, 0, (enum of_gpio_flags *)&pin_cfg);
+		if (!gpio_is_valid(pin_cfg.gpio)) {
+			ARISC_INF("this gpio is invalid: %d\n", pin_cfg.gpio);
+			goto out;
+		}
+		if (gpio_direction_output(pin_cfg.gpio, pin_cfg.data)) {
+			ARISC_INF("fail gpio_direction_output: %d\n", pin_cfg.gpio);
+			goto out;
+		}
+
+		/* NOTE: only used PL, the gpio group info. is discard */
+		pmessage->paras[1 + index] = GPIO_USED_CFG((pin_cfg.gpio) % SUNXI_BANK_SIZE);
+		printk("%s,%d,id:%d,num:%d,reg:%x\n", __func__, __LINE__, index, \
+		          pin_cfg.gpio, pmessage->paras[1 + index]);
 	}
 
+	if (pin_count < 2) /* only gpio0 used */
+		vf_table_size = 2;
+	else
+		vf_table_size = 4;
+
+	for (index = 0; index < vf_table_size; index++) {
+		sprintf(vf_table_sub_key, "pmu_level%d", index);
+		if (of_property_read_u32(pmu_config_node, vf_table_sub_key, &script_val))
+			goto out;
+		pmessage->paras[3 + index] = VOL_LEVEL_CFG(script_val);
+	}
+out:
 	pmessage->type = ARISC_CPUX_DVFS_CFG_REQ;
 	pmessage->state = ARISC_MESSAGE_INITIALIZED;
 	pmessage->cb.handler = NULL;
@@ -1390,12 +1527,10 @@ static void sunxi_rest_cfg(void)
 		ARISC_WRN("config dram paras failed\n");
 	}
 
-	if (!pm_power_off) {
+	if (!pm_power_off)
 		pm_power_off = arisc_power_off;
-		ARISC_LOG("arisc pm_power_off registed\n");
-	}
 	else
-		ARISC_LOG("pm_power_off aleardy been registered!\n");
+		ARISC_WRN("pm_power_off aleardy been registered!\n");
 }
 #else
 static void sunxi_rest_cfg(void)

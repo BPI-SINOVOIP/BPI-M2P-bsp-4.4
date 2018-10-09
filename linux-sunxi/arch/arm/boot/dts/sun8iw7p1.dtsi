@@ -144,41 +144,47 @@
 
 			opp00 {
 				opp-hz = /bits/ 64 <480000000>;
-				opp-microvolt = <1300000>;
+				opp-microvolt = <1100000>;
 				axi-bus-divide-ratio = <3>;
 				clock-latency-ns = <2000000>;
 			};
 
 			opp01 {
 				opp-hz = /bits/ 64 <648000000>;
-				opp-microvolt = <1300000>;
+				opp-microvolt = <1100000>;
 				axi-bus-divide-ratio = <3>;
 				clock-latency-ns = <2000000>;
 			};
 
 			opp02 {
 				opp-hz = /bits/ 64 <720000000>;
-				opp-microvolt = <1300000>;
+				opp-microvolt = <1100000>;
 				axi-bus-divide-ratio = <3>;
 				clock-latency-ns = <2000000>;
 			};
 
 			opp03 {
 				opp-hz = /bits/ 64 <816000000>;
-				opp-microvolt = <1300000>;
+				opp-microvolt = <1100000>;
 				axi-bus-divide-ratio = <3>;
 				clock-latency-ns = <2000000>;
 			};
 
 			opp04 {
 				opp-hz = /bits/ 64 <912000000>;
-				opp-microvolt = <1300000>;
+				opp-microvolt = <1100000>;
 				axi-bus-divide-ratio = <3>;
 				clock-latency-ns = <2000000>;
 			};
 
 			opp05 {
 				opp-hz = /bits/ 64 <1008000000>;
+				opp-microvolt = <1200000>;
+				axi-bus-divide-ratio = <3>;
+				clock-latency-ns = <2000000>;
+			};
+			opp06 {
+				opp-hz = /bits/ 64 <1200000000>;
 				opp-microvolt = <1300000>;
 				axi-bus-divide-ratio = <3>;
 				clock-latency-ns = <2000000>;
@@ -300,7 +306,7 @@
 	};
 
 	pmu {
-		compatible = "arm,armv8-pmuv3";
+		compatible = "arm,cortex-a7-pmu";
 		interrupts = <GIC_SPI 120 4>,
 			     <GIC_SPI 121 4>,
 			     <GIC_SPI 122 4>,
@@ -1558,17 +1564,17 @@
 						hysteresis = <0>;
 					};
 					gpu_trip0:t3{
-						temperature = <90>;
+						temperature = <80>;
 						type = "passive";
 						hysteresis = <0>;
 					};
 					gpu_trip1:t4{
-						temperature = <100>;
+						temperature = <90>;
 						type = "passive";
 						hysteresis = <0>;
 					};
 					gpu_trip2:t5{
-						temperature = <110>;
+						temperature = <100>;
 						type = "passive";
 						hysteresis = <0>;
 					};
@@ -1638,13 +1644,14 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			autorepeat = <0>;
+			status = "disable";
 
-		power_button {
-			label = "power_button";
-			gpios = <&r_pio PL 3 0 1 1 1>;
-			linux,code = <0x74>;
-			gpio-key,wakeup;
-			debounce-interval = <10>;
+			power_button {
+				label = "power_button";
+				gpios = <&r_pio PL 3 0 1 1 1>;
+				linux,code = <0x74>;
+				gpio-key,wakeup;
+				debounce-interval = <10>;
 			};
 		};
 

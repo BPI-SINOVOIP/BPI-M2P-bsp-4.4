@@ -1163,13 +1163,13 @@ ir_tx               = port:PH07<2><default><default><default>
 ;
 ;----------------------------------------------------------------------------------
 [dvfs_table]
-pmuic_type	  = 0
-pmu_gpio0         = port:PL01<1><1><2><1>
+pmuic_type	  = 1
+pmu_gpio0         = port:PL1<1><1><2><1>
 pmu_level0        = 11300
 pmu_level1        = 01100
 
-;extremity_freq   = 1344000000
-max_freq 	  = 1008000000
+extremity_freq 	  = 1344000000
+max_freq 	  = 1200000000
 min_freq 	  = 480000000
 boot_freq 	  = 1008000000
 
@@ -1179,7 +1179,7 @@ lv1_freq 	  = 1200000000
 lv1_volt 	  = 1300
 
 lv2_freq 	  = 1008000000
-lv2_volt 	  = 1300
+lv2_volt 	  = 1200
 
 lv3_freq 	  = 912000000
 lv3_volt 	  = 1100
@@ -1255,7 +1255,7 @@ s_uart_rx         = port:PL03<2><default><default><default>
 ;s_rsb_used  --s_rsb0 whether used for arisc
 ;----------------------------------------------------------------------------------
 [s_rsb0]
-s_rsb_used        = 1
+s_rsb_used        = 0
 s_rsb_sck         = port:PL00<2><1><2><default>
 s_rsb_sda         = port:PL01<2><1><2><default>
 
