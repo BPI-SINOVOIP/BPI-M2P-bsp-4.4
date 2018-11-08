@@ -798,6 +798,7 @@ sdc0_d2            = port:PF05<2><1><2><default>
 cd-gpios           = port:PF06<0><1><2><default>
 ;wp-gpios          = port:PG01<0><1><3><default>
 
+cd-inverted 	      =
 sunxi-power-save-mode =
 vmmc="vcc-card"
 vqmmc="vcc-pf"
