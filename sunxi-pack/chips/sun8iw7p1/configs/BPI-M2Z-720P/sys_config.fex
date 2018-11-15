@@ -625,7 +625,7 @@ pwm_positive        = port:PA06<3><0><default><default>
 ;   PD05  *                 PD11   *           *    PD17   *           *       ;
 ;------------------------------------------------------------------------------;
 [gmac0]
-gmac0_used         = 0
+gmac0_used         = 1
 phy-mode           = "rgmii"
 gmac_rxd3          = port:PD00<2><default><3><default>
 gmac_rxd2          = port:PD01<2><default><3><default>
