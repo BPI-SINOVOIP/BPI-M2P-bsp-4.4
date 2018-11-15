@@ -503,7 +503,7 @@ nand0_ndqs          = port:PC16<2><0><1><default>
 [boot_disp]
 output_disp  = 0
 output_type  = 3
-output_mode  = 5
+output_mode  = 10
 ;output_full = 1
 ;auto_hpd    = 1
 
@@ -523,13 +523,13 @@ disp_init_enable         = 1
 disp_mode                = 0
 
 screen0_output_type      = 3
-screen0_output_mode      = 5
+screen0_output_mode      = 10
 
 screen1_output_type      = 2
 screen1_output_mode      = 11
 
 dev0_output_type = 4
-dev0_output_mode = 4
+dev0_output_mode = 10
 dev0_screen_id = 0
 dev0_do_hpd = 1
 
@@ -545,8 +545,8 @@ hdmi_mode_check = 1
 disp_para_zone           = 1
 
 fb0_format               = 0
-fb0_width                = 1280
-fb0_height               = 720
+fb0_width                = 1920
+fb0_height               = 1080
 
 fb1_format               = 0
 fb1_width                = 0
