@@ -1164,41 +1164,37 @@ ir_tx               = port:PH07<2><default><default><default>
 ;
 ;----------------------------------------------------------------------------------
 [dvfs_table]
-pmuic_type	  = 0
+pmuic_type	  = 1
 pmu_gpio0         = port:PL01<1><1><2><1>
 pmu_level0        = 11300
-pmu_level1        = 01100
+pmu_level1        = 1100
 
-;extremity_freq   = 1344000000
-max_freq 	  = 1008000000
+max_freq 	  = 1200000000
 min_freq 	  = 480000000
-boot_freq 	  = 1008000000
 
-lv_count 	  = 8
+lv_count 	  = 0
 
-lv1_freq 	  = 1200000000
-lv1_volt 	  = 1300
+;lv1_freq 	  = 1200000000
+;lv1_volt 	  = 1300
 
-lv2_freq 	  = 1008000000
-lv2_volt 	  = 1300
+;lv2_freq 	  = 1008000000
+;lv2_volt 	  = 1300
 
-lv3_freq 	  = 912000000
-lv3_volt 	  = 1100
+;lv3_freq 	  = 912000000
+;lv3_volt 	  = 1100
 
-lv4_freq 	  = 648000000
-lv4_volt 	  = 1100
+;lv4_freq 	  = 816000000
+;lv4_volt 	  = 1100
 
-lv5_freq 	  = 480000000
-lv5_volt 	  = 1100
+;lv5_freq 	  = 720000000
+;lv5_volt 	  = 1100
 
-lv6_freq 	  = 0
-lv6_volt 	  = 1100
+;lv6_freq 	  = 648000000
+;lv6_volt 	  = 1100
 
-lv7_freq 	  = 0
-lv7_volt 	  = 1100
+;lv7_freq 	  = 480000000
+;lv7_volt 	  = 1100
 
-lv8_freq 	  = 0
-lv8_volt 	  = 1100
 
 [gpu_dvfs_table]
 
@@ -1256,7 +1252,7 @@ s_uart_rx         = port:PL03<2><default><default><default>
 ;s_rsb_used  --s_rsb0 whether used for arisc
 ;----------------------------------------------------------------------------------
 [s_rsb0]
-s_rsb_used        = 1
+s_rsb_used        = 0
 s_rsb_sck         = port:PL00<2><1><2><default>
 s_rsb_sda         = port:PL01<2><1><2><default>
 

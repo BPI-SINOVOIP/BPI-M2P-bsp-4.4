@@ -179,7 +179,7 @@
 
 			opp05 {
 				opp-hz = /bits/ 64 <1008000000>;
-				opp-microvolt = <1200000>;
+				opp-microvolt = <1300000>;
 				axi-bus-divide-ratio = <3>;
 				clock-latency-ns = <2000000>;
 			};
@@ -317,23 +317,21 @@
 		compatible = "allwinner,dvfs_table";
 		max_freq = <1200000000>;
 		min_freq = <480000000>;
-		lv_count = <8>;
-		lv1_freq = <1200000000>;
+		lv_count = <0>;
+		/*lv1_freq = <1200000000>;
 		lv1_volt = <1300>;
-		lv2_freq = <1104000000>;
-		lv2_volt = <1240>;
-		lv3_freq = <1008000000>;
-		lv3_volt = <1160>;
-		lv4_freq = <912000000>;
+		lv2_freq = <1008000000>;
+		lv2_volt = <1300>;
+		lv3_freq = <912000000>;
+		lv3_volt = <1100>;
+		lv4_freq = <816000000>;
 		lv4_volt = <1100>;
 		lv5_freq = <720000000>;
-		lv5_volt = <1000>;
-		lv6_freq = <0>;
-		lv6_volt = <1000>;
-		lv7_freq = <0>;
-		lv7_volt = <1000>;
-		lv8_freq = <0>;
-		lv8_volt = <1000>;
+		lv5_volt = <1100>;
+		lv6_freq = <648000000>;
+		lv6_volt = <1100>;
+		lv7_freq = <480000000>;
+		lv7_volt = <1100>;*/
 	};
 
 	dramfreq {
