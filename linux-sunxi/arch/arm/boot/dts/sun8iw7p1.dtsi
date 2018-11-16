@@ -1642,7 +1642,7 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			autorepeat = <0>;
-			status = "disable";
+			status = "okay";
 
 			power_button {
 				label = "power_button";
