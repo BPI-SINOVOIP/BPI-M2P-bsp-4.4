@@ -927,6 +927,10 @@ s32 bsp_disp_get_screen_width_from_output_type(u32 disp, u32 output_type,
 			width = 1920;
 			height = 1200;
 			break;
+		case DISP_TV_MOD_1024_600P:
+			width = 1024;
+			height = 600;
+			break;
 		}
 	}
 	/* FIXME: add other output device res */
@@ -1019,6 +1023,10 @@ s32 bsp_disp_get_screen_height_from_output_type(u32 disp, u32 output_type,
 		case DISP_VGA_MOD_1920_1200P_60:
 			width = 1920;
 			height = 1200;
+			break;
+		case DISP_TV_MOD_1024_600P:
+			width = 1024;
+			height = 600;
 			break;
 		}
 	}
