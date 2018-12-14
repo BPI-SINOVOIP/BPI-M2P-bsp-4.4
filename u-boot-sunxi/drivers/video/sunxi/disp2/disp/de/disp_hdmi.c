@@ -18,6 +18,7 @@ struct disp_device_private_data {
 	u32 irq_no;
 
 	struct clk *clk;
+	struct clk *clk_parent;
 };
 
 static u32 hdmi_used = 0;
@@ -62,6 +63,9 @@ static s32 hdmi_clk_init(struct disp_device *hdmi)
 	    return DIS_FAIL;
 	}
 
+	if (hdmip->clk)
+		hdmip->clk_parent = clk_get_parent(hdmip->clk);
+
 	return 0;
 }
 
@@ -77,24 +81,84 @@ static s32 hdmi_clk_exit(struct disp_device *hdmi)
 	return 0;
 }
 
+static bool hdmi_is_divide_by(unsigned long dividend,
+			       unsigned long divisor)
+{
+	bool divide = false;
+	unsigned long temp;
+
+	if (divisor == 0)
+		goto exit;
+
+	temp = dividend / divisor;
+	if (dividend == (temp * divisor))
+		divide = true;
+
+exit:
+	return divide;
+}
+
 static s32 hdmi_clk_config(struct disp_device *hdmi)
 {
 	struct disp_device_private_data *hdmip = disp_hdmi_get_priv(hdmi);
-	unsigned long rate = 0;
+	unsigned long rate = 0, rate_set = 0;
+	unsigned long rate_round, rate_parent;
+	int i;
+	
+	printf("%s, %d\n", __func__, __LINE__);
 
 	if (!hdmi || !hdmip) {
 	    DE_WRN("hdmi clk init null hdl!\n");
 	    return DIS_FAIL;
 	}
-	rate = hdmip->video_info->pixel_clk * (hdmip->video_info->pixel_repeat + 1);
+	
+		printf("%s, %d\n", __func__, __LINE__);
+	rate = hdmip->video_info->pixel_clk *
+			(hdmip->video_info->pixel_repeat + 1);
+			
 	if (hdmip->config.format == DISP_CSC_TYPE_YUV420)
 		rate /= 2;
+	
+		printf("%s, %d\n", __func__, __LINE__);
+		
+	rate_parent = clk_get_rate(hdmip->clk_parent);
+	if (!hdmi_is_divide_by(rate_parent, rate)) {
+		if (hdmi_is_divide_by(297000000, rate))
+			clk_set_rate(hdmip->clk_parent, 297000000);
+		else if (hdmi_is_divide_by(594000000, rate))
+			clk_set_rate(hdmip->clk_parent, 594000000);
+	}
+	
+		printf("%s, %d\n", __func__, __LINE__);
 
-	if (hdmip->clk)
+	if (hdmip->clk) {
 		clk_set_rate(hdmip->clk, rate);
+		rate_set = clk_get_rate(hdmip->clk);
+	}
+	
+		printf("%s, %d\n", __func__, __LINE__);
+
+	if (hdmip->clk && (rate_set != rate)) {
+		for (i = 1; i < 10; i++) {
+			rate_parent = rate * i;
+			rate_round = clk_round_rate(hdmip->clk_parent,
+							rate_parent);
+			if (rate_round == rate_parent) {
+				clk_set_rate(hdmip->clk_parent, rate_parent);
+				clk_set_rate(hdmip->clk, rate);
+				break;
+			}
+		}
+		if (i == 10)
+			DE_WRN("clk_set_rate fail.need %ldhz, but get %ldhz\n",
+					rate, rate_set);
+	}
+	
+		printf("%s, %d\n", __func__, __LINE__);
 
 	return 0;
 }
+
 
 static s32 hdmi_clk_enable(struct disp_device *hdmi)
 {
