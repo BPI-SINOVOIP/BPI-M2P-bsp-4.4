@@ -582,6 +582,8 @@ static int verify_hdmi_mode(int channel, int mode, int *vid, int check)
 		DISP_TV_MOD_720P_50HZ,
 		DISP_TV_MOD_1080P_60HZ,
 		DISP_TV_MOD_1080P_50HZ,
+		DISP_TV_MOD_1024_600P,
+		DISP_TV_MOD_1280_800P,
 	};
 	int i = 0;
 	int actual_vendor_id = get_hdmi_vendor_id(channel);

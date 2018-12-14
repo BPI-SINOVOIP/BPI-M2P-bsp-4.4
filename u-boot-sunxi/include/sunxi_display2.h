@@ -210,6 +210,7 @@ enum disp_tv_mode
 	DISP_TV_MOD_4096_2160P_50HZ     = 0x25,
 	/* reserved */
 	DISP_TV_MOD_1024_600P           = 0x45,
+	DISP_TV_MOD_1280_800P           = 0x46,
 	/*
 	 * vga
 	 * NOTE:macro'value of new solution must between

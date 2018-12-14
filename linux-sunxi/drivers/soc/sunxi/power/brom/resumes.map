@@ -1,74 +1,74 @@
 
-内存配置
+Memory Configuration
 
-名称           来源             长度             属性
+Name             Origin             Length             Attributes
 *default*        0x0000000000000000 0xffffffffffffffff
 
 Linker script and memory map
 
                 0x0000000000000000                __resumes_start = .
 
-.text           0x0000000000000000       0x50
+.text           0x0000000000000000      0x110
  drivers/soc/sunxi/power/brom/resume_head.o(.rodata)
  .rodata        0x0000000000000000       0x30 drivers/soc/sunxi/power/brom/resume_head.o
                 0x0000000000000000                resume_head
  drivers/soc/sunxi/power/brom/resumes.o(.text)
- .text          0x0000000000000030       0x20 drivers/soc/sunxi/power/brom/resumes.o
+ .text          0x0000000000000030       0xe0 drivers/soc/sunxi/power/brom/resumes.o
                 0x0000000000000030                _start
-                0x0000000000000048                cpu_brom_addr
+                0x0000000000000100                cpu_brom_addr
  *(.text)
- .text          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+ .text          0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resume_head.o
 
-.glue_7         0x0000000000000050        0x0
- .glue_7        0x0000000000000050        0x0 linker stubs
+.glue_7         0x0000000000000110        0x0
+ .glue_7        0x0000000000000110        0x0 linker stubs
 
-.glue_7t        0x0000000000000050        0x0
- .glue_7t       0x0000000000000050        0x0 linker stubs
+.glue_7t        0x0000000000000110        0x0
+ .glue_7t       0x0000000000000110        0x0 linker stubs
 
-.vfp11_veneer   0x0000000000000050        0x0
- .vfp11_veneer  0x0000000000000050        0x0 linker stubs
+.vfp11_veneer   0x0000000000000110        0x0
+ .vfp11_veneer  0x0000000000000110        0x0 linker stubs
 
-.v4_bx          0x0000000000000050        0x0
- .v4_bx         0x0000000000000050        0x0 linker stubs
+.v4_bx          0x0000000000000110        0x0
+ .v4_bx         0x0000000000000110        0x0 linker stubs
 
-.iplt           0x0000000000000050        0x0
- .iplt          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+.iplt           0x0000000000000110        0x0
+ .iplt          0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resume_head.o
 
-.rel.dyn        0x0000000000000050        0x0
- .rel.iplt      0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+.rel.dyn        0x0000000000000110        0x0
+ .rel.iplt      0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resume_head.o
 
 .rodata
  *(.rodata)
 
-.data           0x0000000000000050        0x0
+.data           0x0000000000000110        0x0
  *(.data)
- .data          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
- .data          0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resumes.o
-                0x0000000000000050                __bss_start = .
+ .data          0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+ .data          0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resumes.o
+                0x0000000000000110                __bss_start = .
 
-.igot.plt       0x0000000000000050        0x0
- .igot.plt      0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+.igot.plt       0x0000000000000110        0x0
+ .igot.plt      0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resume_head.o
 
-.bss            0x0000000000000050        0x0
+.bss            0x0000000000000110        0x0
  *(.sbss)
  *(.scommon)
  *(.bss)
- .bss           0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resume_head.o
- .bss           0x0000000000000050        0x0 drivers/soc/sunxi/power/brom/resumes.o
+ .bss           0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resume_head.o
+ .bss           0x0000000000000110        0x0 drivers/soc/sunxi/power/brom/resumes.o
  *(COMMON)
-                0x0000000000000050                __bss_end = .
-                0x0000000000000050                __resumes_end = .
+                0x0000000000000110                __bss_end = .
+                0x0000000000000110                __resumes_end = .
 LOAD drivers/soc/sunxi/power/brom/resumes.o
 LOAD drivers/soc/sunxi/power/brom/resume_head.o
 OUTPUT(drivers/soc/sunxi/power/brom/resumes.elf elf32-littlearm)
 
-.debug_info     0x0000000000000000      0x1b7
- .debug_info    0x0000000000000000      0x132 drivers/soc/sunxi/power/brom/resume_head.o
- .debug_info    0x0000000000000132       0x85 drivers/soc/sunxi/power/brom/resumes.o
+.debug_info     0x0000000000000000      0x1bd
+ .debug_info    0x0000000000000000      0x139 drivers/soc/sunxi/power/brom/resume_head.o
+ .debug_info    0x0000000000000139       0x84 drivers/soc/sunxi/power/brom/resumes.o
 
-.debug_abbrev   0x0000000000000000       0x8f
- .debug_abbrev  0x0000000000000000       0x7b drivers/soc/sunxi/power/brom/resume_head.o
- .debug_abbrev  0x000000000000007b       0x14 drivers/soc/sunxi/power/brom/resumes.o
+.debug_abbrev   0x0000000000000000       0x9c
+ .debug_abbrev  0x0000000000000000       0x88 drivers/soc/sunxi/power/brom/resume_head.o
+ .debug_abbrev  0x0000000000000088       0x14 drivers/soc/sunxi/power/brom/resumes.o
 
 .debug_aranges  0x0000000000000000       0x38
  .debug_aranges
@@ -76,13 +76,13 @@ OUTPUT(drivers/soc/sunxi/power/brom/resumes.elf elf32-littlearm)
  .debug_aranges
                 0x0000000000000018       0x20 drivers/soc/sunxi/power/brom/resumes.o
 
-.debug_line     0x0000000000000000       0xd2
+.debug_line     0x0000000000000000      0x10e
  .debug_line    0x0000000000000000       0x77 drivers/soc/sunxi/power/brom/resume_head.o
- .debug_line    0x0000000000000077       0x5b drivers/soc/sunxi/power/brom/resumes.o
+ .debug_line    0x0000000000000077       0x97 drivers/soc/sunxi/power/brom/resumes.o
 
-.debug_str      0x0000000000000000      0x21d
- .debug_str     0x0000000000000000      0x21d drivers/soc/sunxi/power/brom/resume_head.o
-                                        0x236 (size before relaxing)
+.debug_str      0x0000000000000000      0x21a
+ .debug_str     0x0000000000000000      0x21a drivers/soc/sunxi/power/brom/resume_head.o
+                                        0x233 (size before relaxing)
 
 .comment        0x0000000000000000       0x2d
  .comment       0x0000000000000000       0x2d drivers/soc/sunxi/power/brom/resume_head.o
@@ -94,8 +94,8 @@ OUTPUT(drivers/soc/sunxi/power/brom/resumes.elf elf32-littlearm)
                 0x0000000000000000        0x0 drivers/soc/sunxi/power/brom/resume_head.o
 
 .ARM.attributes
-                0x0000000000000000       0x2f
+                0x0000000000000000       0x31
  .ARM.attributes
-                0x0000000000000000       0x31 drivers/soc/sunxi/power/brom/resume_head.o
+                0x0000000000000000       0x33 drivers/soc/sunxi/power/brom/resume_head.o
  .ARM.attributes
-                0x0000000000000031       0x1f drivers/soc/sunxi/power/brom/resumes.o
+                0x0000000000000033       0x1f drivers/soc/sunxi/power/brom/resumes.o

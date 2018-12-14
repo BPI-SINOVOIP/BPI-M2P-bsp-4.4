@@ -143,6 +143,8 @@ static int get_factors_pll_video(u32 rate, u32 parent_rate,
 	do_div(tmp_rate, 1000000);
 	index = tmp_rate;
 
+	pr_info("%s rate = %d\n", __func__, rate);
+
 	if (FACTOR_SEARCH(video))
 		return -1;
 
@@ -272,14 +274,19 @@ static unsigned long calc_rate_media(u32 parent_rate,
 {
 	u64 tmp_rate = (parent_rate ? parent_rate : 24000000);
 
+	pr_info("%s, begin tmp_rate = %ld\n", __func__, tmp_rate);
+	pr_info("%s, frac_mode = %d frac_freq = %d\n", __func__, factor->frac_mode, factor->frac_freq);
+
 	if (factor->frac_mode == 0) {
 		if (factor->frac_freq == 1)
 			return 297000000;
 		else
 			return 270000000;
 	} else {
+		pr_info("%s, factorn = %d factorm = %d\n", __func__, factor->factorn, factor->factorm);
 		tmp_rate = tmp_rate * (factor->factorn + 1);
 		do_div(tmp_rate, factor->factorm + 1);
+		pr_info("%s, end tmp_rate = %ld\n", __func__, tmp_rate);
 		return (unsigned long)tmp_rate;
 	}
 }

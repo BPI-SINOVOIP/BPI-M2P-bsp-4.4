@@ -138,6 +138,7 @@ static s32 hdmi_clk_config(struct disp_device *hdmi)
 		clk_set_rate(hdmip->clk, rate);
 #else
 	rate_parent = clk_get_rate(hdmip->parent_clk);
+	pr_info("%s rate = %ld rate_parent = %ld\n", __func__, rate, rate_parent);
 	if (!hdmi_is_divide_by(rate_parent, rate)) {
 		if (hdmi_is_divide_by(297000000, rate))
 			clk_set_rate(hdmip->parent_clk, 297000000);
@@ -145,9 +146,12 @@ static s32 hdmi_clk_config(struct disp_device *hdmi)
 			clk_set_rate(hdmip->parent_clk, 594000000);
 	}
 
+	pr_info("%s rate = %ld\n", __func__, rate);
+	
 	if (hdmip->clk) {
 		clk_set_rate(hdmip->clk, rate);
 		rate_set = clk_get_rate(hdmip->clk);
+		pr_info("%s rate_set = %ld\n", __func__, rate_set);
 	}
 
 	if (hdmip->clk && (rate_set != rate)) {
@@ -155,6 +159,7 @@ static s32 hdmi_clk_config(struct disp_device *hdmi)
 			rate_parent = rate * i;
 			rate_round =
 			    clk_round_rate(hdmip->parent_clk, rate_parent);
+			pr_info("%s rate = %ld rate_parent = %ld rate_round = %ld\n", __func__, rate, rate_parent, rate_round);
 			if (rate_round == rate_parent) {
 				clk_set_rate(hdmip->parent_clk, rate_parent);
 				clk_set_rate(hdmip->clk, rate);
@@ -166,7 +171,6 @@ static s32 hdmi_clk_config(struct disp_device *hdmi)
 			    "clk_set_rate fail.we need %ldhz, but get %ldhz\n",
 			    rate, rate_set);
 	}
-
 #endif /*endif CONFIG_ARCH_SUN8IW12P1 */
 
 	return 0;
