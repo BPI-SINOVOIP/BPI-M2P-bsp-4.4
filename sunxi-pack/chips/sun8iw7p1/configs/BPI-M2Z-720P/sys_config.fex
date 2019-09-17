@@ -292,17 +292,17 @@ wakeup_src0         =
 ;i2c configuration
 ;----------------------------------------------------------------------------------
 [twi0]
-twi_used        = 1
+twi0_used       = 1
 twi_scl         = port:PA11<2><default><default><default>
 twi_sda         = port:PA12<2><default><default><default>
 
 [twi1]
-twi_used        = 1
+twi1_used       = 1
 twi_scl         = port:PA18<3><default><default><default>
 twi_sda         = port:PA19<3><default><default><default>
 
 [twi2]
-twi_used        = 0
+twi2_used       = 0
 twi_scl         = port:PE12<3><default><default><default>
 twi_sda         = port:PE13<3><default><default><default>
 
@@ -348,7 +348,7 @@ uart3_cts        = port:PA16<3><1><default><default>
 ;SPI controller configuration
 ;----------------------------------------------------------------------------------
 [spi0]
-spi_used       = 1
+spi0_used      = 1
 spi_cs_bitmap  = 1
 spi_mosi       = port:PC00<3><default><default><default>
 spi_miso       = port:PC01<3><default><default><default>
@@ -356,7 +356,7 @@ spi_sclk       = port:PC02<3><default><default><default>
 spi_cs0        = port:PC03<3><1><default><default>
 
 [spi1]
-spi_used       = 0
+spi1_used      = 0
 spi_cs_bitmap  = 1
 spi_cs0        = port:PA13<2><1><default><default>
 spi_sclk       = port:PA14<2><default><default><default>
@@ -366,17 +366,13 @@ spi_miso       = port:PA16<2><default><default><default>
 ;----------------------------------------------------------------------------------
 ;SPI device configuration
 ;----------------------------------------------------------------------------------
-[spi_devices]
-spi_dev_num = 1
-
-[spi_board0]
-modalias      = "spidev"
-max_speed_hz  = 33000000
-bus_num       = 0
-chip_select   = 0
-mode          = 3
-full_duplex   = 0
-manual_cs     = 0
+[spi0/spi_board0]
+compatible        = "allwinner,spidev"
+spi-max-frequency = 0x2faf080
+reg               = 0x0
+spi-cpha
+spi-cpol
+spi-cs-high
 
 ;----------------------------------------------------------------------------------
 ;userspace gpio interface
@@ -572,7 +568,7 @@ lcd1_hue                 = 50
 ;hdmi_hdcp_enable:      if hdmi hdcp function enable
 ;hdmi_cts_compatibility:if hdmi cts test compatibility enable
 ;hdmi_power:            power name for hdmi
-;hdmi_io_regulator:     controller's power
+;hdmi_io_regulator:     controller power
 ;hdmi_cec_support:      enable cec funciton. (1:enable, 0:disable)
 ;----------------------------------------------------------------------------------
 [hdmi]

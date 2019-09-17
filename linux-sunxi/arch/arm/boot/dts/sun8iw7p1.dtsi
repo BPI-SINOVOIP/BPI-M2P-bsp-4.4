@@ -1655,7 +1655,7 @@
 
 		gmac0: eth@01c30000 {
 			compatible = "allwinner,sunxi-gmac";
-			reg = <0x0 0x01c30000 0x0 0x40000>,
+			reg = <0x0 0x01c30000 0x0 0x10000>,
 			      <0x0 0x01c00030 0x0 0x04>;
 			interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "gmacirq";
