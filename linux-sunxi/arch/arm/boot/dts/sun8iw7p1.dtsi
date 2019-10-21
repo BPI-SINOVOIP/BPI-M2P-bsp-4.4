@@ -1509,6 +1509,15 @@
 				combine_sensor_temp_type = "max";
 				combine_sensor_id = <0>;
 			};
+/*
+			ths_combine1:ths_combine1{
+                                compatible = "allwinner,ths_combine1";
+                                #thermal-sensor-cells = <1>;
+                                combine_sensor_num = <2>;
+                                combine_sensor_type = "gpu";
+                                combine_sensor_temp_type = "max";
+                                combine_sensor_id = <1 2>;
+                        };*/
 		};
 
 		cpu_budget_cooling:cpu_budget_cool{
@@ -1516,13 +1525,15 @@
 			device_type = "cpu_budget_cooling";
 			#cooling-cells = <2>;
 			status = "okay";
-			state_cnt = <5>;
+			state_cnt = <7>;
 			cluster_num = <1>;
 			state0 = <1200000 4>;
-			state1 = <1200000 3>;
-			state2 = <1200000 2>;
-			state3 = <1200000 1>;
-			state4 = <504000 1>;
+			state1 = <1008000 4>;
+			state2 = <912000 4>;
+			state3 = <816000 3>;
+			state4 = <720000 2>;
+			state5 = <648000 2>;
+                        state6 = <480000 1>;
 		};
 
 		gpu_cooling:gpu_cooling{
@@ -1531,53 +1542,42 @@
 			reg = <0x0 0x0 0x0 0x0>;
 			#cooling-cells = <2>;
 			status = "okay";
-			state_cnt = <4>;
-			state0 = <4>;
-			state1 = <3>;
-			state2 = <2>;
-			state3 = <1>;
+			state_cnt = <3>;
+			state0 = <0>;
+			state1 = <360>;
+			state2 = <144>;
 		};
 
 		thermal-zones{
-			soc_thermal{
+			cpu_thermal_zone{
 
-				polling-delay-passive = <1000>;
-				polling-delay = <1000>;
+				polling-delay-passive = <500>;
+				polling-delay = <2000>;
 				thermal-sensors = <&ths_combine0 0>;
 
 				trips{
 					cpu_trip0:t0{
-						temperature = <85>;
+						temperature = <70>;
 						type = "passive";
 						hysteresis = <0>;
 					};
 					cpu_trip1:t1{
-						temperature = <95>;
-						type = "passive";
-						hysteresis = <0>;
-					};
-					cpu_trip2:t2{
-						temperature = <105>;
-						type = "passive";
-						hysteresis = <0>;
-					};
-					gpu_trip0:t3{
 						temperature = <80>;
 						type = "passive";
 						hysteresis = <0>;
 					};
-					gpu_trip1:t4{
+					cpu_trip2:t2{
 						temperature = <90>;
 						type = "passive";
 						hysteresis = <0>;
 					};
-					gpu_trip2:t5{
-						temperature = <100>;
-						type = "passive";
-						hysteresis = <0>;
-					};
-					crt_trip:t6{
-						temperature = <115>;
+					cpu_trip3:t3{
+                                                temperature = <100>;
+                                                type = "passive";
+                                                hysteresis = <0>;
+                                        };
+					crt_trip:t4{
+						temperature = <110>;
 						type = "critical";
 						hysteresis = <0>;
 					};
@@ -1604,24 +1604,50 @@
 					};
 					bind3{
 						contribution = <0>;
-						trip = <&gpu_trip0>;
+						trip = <&cpu_trip3>;
 						cooling-device =
-						<&gpu_cooling 1 1>;
-					};
-					bind4{
-						contribution = <0>;
-						trip = <&gpu_trip1>;
-						cooling-device =
-						<&gpu_cooling 2 2>;
-					};
-					bind5{
-						contribution = <0>;
-						trip = <&gpu_trip2>;
-						cooling-device =
-						<&gpu_cooling 3 3>;
+						<&cpu_budget_cooling 5 6>;
 					};
 				};
 			};
+/*
+			gpu_thermal_zone{
+
+                                polling-delay-passive = <500>;
+                                polling-delay = <2000>;
+                                thermal-sensors = <&ths_combine1 1>;
+
+                                trips{
+                                        gpu_trip0:t0{
+                                                temperature = <85>;
+                                                type = "passive";
+                                                hysteresis = <0>;
+                                        };
+                                        gpu_trip1:t1{
+                                                temperature = <95>;
+                                                type = "passive";
+                                                hysteresis = <0>;
+                                        };
+                                        crt_trip1:t2{
+                                                temperature = <110>;
+                                                type = "critical";
+                                                hysteresis = <0>;
+                                        };
+                                };
+
+                                cooling-maps{
+                                        bind4{
+                                                contribution = <0>;
+                                                trip = <&gpu_trip0>;
+                                                cooling-device = <&gpu_cooling 1 1>;
+                                        };
+                                        bind5{
+                                                contribution = <0>;
+                                                trip = <&gpu_trip1>;
+                                                cooling-device = <&gpu_cooling 2 2>;
+                                        };
+                                };
+                        };*/
 		};
 
 		keyboard0:keyboard{
