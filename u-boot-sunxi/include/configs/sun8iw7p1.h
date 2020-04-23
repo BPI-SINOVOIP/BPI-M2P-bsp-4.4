@@ -557,7 +557,7 @@
 
 /* bootGUI config */
 #ifdef CONFIG_SUNXI_MODULE_DISPLAY
-#define ENABLE_ADVERT_PICTURE
+/*#define ENABLE_ADVERT_PICTURE*/
 #define CONFIG_BOOT_GUI
 #define UPDATE_DISPLAY_MODE
 #endif

@@ -119,7 +119,7 @@ static s32 hdmi_clk_config(struct disp_device *hdmi)
 	if (hdmip->config.format == DISP_CSC_TYPE_YUV420)
 		rate /= 2;
 	
-		printf("%s, %d\n", __func__, __LINE__);
+	printf("%s, %d\n", __func__, __LINE__);
 		
 	rate_parent = clk_get_rate(hdmip->clk_parent);
 	if (!hdmi_is_divide_by(rate_parent, rate)) {

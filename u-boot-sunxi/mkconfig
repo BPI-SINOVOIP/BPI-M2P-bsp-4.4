@@ -169,9 +169,10 @@ echo "#define CONFIG_SYS_ARCH  \"${arch}\""  >> config.h
 echo "#define CONFIG_SYS_CPU   \"${cpu}\""   >> config.h
 echo "#define CONFIG_SYS_BOARD \"${board}\"" >> config.h
 
-if [ "x${SUNXI_MODE}" = "x${OTA_TEST_NAME}" ] ; then
-	echo "#define SUNXI_OTA_TEST" >> config.h
-fi
+#if [ "x${SUNXI_MODE}" = "x${OTA_TEST_NAME}" ] ; then
+#	echo "#define SUNXI_OTA_TEST" >> config.h
+#fi
+
 [ "${vendor}" ] && echo "#define CONFIG_SYS_VENDOR \"${vendor}\"" >> config.h
 
 [ "${soc}"    ] && echo "#define CONFIG_SYS_SOC    \"${soc}\""    >> config.h

@@ -2,21 +2,26 @@
 
 set -e
 
-SOC=h3
-MACH=sun8iw7p1
-PLATFORM=
+TOPDIR=`pwd`
+
+MACH=
+ARCH=
 BOARD=
 board=
-TOPDIR=`pwd`
-#TARGET_PLATFORM="BPI"
-#TARGET_PRODUCT="BPI-M2P"
+uboot_config=
+kernel_config=
+kernel_modules=
+kernel_headers=
 
-CUR_DIR=$PWD
-U_CROSS_COMPILE=$CUR_DIR/allwinner-tools/gcc-linaro/bin
-K_CROSS_COMPILE=$CUR_DIR/allwinner-tools/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin
+TOOLCHAIN=gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf
+CROSS_COMPILE=$TOPDIR/toolchains/$TOOLCHAIN/bin
 
 list_boards() {
-	(cd sunxi-pack/chips/$MACH/configs ; ls -1d BPI* )
+	for boarddir in $(find sunxi-pack/*/configs/ -mindepth 1 -maxdepth 1 -type d | grep "BPI") ;
+	do
+	    packboard=`basename ${boarddir}`
+	    echo "    ${packboard}"
+	done
 }
 
 # keep the output `sh` friendly
@@ -24,14 +29,13 @@ list_boards() {
 generate_board_mk() {
 	
 	cat <<-EOT
-	BOARD=$BOARD
-	SOC=$SOC
 	MACH=$MACH
-	U_COMPILE_TOOL=$U_CROSS_COMPILE
-	K_COMPILE_TOOL=$K_CROSS_COMPILE
-	UBOOT_CONFIG=$MACH
-	KERNEL_CONFIG=${MACH}smp_${board}_defconfig
-	LICHEE_PLATFORM=linux
+	ARCH=$ARCH
+	BOARD=$BOARD
+	COMPILE_TOOL=$CROSS_COMPILE
+	SPL_COMPILE_TOOL=$SPL_CROSS_COMPILE
+	UBOOT_CONFIG=$uboot_config
+	KERNEL_CONFIG=$kernel_config
 	EOT
 
 }
@@ -40,29 +44,24 @@ generate_board_mk() {
 generate_board_envsh() {
 	
 	cat <<-EOT
-	export ARCH=arm
-	export BOARD=$BOARD
-	export SOC=$SOC
 	export MACH=$MACH
-	export CROSS_COMPILE=arm-linux-gnueabihf-
-	export UBOOT_CONFIG=${MACH}_config
-	export KERNEL_CONFIG=${MACH}smp_${board}_defconfig
-	export LICHEE_PLATFORM="linux"
-	export GPU_TYPE="mali400"
+	export ARCH=$ARCH
+	export BOARD=$BOARD
+	export board=$board
+	export UBOOT_CONFIG=$uboot_config
+	export KERNEL_CONFIG=$kernel_config
+	export KERNEL_MODULES=${kernel_modules}
+	export KERNEL_HEADERS=${kernel_headers}
 	export TOPDIR=${TOPDIR}
-#	export TARGET_PLATFORM=${TARGET_PLATFORM}
-#	export TARGET_PRODUCT=${TARGET_PRODUCT}
 	EOT
 
 }
 
 usage() {
 	cat <<-EOT >&2
-	Usage: $0 <board>
-
 	supported boards:
 	EOT
-	list_boards  #DK, update later
+	list_boards
 }
 
 if [ $# -eq 0 ]; then
@@ -71,26 +70,39 @@ if [ $# -eq 0 ]; then
 fi
 
 BOARD=$1
-
 case $BOARD in
-  BPI-M2P*)
-    board="bpi-m2p"
-    ;;
-  BPI-M2Z*)
-    board="bpi-m2z"
-    ;;
-  *)
-    board=$(echo $BOARD | tr '[A-Z]' '[a-z]')
-    ;;
+	BPI-M2P*)
+		MACH=sun8iw7p1
+		ARCH=arm
+		board="bpi-m2p"
+		uboot_config=${MACH}_config
+		kernel_config=${MACH}smp_${board}_defconfig
+		kernel_modules="4.4.55-BPI-M2P-Kernel"
+		kernel_headers="linux-headers-4.4.55-BPI-M2P-Kernel"
+		;;    
+	BPI-M2Z*)
+		MACH=sun8iw7p1
+		ARCH=arm
+		board="bpi-m2z"
+		uboot_config=${MACH}_config
+		kernel_config=${MACH}smp_${board}_defconfig
+		kernel_modules="4.4.55-BPI-M2Z-Kernel"
+		kernel_headers="linux-headers-4.4.55-BPI-M2Z-Kernel"
+		;;    
 esac
 
-generate_board_envsh "$1" > env.sh
-
-out=chosen_board.mk
-if generate_board_mk "$1" > $out~; then
-	mv $out~ $out
-	echo "$1 configured. Now run \`make\`"
-else
-	rm $out~
+if [ ! -d ${TOPDIR}/sunxi-pack/${MACH}/configs/${BOARD} ]; then
+	echo -e "\033[31m${BOARD} not support, exit   \033[0m"
+	usage
 	exit 1
 fi
+
+if [ -e env.sh ]; then
+	rm env.sh
+fi
+generate_board_envsh "$1" > env.sh
+
+if [ -e chosen_board.mk ]; then
+        rm chosen_board.mk
+fi
+generate_board_mk "$1" > chosen_board.mk

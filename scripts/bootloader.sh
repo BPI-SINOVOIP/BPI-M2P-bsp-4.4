@@ -1,6 +1,4 @@
-#!/bin/bash
-
-#gunzip -c BPI_M3_1080P.img.gz | dd of=/dev/mmcblk0 conv=sync,noerror bs=1k
+#!/bin/sh
 
 die() {
         echo "$*" >&2
@@ -9,17 +7,14 @@ die() {
 
 [ -s "./env.sh" ] || die "please run ./configure first."
 . ./env.sh
-O=$1
 
+O=$1
 if [ ! -z $O ] ; then
 	BOARD=$O
 fi
 
-#P=${TOPDIR}/output/$BOARD/pack
-P=${TOPDIR}/sunxi-pack/out
-#U=${TOPDIR}/output/100MB
-U=${TOPDIR}/out/100MB
-#echo DOWNLOAD DIR=$P
+P=$TOPDIR/out/${BOARD}/image/
+U=$TOPDIR/out/100MB
 
 mkdir -p $U
 TMP_FILE=${U}/${BOARD}-linux4.4-8k.tmp
@@ -29,11 +24,11 @@ IMG_FILE=${U}/${BOARD}-linux4.4-8k.img
 LOOP_DEV=`sudo losetup -f --show ${TMP_FILE}`
 
 (sudo dd if=$P/boot0_sdcard.fex	of=${LOOP_DEV} bs=1k seek=8) >/dev/null 2>&1
-(sudo dd if=$P/boot_package.fex	of=${LOOP_DEV} bs=1k seek=16400) >/dev/null 2>&1
+(sudo dd if=$P/boot_package.fex of=${LOOP_DEV} bs=1k seek=16400) >/dev/null 2>&1
 (sudo dd if=$P/sunxi_mbr.fex 	of=${LOOP_DEV} bs=1k seek=20480) >/dev/null 2>&1
 (sudo dd if=$P/boot-resource.fex of=${LOOP_DEV} bs=1k seek=36864) >/dev/null 2>&1
 (sudo dd if=$P/env.fex 		of=${LOOP_DEV} bs=1k seek=53248) >/dev/null 2>&1
-#(sudo dd if=$P/boot.fex 	of=${LOOP_DEV} bs=1k seek=69632) >/dev/null 2>&1
+#(sudo dd if=$P/boot.fex 	of=${LOOP_DEV} bs=1k seek=54272) >/dev/null 2>&1
 
 sudo sync
 

@@ -62,9 +62,9 @@ LOAD drivers/soc/sunxi/power/brom/resumes.o
 LOAD drivers/soc/sunxi/power/brom/resume_head.o
 OUTPUT(drivers/soc/sunxi/power/brom/resumes.elf elf32-littlearm)
 
-.debug_info     0x0000000000000000      0x1bd
- .debug_info    0x0000000000000000      0x139 drivers/soc/sunxi/power/brom/resume_head.o
- .debug_info    0x0000000000000139       0x84 drivers/soc/sunxi/power/brom/resumes.o
+.debug_info     0x0000000000000000      0x1b6
+ .debug_info    0x0000000000000000      0x132 drivers/soc/sunxi/power/brom/resume_head.o
+ .debug_info    0x0000000000000132       0x84 drivers/soc/sunxi/power/brom/resumes.o
 
 .debug_abbrev   0x0000000000000000       0x9c
  .debug_abbrev  0x0000000000000000       0x88 drivers/soc/sunxi/power/brom/resume_head.o
@@ -80,13 +80,13 @@ OUTPUT(drivers/soc/sunxi/power/brom/resumes.elf elf32-littlearm)
  .debug_line    0x0000000000000000       0x77 drivers/soc/sunxi/power/brom/resume_head.o
  .debug_line    0x0000000000000077       0x97 drivers/soc/sunxi/power/brom/resumes.o
 
-.debug_str      0x0000000000000000      0x21a
- .debug_str     0x0000000000000000      0x21a drivers/soc/sunxi/power/brom/resume_head.o
-                                        0x233 (size before relaxing)
+.debug_str      0x0000000000000000      0x258
+ .debug_str     0x0000000000000000      0x258 drivers/soc/sunxi/power/brom/resume_head.o
+                                        0x271 (size before relaxing)
 
-.comment        0x0000000000000000       0x2d
- .comment       0x0000000000000000       0x2d drivers/soc/sunxi/power/brom/resume_head.o
-                                         0x2e (size before relaxing)
+.comment        0x0000000000000000       0x74
+ .comment       0x0000000000000000       0x74 drivers/soc/sunxi/power/brom/resume_head.o
+                                         0x75 (size before relaxing)
 
 .note.GNU-stack
                 0x0000000000000000        0x0

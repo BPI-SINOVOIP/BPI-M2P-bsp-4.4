@@ -1,37 +1,24 @@
 #!/bin/bash
 
+[ -s "./env.sh" ] || die "please run ./configure first."
+
+. ./env.sh
+
+board=$(echo ${BOARD%-*} | tr '[A-Z]' '[a-z]')
+
 DEVICE=
 VARIANT=
-BOARD=
-TARGET=
-
-echo "--------------------------------------------------------------------------------"
-echo "  1. M2P"
-echo "  2. M2Z"
-echo "--------------------------------------------------------------------------------"
-
-read -p "Please choose a target to install(1-5): " board
-echo
-
-if [ -z "${board}" ]; then
-	echo -e "\033[31mNo install target choose \033[0m"
-	exit 1
-fi
-
-case ${board} in
-	1) BOARD="M2P";;
-	2) BOARD="M2Z";;
-esac
-
-TARGET=SD/bpi-$(echo ${BOARD} | tr '[A-Z]' '[a-z]')
+TARGET=SD/${board}
 
 if [ ! -d ${TARGET} ]; then
-	echo -e "\033[31mtarget install files does not exist, please check the build. \033[0m"
+	echo -e "\033[31mNo download files exits, check build and pack. \033[0m"
 	exit 1
 fi
 
 echo "--------------------------------------------------------------------------------"
 echo "  1. HDMI 720P"
+echo "  2. HDMI 1080P"
+echo "  3. LCD7 Panel"
 echo "--------------------------------------------------------------------------------"
 
 read -p "Please choose a type to install(1-5): " type
@@ -44,6 +31,8 @@ fi
 
 case ${type} in
         1) VARIANT="720P";;
+	2) VARIANT="1080P";;
+	3) VARIANT="LCD7";;
 esac
 
 read -p "Please type the SD device(/dev/sdX): " DEVICE
@@ -68,7 +57,7 @@ esac
 
 echo
 
-BOOTLOADER=${TARGET}/100MB/BPI-${BOARD}-${VARIANT}-linux4.4-8k.img.gz
+BOOTLOADER=${TARGET}/100MB/${BOARD%-*}-${VARIANT}-linux4.4-8k.img.gz
 
 ## download bootloader
 if [ ! -f ${BOOTLOADER} ]; then

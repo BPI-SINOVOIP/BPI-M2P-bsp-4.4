@@ -28,7 +28,3 @@ Get the image from [bpi](http://wiki.banana-pi.org/Banana_Pi_BPI-M2%2B#Image_Rel
 
 Choose the type, enter the SD dev, and confirm yes, all the build packages will be installed to target SD card.
 
-![Install](https://raw.githubusercontent.com/Dangku/readme/master/m2p_4.4/Screenshot%20from%202018-09-25%2011-30-13.png)
-
-
-

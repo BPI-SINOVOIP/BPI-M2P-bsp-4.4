@@ -10,25 +10,21 @@ die() {
 
 [ -s "./env.sh" ] || die "please run ./configure first."
 
-set -e
-
 . ./env.sh
-
-set -e
 
 LINUX="$TOPDIR/linux-sunxi"
 DEST="$LINUX/output"
 
 echo "Using Linux from $LINUX ..."
 
-VERSION=$(strings $LINUX/arch/arm/boot/Image |grep "Linux version"|awk '{print $3}')
+VERSION=$(strings $LINUX/arch/$ARCH/boot/Image |grep "Linux version"|awk '{print $3}')
 echo "Kernel build version $VERSION ..."
 if [ -z "$VERSION" ]; then
 	echo "Failed to get build version, correct <linux-folder>?"
 	exit 1
 fi
 
-LINUX_ARCH=arm
+LINUX_ARCH=$ARCH
 CROSS_COMPILE=$1
 
 cd $LINUX
@@ -65,7 +61,7 @@ find "$TARGET/scripts" -type f | while read i; do if file -b $i | egrep -q "^ELF
 (cd scripts/mod && ${CROSS_COMPILE}gcc mk_elfconfig.c -o "$TARGET/scripts/mod/mk_elfconfig")
 (cd scripts/genksyms && ${CROSS_COMPILE}gcc genksyms.c parse.tab.c lex.lex.c -o "$TARGET/scripts/genksyms/genksyms")
 
-find arch/$LINUX_ARCH/include   \
+find arch/*/include   \
                -print | cpio -pdL --preserve-modification-time "$TARGET";
 
 find arch/$LINUX_ARCH/mach-sunxi/include   \

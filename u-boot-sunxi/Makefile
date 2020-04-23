@@ -10,7 +10,7 @@ PATCHLEVEL = 07
 SUBLEVEL =
 EXTRAVERSION =
 NAME =
-OTA_TEST_NAME=ota_test
+
 
 #check gcc tools chain
 #arm_toolchain_check=$(strip $(shell if [  -d ../toolchain/gcc-arm -a -d ../toolchain/gcc-aarch64 ];  then  echo yes;  fi ) )
@@ -179,11 +179,8 @@ SPLTREE		:= $(OBJTREE)/spl
 SRCTREE		:= $(CURDIR)
 TOPDIR		:= $(SRCTREE)
 LNDIR		:= $(OBJTREE)
-#BPI
-#SPLDIR		:= $(OBJTREE)/../../bootloader/uboot_2014_sunxi_spl/sunxi_spl
-#SPLBASE		:= $(OBJTREE)/../../bootloader/uboot_2014_sunxi_spl
-SPLDIR		:= $(OBJTREE)/../bootloader/uboot_2014_sunxi_spl/sunxi_spl
-SPLBASE		:= $(OBJTREE)/../bootloader/uboot_2014_sunxi_spl
+SPLDIR		:= $(OBJTREE)/bootloader/uboot_2014_sunxi_spl/sunxi_spl
+SPLBASE		:= $(OBJTREE)/bootloader/uboot_2014_sunxi_spl
 SPLSUPPORT  := $(shell if [ -d $(SPLBASE) ] ; then echo "y"; else echo "n"; fi)
 
 export	TOPDIR SRCTREE OBJTREE SPLTREE SPLDIR SPLBASE
@@ -210,7 +207,7 @@ HOSTARCH := $(shell uname -m | \
 HOSTOS := $(shell uname -s | tr '[:upper:]' '[:lower:]' | \
 	    sed -e 's/\(cygwin\).*/cygwin/')
 
-export	HOSTARCH HOSTOS OTA_TEST_NAME
+export	HOSTARCH HOSTOS
 
 # Deal with colliding definitions from tcsh etc.
 VENDOR=
@@ -857,17 +854,12 @@ u-boot.bin: u-boot FORCE
 
 u-boot-$(CONFIG_TARGET_NAME).bin:   u-boot.bin
 	@cp -v $<    $@
-#BPI
-#	@cp -v $@ $(objtree)/../../tools/pack/chips/$(CONFIG_SYS_BOARD)/bin/$@
-	@cp -v $@ $(objtree)/../sunxi-pack/chips/$(CONFIG_SYS_BOARD)/bin/$@
-	if [ -z "$(findstring $(OTA_TEST_NAME), $(SUNXI_MODE))" ]; then \
-		cp -v u-boot-$(CONFIG_TARGET_NAME).bin $(objtree)/../sunxi-pack/chips/$(subst  spinor-,,$(CONFIG_TARGET_NAME))/bin/u-boot-$(CONFIG_TARGET_NAME).bin; \
-	else \
-		cp -v u-boot-$(CONFIG_TARGET_NAME).bin $(objtree)/../sunxi-pack/chips/$(subst  spinor-,,$(CONFIG_TARGET_NAME))/bin/u-boot-$(CONFIG_TARGET_NAME)-$(SUNXI_MODE).bin; \
-	fi
+	@cp -v $@ $(objtree)/../sunxi-pack/$(MACH)/bin/$@
+ifdef CONFIG_SUNXI_MODULE_NAND
 	@if [ -d nand_sunxi/$(SOC)/lib-nand ];  then \
 		cp -v  nand_sunxi/$(SOC)/lib-nand/built-in.o nand_sunxi/$(SOC)/libnand-$(SOC); \
 	fi
+endif
 
 u-boot.ldr:	u-boot
 		$(CREATE_LDR_ENV)
@@ -1217,8 +1209,7 @@ tpl/u-boot-tpl.bin: tools prepare
 TAG_SUBDIRS := $(u-boot-dirs) include $(SPLDIR)
 
 FIND := find
-FINDFLAGS := -L \
--R --c++-kinds=+p --fields=+iaS --extra=+q
+FINDFLAGS := -L -R --c++-kinds=+p --fields=+iaS --extra=+q
 tags ctags:
 		ctags -w -o ctags `$(FIND) $(FINDFLAGS) $(TAG_SUBDIRS) \
 						-name '*.[chS]' -print`
@@ -1340,6 +1331,7 @@ ifeq ($(SPLSUPPORT), y)
 		-o -name '*.o'	-o -name '*.exe' -o -name '*.axf' \
 		-o -name '*.depend' \
 		-o -name '*.bin' \
+		-o -name '*.log' \
 		-o -name '*.map' \) -print \
 		| xargs rm -f
 	@rm -f $(SPLDIR)/boot0/boot0.lds
