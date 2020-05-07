@@ -1,5 +1,5 @@
 ## **BPI-M2P-bsp-4.4**
-Banana Pi BPI-M2P/M2Z bsp (u-boot 2014.7 & Kernel 4.4)
+Banana Pi BPI-M2P/M2Z/P2/P2Z bsp (u-boot 2014.7 & Kernel 4.4)
 
 ### **Compile**
 
@@ -10,7 +10,7 @@ Banana Pi BPI-M2P/M2Z bsp (u-boot 2014.7 & Kernel 4.4)
 
     #./build.sh BPI-M2P-720P 1
 
-**Build M2Z**
+**Build M2Z/P2/P2Z**
 
     #./build.sh BPI-M2Z-720P 1
 
