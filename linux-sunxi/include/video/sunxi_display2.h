@@ -160,6 +160,7 @@ enum disp_tv_mode {
 	DISP_TV_MOD_3840_2160P_24HZ = 0x1e,
 	DISP_TV_MOD_4096_2160P_24HZ     = 0x1f,
 	/* reserved */
+	DISP_TV_MOD_800_480P = 0x44,
 	DISP_TV_MOD_1024_600P = 0x45,
 	DISP_TV_MOD_1280_800P = 0x46,
 	/* vga */
