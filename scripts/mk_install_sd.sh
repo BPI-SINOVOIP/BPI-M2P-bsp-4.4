@@ -18,10 +18,9 @@ fi
 echo "--------------------------------------------------------------------------------"
 echo "  1. HDMI 720P"
 echo "  2. HDMI 1080P"
-echo "  3. LCD7 Panel"
 echo "--------------------------------------------------------------------------------"
 
-read -p "Please choose a type to install(1-5): " type
+read -p "Please choose a type to install(1-2): " type
 echo
 
 if [ -z "${type}" ]; then
@@ -32,7 +31,6 @@ fi
 case ${type} in
         1) VARIANT="720P";;
 	2) VARIANT="1080P";;
-	3) VARIANT="LCD7";;
 esac
 
 read -p "Please type the SD device(/dev/sdX): " DEVICE
