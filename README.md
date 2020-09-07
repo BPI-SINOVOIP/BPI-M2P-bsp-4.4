@@ -24,7 +24,13 @@ Target download packages in SD/ after build. Please check the build.sh and Makef
 
 Get the image from [bpi](http://wiki.banana-pi.org/Banana_Pi_BPI-M2%2B#Image_Release) and download it to the SD card. After finish, insert the SD card to PC
 
-    # ./build.sh 7
+**M2P**
+
+    # ./build.sh BPI-M2P-720P 6
+
+**M2Z/P2/P2Z**
+
+    # ./build.sh BPI-M2Z-720P 6
 
 Choose the type, enter the SD dev, and confirm yes, all the build packages will be installed to target SD card.
 
