@@ -730,7 +730,7 @@ int update_fdt_para_for_kernel(void* dtb_base)
 		case STORAGE_EMMC:
 			disable_node("nand0");
 			disable_node("mmc3");
-			disable_node("spi0");
+			//disable_node("spi0");
 			break;
 		case STORAGE_EMMC3:
 			disable_node("nand0");
