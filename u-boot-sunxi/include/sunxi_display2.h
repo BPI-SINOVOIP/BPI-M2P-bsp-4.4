@@ -212,6 +212,7 @@ enum disp_tv_mode
 	DISP_TV_MOD_800_480P            = 0x44,
 	DISP_TV_MOD_1024_600P           = 0x45,
 	DISP_TV_MOD_1280_800P           = 0x46,
+	DISP_TV_MOD_400_1280P			= 0x47,
 	/*
 	 * vga
 	 * NOTE:macro'value of new solution must between

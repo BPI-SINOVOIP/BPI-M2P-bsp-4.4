@@ -36,6 +36,7 @@
 #define HDMI1024_600      (0x05 + 0x100)
 #define HDMI1280_800      (0x06 + 0x100)
 #define HDMI800_480       (0x07 + 0x100)
+#define HDMI400_1280      (0x08 + 0x100)
 
 s32 disp_init_hdmi(struct disp_bsp_init_para *para);
 
