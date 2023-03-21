@@ -1,8 +1,15 @@
 ## **BPI-M2P-bsp-4.4**
 Banana Pi BPI-M2P/M2Z/P2/P2Z bsp (u-boot 2014.7 & Kernel 4.4)
 
-### **Compile**
+----------
 
+### **Prepare**
+
+[Install Docker Engine](https://docs.docker.com/engine/install/) on your platform.
+
+Get the docker image from [Sinovoip Docker Hub](https://hub.docker.com/r/sinovoip/bpi-build-linux-4.4/) , Build the source code with this docker environment.
+
+### **Compile**
 
 ----------
 
